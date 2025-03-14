@@ -10,6 +10,7 @@ class Imgs extends Model
 {
     protected $primaryKey = 'IMG_No';
     public $incrementing = false; 
+    
     protected $keyType = 'string'; 
     protected $table = 'imgs';
 
@@ -27,19 +28,15 @@ class Imgs extends Model
     // }
     public static function generateImgNo()
     {
-        // Ambil IMG_No terakhir dari database
         $lastImg = self::orderByDesc('IMG_No')->first();
     
-        // Jika belum ada data, mulai dari 001
         if (!$lastImg) {
             $newNumber = 1;
         } else {
-            // Ambil angka dari IMG_No terakhir dan tambah 1
-            $lastNumber = (int) substr($lastImg->IMG_No, 3); // Ambil angka setelah "IMG"
+            $lastNumber = (int) substr($lastImg->IMG_No, 3); 
             $newNumber = $lastNumber + 1;
         }
     
-        // Format dengan leading zeros (3 digit: 001, 002, dst.)
         return 'IMG' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
     }
     
