@@ -14,9 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
+
 
 class CaseController extends Controller
 {
@@ -197,181 +200,384 @@ class CaseController extends Controller
         return view('content.case.EditCase', compact('case', 'categories', 'subCategories', 'caseImages'));
     }
 
-    public function UpdateCase(Request $request)
+    public function deleteImage(Request $request)
     {
-        $request->validate([
-            'case_no' => 'required|string|exists:cases,Case_No',
-            'cases' => 'required|string|max:255',
-            'date' => 'required|date',
-            'category' => 'required|string|exists:cats,Cat_No',
-            'sub_category' => 'required|string|exists:subcats,Scat_No',
-            'chronology' => 'required|string|max:255',
-            'impact' => 'required|string|max:255',
-            'suggestion' => 'required|string|max:255',
-            'action' => 'required|string|max:255',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+        $image = Imgs::where('IMG_No', $request->img_id)->first();
+
+        if (!$image) {
+            return response()->json(['success' => false, 'message' => 'Foto tidak ditemukan.']);
+        }
+
+        Log::info('DeleteImage: Menghapus gambar', ['IMG_No' => $request->img_id]);
+
+        // Ambil Case_No berdasarkan IMG_RefNo
+        $caseNo = str_replace(['/','\\'], '-', $image->IMG_RefNo);
+        $directory = "case_photos/$caseNo";
+        $filePath = "$directory/{$image->IMG_Filename}";
+
+        // Hapus file dari storage jika ada
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+            Log::info('DeleteImage: File dihapus', ['filepath' => $filePath]);
+        } else {
+            Log::warning('DeleteImage: File tidak ditemukan di storage', ['filepath' => $filePath]);
+        }
+
+        // Hapus dari database
+        $image->delete();
+
+        // Tambahkan log penghapusan ke database
+        DB::table('Logs')->insert([
+            'LOG_Type' => 'BA',
+            'LOG_RefNo' => $image->IMG_RefNo,
+            'LOG_Status' => 'IMAGE_DELETED',
+            'LOG_User' => Auth::id(),
+            'LOG_Date' => now(),
+            'LOG_Desc' => "Image deleted for case {$image->IMG_RefNo}",
         ]);
 
-        try {
-            Log::info('UpdateCase: Memulai proses update case', ['case_no' => $request->case_no]);
+        return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus.']);
+    }
 
-            $case = Cases::where('Case_No', $request->case_no)->first();
-            if (!$case) {
-                Log::warning('UpdateCase: Case tidak ditemukan', ['case_no' => $request->case_no]);
-                return redirect()->back()->with('error', 'Case tidak ditemukan.');
-            }
+    // Update Case
 
-            $case->Case_Name = $request->cases;
-            $case->Case_Date = $request->date;
-            $case->Cat_No = $request->category;
-            $case->Scat_No = $request->sub_category;
-            $case->Case_Chronology = $request->chronology;
-            $case->Case_Outcome = $request->impact;
-            $case->Case_Suggest = $request->suggestion;
-            $case->Case_Action = $request->action;
-            $case->Update_Date = now();
+    // public function UpdateCase(Request $request)
+    // {
+    //     $request->validate([
+    //         'case_no' => 'required|string|exists:cases,Case_No',
+    //         'cases' => 'required|string|max:255',
+    //         'date' => 'required|date',
+    //         'category' => 'required|string|exists:cats,Cat_No',
+    //         'sub_category' => 'required|string|exists:subcats,Scat_No',
+    //         'chronology' => 'required|string|max:255',
+    //         'impact' => 'required|string|max:255',
+    //         'suggestion' => 'required|string|max:255',
+    //         'action' => 'required|string|max:255',
+    //         'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+    //     ]);
 
-            $user = User::find($case->CR_BY);
-            if (!$user) {
-                return redirect()->back()->with('error', 'User Not Found');
-            }
+    //     try {
+    //         Log::info('UpdateCase: Memulai proses update case', ['case_no' => $request->case_no]);
 
-            $matrix = Matrix::where('Position', $user->PS_ID)
+    //         $case = Cases::where('Case_No', $request->case_no)->first();
+    //         if (!$case) {
+    //             Log::warning('UpdateCase: Case tidak ditemukan', ['case_no' => $request->case_no]);
+    //             return $request->ajax()
+    //                 ? response()->json(['success' => false, 'message' => 'Case tidak ditemukan.'])
+    //                 : redirect()->back()->with('error', 'Case tidak ditemukan.');
+    //         }
+
+    //         $case->Case_Name = $request->cases;
+    //         $case->Case_Date = $request->date;
+    //         $case->Cat_No = $request->category;
+    //         $case->Scat_No = $request->sub_category;
+    //         $case->Case_Chronology = $request->chronology;
+    //         $case->Case_Outcome = $request->impact;
+    //         $case->Case_Suggest = $request->suggestion;
+    //         $case->Case_Action = $request->action;
+    //         $case->Update_Date = now();
+            
+    //         $user = User::find($case->CR_BY);
+    //         if (!$user) {
+    //             return $request->ajax()
+    //                 ? response()->json(['success' => false, 'message' => 'User Not Found'])
+    //                 : redirect()->back()->with('error', 'User Not Found');
+    //         }
+
+    //         $matrix = Matrix::where('Position', $user->PS_ID)
+    //             ->where('MAT_TYPE', 'CR')
+    //             ->first();
+
+    //         if ($matrix) {
+    //             $case->Case_Status = 'SUBMIT';
+    //             $case->Case_ApStep = 1;
+    //             $case->Case_APMaxStep = $matrix->Mat_Max;
+    //             $case->Case_AP1 = $matrix->AP1;
+    //             $case->Case_AP2 = $matrix->AP2;
+    //             $case->Case_AP3 = $matrix->AP3;
+    //             $case->Case_AP4 = $matrix->AP4;
+    //         } else {
+    //             Log::warning('UpdateCase: Tidak ada data Matrix dengan MAT_TYPE CR untuk posisi ini', [
+    //                 'position' => $user->PS_ID
+    //             ]);
+    //         }
+
+    //         $case->save();
+
+    //         Log::info('UpdateCase: Case berhasil diperbarui', ['case_no' => $request->case_no]);
+
+    //         DB::table('Logs')->insert([
+    //             'LOG_Type' => 'BA',
+    //             'LOG_RefNo' => $case->Case_No,
+    //             'LOG_Status' => 'UPDATED',
+    //             'LOG_User' => Auth::id(),
+    //             'LOG_Date' => now(),
+    //             'LOG_Desc' => 'Case updated successfully',
+    //         ]);
+
+    //         if ($request->hasFile('new_images')) {
+    //             foreach ($request->file('new_images') as $image) {
+    //                 $caseNo = str_replace(['/','\\'], '-', $case->Case_No);
+    //                 $directory = "case_photos/$caseNo";
+
+    //                 if (!Storage::disk('public')->exists($directory)) {
+    //                     Storage::disk('public')->makeDirectory($directory, 0755, true);
+    //                 }
+
+    //                 $newFilename = "case_" . time() . "_" . uniqid() . "." . $image->getClientOriginalExtension();
+    //                 $path = $image->storeAs($directory, $newFilename, 'public');
+
+    //                 Imgs::create([
+    //                     'IMG_No' => Imgs::generateImgNo(),
+    //                     'IMG_RefNo' => $case->Case_No,
+    //                     'IMG_Filename' => $newFilename,
+    //                     'IMG_Realname' => $image->getClientOriginalName(),
+    //                 ]);
+
+    //                 DB::table('Logs')->insert([
+    //                     'LOG_Type' => 'BA',
+    //                     'LOG_RefNo' => $case->Case_No,
+    //                     'LOG_Status' => 'IMAGE_ADDED',
+    //                     'LOG_User' => Auth::id(),
+    //                     'LOG_Date' => now(),
+    //                     'LOG_Desc' => "New image for case {$case->Case_No}",
+    //                 ]);
+    //             }
+    //         }
+
+    //         if ($case->Case_AP1) {
+    //             Notification::create([
+    //                 'Notif_Title' => 'Approval Case: ' . $case->Case_No,
+    //                 'Notif_Text' => 'A case has been updated and requires your approval.',
+    //                 'Notif_IsRead' => 'N',
+    //                 'Notif_From' => Auth::id(),
+    //                 'Notif_To' => $case->Case_AP1,
+    //                 'Notif_Date' => now(),
+    //                 'Notif_Type' => 'BA',
+    //             ]);
+
+    //             Log::info('UpdateCase: Notifikasi berhasil dikirim', [
+    //                 'case_no' => $case->Case_No,
+    //                 'notif_to' => $case->Case_AP1,
+    //             ]);
+
+    //             DB::table('Logs')->insert([
+    //                 'LOG_Type' => 'BA',
+    //                 'LOG_RefNo' => $case->Case_No,
+    //                 'LOG_Status' => 'NOTIFICATION_SENT',
+    //                 'LOG_User' => Auth::id(),
+    //                 'LOG_Date' => now(),
+    //                 'LOG_Desc' => "Notification sent to user {$case->Case_AP1}",
+    //             ]);
+    //         }
+    //         if ($request->ajax()) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'Case updated successfully!',
+    //                 'case_no' => $case->Case_No
+    //             ]);
+    //         } else {
+    //             return redirect()->route('CreateCase')->with('success', 'Case updated successfully!');
+    //         }
+
+    //     } catch (\Exception $e) {
+    //         Log::error('UpdateCase: Terjadi kesalahan saat update case', [
+    //             'case_no' => $request->case_no,
+    //             'error' => $e->getMessage()
+    //         ]);
+
+    //         DB::table('Logs')->insert([
+    //             'LOG_Type' => 'BA',
+    //             'LOG_RefNo' => $request->case_no,
+    //             'LOG_Status' => 'ERROR',
+    //             'LOG_User' => Auth::id(),
+    //             'LOG_Date' => now(),
+    //             'LOG_Desc' => 'Error updating case: ' . $e->getMessage(),
+    //         ]);
+
+    //         if ($request->ajax()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Error: ' . $e->getMessage()
+    //             ]);
+    //         } else {
+    //             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+    //         }
+    //     }
+    // }
+
+    public function UpdateCase(Request $request)
+{
+    $request->validate([
+        'case_no' => 'required|string|exists:cases,Case_No',
+        'cases' => 'required|string|max:255',
+        'date' => 'required|date',
+        'category' => 'required|string|exists:cats,Cat_No',
+        'sub_category' => 'required|string|exists:subcats,Scat_No',
+        'chronology' => 'required|string|max:255',
+        'impact' => 'required|string|max:255',
+        'suggestion' => 'required|string|max:255',
+        'action' => 'required|string|max:255',
+        'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+    ]);
+
+    try {
+        Log::info('UpdateCase: Memulai proses update case', ['case_no' => $request->case_no]);
+
+        $case = Cases::where('Case_No', $request->case_no)->first();
+        if (!$case) {
+            Log::warning('UpdateCase: Case tidak ditemukan', ['case_no' => $request->case_no]);
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => 'Case tidak ditemukan.'])
+                : redirect()->back()->with('error', 'Case tidak ditemukan.');
+        }
+
+        // Update Data Case
+        $case->Case_Name = $request->cases;
+        $case->Case_Date = $request->date;
+        $case->Cat_No = $request->category;
+        $case->Scat_No = $request->sub_category;
+        $case->Case_Chronology = $request->chronology;
+        $case->Case_Outcome = $request->impact;
+        $case->Case_Suggest = $request->suggestion;
+        $case->Case_Action = $request->action;
+        $case->Update_Date = now();
+
+        $user = User::find($case->CR_BY);
+        if (!$user) {
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => 'User Not Found'])
+                : redirect()->back()->with('error', 'User Not Found');
+        }
+
+        $matrix = Matrix::where('Position', $user->PS_ID)
             ->where('MAT_TYPE', 'CR')
             ->first();
 
-            if ($matrix) {
-                $case->Case_Status = 'SUBMIT';
-                $case->Case_ApStep = 1;
-                $case->Case_APMaxStep = $matrix->Mat_Max;
-                $case->Case_AP1 = $matrix->AP1;
-                $case->Case_AP2 = $matrix->AP2;
-                $case->Case_AP3 = $matrix->AP3;
-                $case->Case_AP4 = $matrix->AP4;
-            } else {
-                Log::warning('UpdateCase: Tidak ada data Matrix dengan MAT_TYPE CR untuk posisi ini', [
-                    'position' => $user->PS_ID
+        if ($matrix) {
+            $case->Case_Status = 'SUBMIT';
+            $case->Case_ApStep = 1;
+            $case->Case_APMaxStep = $matrix->Mat_Max;
+            $case->Case_AP1 = $matrix->AP1;
+            $case->Case_AP2 = $matrix->AP2;
+            $case->Case_AP3 = $matrix->AP3;
+            $case->Case_AP4 = $matrix->AP4;
+        } else {
+            Log::warning('UpdateCase: Tidak ada data Matrix dengan MAT_TYPE CR untuk posisi ini', [
+                'position' => $user->PS_ID
+            ]);
+        }
+
+        $case->save();
+
+        Log::info('UpdateCase: Case berhasil diperbarui', ['case_no' => $request->case_no]);
+
+        // Logs
+        DB::table('Logs')->insert([
+            'LOG_Type' => 'BA',
+            'LOG_RefNo' => $case->Case_No,
+            'LOG_Status' => 'UPDATED',
+            'LOG_User' => Auth::id(),
+            'LOG_Date' => now(),
+            'LOG_Desc' => 'Case updated successfully',
+        ]);
+
+        // Handle Images Upload
+        if ($request->hasFile('new_images')) {
+            foreach ($request->file('new_images') as $image) {
+                $caseNo = str_replace(['/','\\'], '-', $case->Case_No);
+                $directory = "case_photos/$caseNo";
+
+                if (!Storage::disk('public')->exists($directory)) {
+                    Storage::disk('public')->makeDirectory($directory, 0755, true);
+                }
+
+                // Generate file name
+                $newFilename = "case_" . time() . "_" . uniqid() . "." . $image->getClientOriginalExtension();
+                $path = $image->storeAs($directory, $newFilename, 'public');
+
+                // Save image details to the database
+                $img = Imgs::create([
+                    'IMG_No' => Imgs::generateImgNo(),
+                    'IMG_RefNo' => $case->Case_No,
+                    'IMG_Filename' => $newFilename,
+                    'IMG_Realname' => $image->getClientOriginalName(),
+                ]);
+
+                // Log image upload
+                DB::table('Logs')->insert([
+                    'LOG_Type' => 'BA',
+                    'LOG_RefNo' => $case->Case_No,
+                    'LOG_Status' => 'IMAGE_ADDED',
+                    'LOG_User' => Auth::id(),
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => "New image for case {$case->Case_No}",
                 ]);
             }
+        }
 
-            $case->save();
+        // Send Notification
+        if ($case->Case_AP1) {
+            Notification::create([
+                'Notif_Title' => 'Approval Case: ' . $case->Case_No,
+                'Notif_Text' => 'A case has been updated and requires your approval.',
+                'Notif_IsRead' => 'N',
+                'Notif_From' => Auth::id(),
+                'Notif_To' => $case->Case_AP1,
+                'Notif_Date' => now(),
+                'Notif_Type' => 'BA',
+            ]);
 
-            Log::info('UpdateCase: Case berhasil diperbarui', ['case_no' => $request->case_no]);
+            Log::info('UpdateCase: Notifikasi berhasil dikirim', [
+                'case_no' => $case->Case_No,
+                'notif_to' => $case->Case_AP1,
+            ]);
 
             DB::table('Logs')->insert([
                 'LOG_Type' => 'BA',
                 'LOG_RefNo' => $case->Case_No,
-                'LOG_Status' => 'UPDATED',
+                'LOG_Status' => 'NOTIFICATION_SENT',
                 'LOG_User' => Auth::id(),
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'Case updated successfully',
+                'LOG_Desc' => "Notification sent to user {$case->Case_AP1}",
             ]);
+        }
 
-            if ($request->hasFile('new_images')) {
-                foreach ($request->file('new_images') as $img_no => $image) {
-                    $existingImage = Imgs::where('IMG_No', $img_no)->first();
-
-                    if ($existingImage) {
-                        Log::info('UpdateCase: Mengupdate gambar', ['IMG_No' => $img_no]);
-
-                        $caseNo = str_replace(['/','\\'], '-', $existingImage->IMG_RefNo);
-                        $directory = "case_photos/$caseNo";
-
-                        if (!Storage::disk('public')->exists($directory)) {
-                            Storage::disk('public')->makeDirectory($directory, 0755, true);
-                        }
-
-                        $oldFilePath = "$directory/{$existingImage->IMG_Filename}";
-
-                        if (Storage::disk('public')->exists($oldFilePath)) {
-                            Storage::disk('public')->delete($oldFilePath);
-                            Log::info('UpdateCase: File lama dihapus', ['filepath' => $oldFilePath]);
-                        } else {
-                            Log::warning('UpdateCase: File lama tidak ditemukan', ['filepath' => $oldFilePath]);
-                        }
-
-                        $newFilename = "case_" . time() . "_" . uniqid() . "." . $image->getClientOriginalExtension();
-                        $path = $image->storeAs($directory, $newFilename, 'public');
-
-                        $existingImage->IMG_Filename = $newFilename;
-                        $existingImage->IMG_Realname = $image->getClientOriginalName();
-                        $existingImage->save();
-
-                        Log::info('UpdateCase: Gambar berhasil diperbarui', [
-                            'IMG_No' => $img_no,
-                            'filename' => $newFilename,
-                            'path' => $path
-                        ]);
-
-                        DB::table('Logs')->insert([
-                            'LOG_Type' => 'BA',
-                            'LOG_RefNo' => $case->Case_No,
-                            'LOG_Status' => 'IMAGE_UPDATED',
-                            'LOG_User' => Auth::id(),
-                            'LOG_Date' => now(),
-                            'LOG_Desc' => "Image updated for case {$case->Case_No}",
-                        ]);
-                    } else {
-                        Log::warning('UpdateCase: Gambar tidak ditemukan', ['IMG_No' => $img_no]);
-                    }
-                }
-            }
-
-            // Notifikasi
-            if ($case->Case_AP1) {
-                $notifFrom = Auth::id();
-                if (!$notifFrom) {
-                    Log::error('UpdateCase: User login tidak ditemukan untuk Notif_From');
-                    return redirect()->back()->with('error', 'User login tidak ditemukan.');
-                }
-
-                Notification::create([
-                    'Notif_Title' => 'Approval Case: ' . $case->Case_No,
-                    'Notif_Text' => 'A case has been updated and requires your approval.',
-                    'Notif_IsRead' => 'N',
-                    'Notif_From' => $notifFrom,
-                    'Notif_To' => $case->Case_AP1,
-                    'Notif_Date' => now(),
-                    'Notif_Type' => 'BA',
-                ]);
-
-                Log::info('UpdateCase: Notifikasi berhasil dikirim', [
-                    'case_no' => $case->Case_No,
-                    'notif_to' => $case->Case_AP1,
-                ]);
-
-                // Simpan ke Logs
-                DB::table('Logs')->insert([
-                    'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $case->Case_No,
-                    'LOG_Status' => 'NOTIFICATION_SENT',
-                    'LOG_User' => Auth::id(),
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => "Notification sent to user {$case->Case_AP1}",
-                ]);
-            }
-
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Case updated successfully!',
+                'case_no' => $case->Case_No
+            ]);
+        } else {
             return redirect()->route('CreateCase')->with('success', 'Case updated successfully!');
+        }
 
-        } catch (\Exception $e) {
-            Log::error('UpdateCase: Terjadi kesalahan saat update case', [
-                'case_no' => $request->case_no,
-                'error' => $e->getMessage()
+    } catch (\Exception $e) {
+        Log::error('UpdateCase: Terjadi kesalahan saat update case', [
+            'case_no' => $request->case_no,
+            'error' => $e->getMessage()
+        ]);
+
+        DB::table('Logs')->insert([
+            'LOG_Type' => 'BA',
+            'LOG_RefNo' => $request->case_no,
+            'LOG_Status' => 'ERROR',
+            'LOG_User' => Auth::id(),
+            'LOG_Date' => now(),
+            'LOG_Desc' => 'Error updating case: ' . $e->getMessage(),
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
             ]);
-
-            // Simpan error ke Logs
-            DB::table('Logs')->insert([
-                'LOG_Type' => 'BA',
-                'LOG_RefNo' => $request->case_no,
-                'LOG_Status' => 'ERROR',
-                'LOG_User' => Auth::id(),
-                'LOG_Date' => now(),
-                'LOG_Desc' => 'Error updating case: ' . $e->getMessage(),
-            ]);
-
+        } else {
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+}
 
 // PAGE LIST CASE
     // Untuk Liat Page View Case
@@ -379,49 +585,62 @@ class CaseController extends Controller
         return view('content.case.ViewCase');
     }
 
-    public function filter(Request $request)
+    // public function filter(Request $request)
+    // {
+    //     $query = DB::table('cases');
+    
+    //     if ($request->status) {
+    //         $query->where('Case_Status', $request->status);
+    //     }
+    
+    //     if ($request->date) {
+    //         $query->whereDate('CR_DT', $request->date  );
+    //     }
+    
+    //     $data = $query->get();
+    
+    //     return response()->json(['data' => $data]);
+    // }
+    
+
+    public function getCases(Request $request)
     {
-        $query = DB::table('cases');
-    
-        if ($request->status) {
-            $query->where('Case_Status', $request->status);
+        $userId = Auth::id(); 
+        $status = $request->query('status'); 
+        $sortColumn = $request->query('sortColumn', 'Case_No'); 
+        $sortDirection = $request->query('sortDirection', 'ASC');
+
+        $validColumns = ['Case_No', 'Case_Date'];
+        if (!in_array($sortColumn, $validColumns)) {
+            $sortColumn = 'Case_No'; 
         }
-    
-        if ($request->date) {
-            $query->whereDate('CR_DT', $request->date  );
+
+        $query = Cases::select(
+                'cases.Case_No',
+                'cases.Case_Name',
+                'cases.Case_Date',
+                'cases.Cat_No',
+                'Cats.Cat_Name as Category',
+                'cases.CR_BY',
+                'Users.Fullname as CreatedBy', 
+                'Users.Fullname as User',
+                'cases.Case_Status',
+                'Users.PS_ID',
+                'Positions.PS_Name'
+            )
+            ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
+            ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
+            ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id')
+            ->where('cases.CR_BY', $userId);
+
+        if (!empty($status)) {
+            $query->where('cases.Case_Status', $status);
         }
-    
-        $data = $query->get();
-    
-        return response()->json(['data' => $data]);
-    }
-    
-    
-    // Untuk mengambil data Cases dan ditampilakn kedalam Table
-    public function getCases()
-    {
-        $cases = Cases::select(
-            'cases.Case_No',
-            'cases.Case_Name',
-            'cases.Case_Date',
-            'cases.Cat_No',
-            'Cats.Cat_Name as Category',
-            'cases.CR_BY',
-            'Users.Fullname as CreatedBy', 
-            // 'Users2.Fullname as Case_RejectedBy',
-            'Users.Fullname as User',
-            'cases.Case_Status',
-            'Users.PS_ID',
-            'Positions.PS_Name', 
-        )
-        ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
-        ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-        ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id') 
-        ->get();           
-        
+
+        $cases = $query->orderBy($sortColumn, $sortDirection)->get();
+
         return response()->json($cases);
     }
-
 
     public function storeCaseNoViewBA(Request $request)
     {
@@ -429,7 +648,8 @@ class CaseController extends Controller
         return redirect('/Case/Detail');
     }
 
-    // Untuk Buku Detail Case (Not Approval)
+
+    // Untuk Buk Detail Case (Not Approval)
     public function showDetailPage(Request $request)
     {
         $case_no = $request->session()->get('case_no');
@@ -474,52 +694,16 @@ class CaseController extends Controller
         return view('content.case.DetailCase', compact('case', 'images'));
     }
 
-// Page Approval List Table
-    // Untuk mengambil dara Cases dan ditampilakn kedalam Table
-    // public function getApprovalCases()
-    // {
-    //     $user = Auth::user();
-
-    //     if (!$user) {
-    //         return response()->json(['error' => 'Unauthorized'], 401);
-    //     }
-
-    //     $cases = Cases::select(
-    //             'cases.Case_No',
-    //             'cases.Case_Name',
-    //             'cases.Case_Date',
-    //             'cases.Cat_No',
-    //             'Cats.Cat_Name as Category',
-    //             'cases.CR_BY',
-    //             'Users.Fullname as User',
-    //             'cases.Case_Status',
-    //             'Users.PS_ID',
-    //             'Positions.PS_Name', 
-    //         )
-    //         ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
-    //         ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-    //         ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id') 
-    //         ->where(function ($query) use ($user) {
-    //             $query->where('cases.Case_AP1', $user->id)
-    //                 ->orWhere('cases.Case_AP2', $user->id)
-    //                 ->orWhere('cases.Case_AP3', $user->id)
-    //                 ->orWhere('cases.Case_AP4', $user->id)
-    //                 ->orWhere('cases.Case_AP5', $user->id);
-    //         })
-    //         ->whereNotIn('cases.Case_Status', ['CLOSE', 'REJECT'])
-    //         ->get();
-
-    //     return response()->json($cases);
-    // }
-
-    public function getApprovalCases()
+    public function getApprovalCases(Request $request)
     {
         $user = Auth::user();
-    
+
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-    
+
+        $status = $request->input('status'); 
+
         $cases = Cases::select(
                 'cases.Case_No',
                 'cases.Case_Name',
@@ -537,19 +721,23 @@ class CaseController extends Controller
             ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id') 
             ->where(function ($query) use ($user) {
                 $query->where('cases.Case_AP1', $user->id)
-                      ->whereNull('cases.Case_RMK1')  
+                    ->whereNull('cases.Case_RMK1')  
                     ->orWhere(function ($q) use ($user) {
                         $q->where('cases.Case_AP2', $user->id)
-                          ->whereNull('cases.Case_RMK2'); 
+                        ->whereNull('cases.Case_RMK2'); 
                     });
-            })
-            ->whereNotIn('cases.Case_Status', ['CLOSE', 'REJECT'])
-            ->get();
-    
-        return response()->json($cases);
-    }
-    
+            });
 
+        if ($status && $status !== '') {
+            $cases->where('cases.Case_Status', $status);
+        }
+
+        $cases->whereNotIn('cases.Case_Status', ['CLOSE', 'REJECT']);
+
+        return response()->json($cases->get());
+    }
+
+    
     // Mengarahkan Ke Page Approval List (Table)
     public function ApprovalListBA(){
         return view('content.case.ApprovalList');
@@ -611,6 +799,7 @@ class CaseController extends Controller
         $user = Auth::user();
         $notes = $request->input('approvalNotes');
         $action = $request->input('action');
+        
         if ($action == 'approve') {
             if ($case->Case_ApStep == 1) {
                 $case->Case_Status = 'AP1'; 
@@ -650,7 +839,7 @@ class CaseController extends Controller
             if ($case->Case_ApStep == 1) {
                 $case->Case_Status = 'REJECT';
                 $case->Case_IsReject = 'Y';
-                $case->Case_RejGroup = 'AP2';
+                $case->Case_RejGroup = 'AP1';
                 $case->Case_RejBy = $user->id;
                 $case->Case_RejDate = Carbon::now();
                 $case->Case_RMK1 = $notes;
@@ -714,3 +903,5 @@ class CaseController extends Controller
 
 
 }
+
+

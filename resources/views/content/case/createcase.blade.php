@@ -5,10 +5,6 @@
 
 @section('content')
 
-{{-- <!-- Tambahkan ini di dalam <head> jika Dropzone belum ada -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script> --}}
-    
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
             <div class="card mb-5 mb-xl-10">
@@ -23,29 +19,29 @@
                             @csrf
                             <div class="row">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Cases Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="cases" id="cases" class="form-control" required>
+                                <div class="fv-row mb-5 col-md-6">
+                                    <label for="cases" class="required form-label">Case Name</label>
+                                    <input type="text" name="cases" id="cases" class="form-control form-control-solid" placeholder="Input Case Name"/>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Date <span class="text-danger">*</span></label>
-                                    <input type="date" name="date" id="date" class="form-control" required value="{{ now()->toDateString() }}">
+                                <div class="fv-row col-md-6 mb-5">
+                                    <label for="" class="form-label">Date</label>
+                                    <input class="form-control form-control-solid" placeholder="Pick date & time" name="date" id="date"/>
                                 </div>
-
-                                <div class="col-md-6 mb-3">
+                  
+                                <div class="fv-row col-md-6 mb-5">
                                     <label class="form-label">Created By </label>
-                                    <input type="text" class="form-control" value="{{ auth()->user()->Fullname }}" readonly>
+                                    <input type="text" class="form-control form-control-solid" value="{{ auth()->user()->Fullname }}" readonly/>
                                 </div>
-
-                                <div class="col-md-6 mb-3">
+                                        
+                                <div class="fv-row col-md-6 mb-5">
                                     <label class="form-label">Position</label>
-                                    <input type="text" class="form-control" value="{{ auth()->user()->position->PS_Name }}" readonly>
+                                    <input type="text" class="form-control form-control-solid" value="{{ auth()->user()->position->PS_Name }}" readonly/>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="fv-row col-md-6 mb-5">
                                     <label class="form-label">Category <span class="text-danger">*</span></label>
-                                    <select name="category" class="form-select text-dark" required id="category">
+                                    <select name="category" class="form-select" id="category">
                                         <option value="">Choose Category</option>
                                         @foreach ($listCategory as $cat)
                                             <option value="{{ $cat->Cat_No }}" class="text-dark">{{ $cat->Cat_Name }}</option>
@@ -53,41 +49,33 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="fv-row col-md-6 mb-5">
                                     <label class="form-label">Sub Category <span class="text-danger">*</span></label>
-                                    <select name="sub_category" class="form-select text-dark" required id="sub_category" disabled>
-                                        <option value="" class="text-dark">You Should Choose Category First</option>
+                                    <select name="sub_category" class="form-select" id="sub_category" disabled>
+                                        <option value="">You Should Choose Category First</option>                                     
                                     </select>
                                 </div>
 
-                                <div class="col-12 mb-3">
+
+                                <div class="fv-row col-12 mb-5">
                                     <label class="form-label">Chronology <span class="text-danger">*</span></label>
-                                    <textarea name="chronology" class="form-control" id="chronology" rows="2" required></textarea>
+                                    <textarea name="chronology" class="form-control" id="chronology" rows="2" placeholder="Input Chronology" ></textarea>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="fv-row col-md-6 mb-5">
                                     <label class="form-label">Outcome <span class="text-danger">*</span></label>
-                                    <textarea name="impact" class="form-control" id="impact" rows="2" required></textarea>
+                                    <textarea name="impact" class="form-control" id="impact" rows="2" placeholder="Input Impact"></textarea>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="fv-row col-md-6 mb-5">
                                     <label class="form-label">Suggest <span class="text-danger">*</span></label>
-                                    <textarea name="suggestion" class="form-control" id="suggest" rows="2" required></textarea>
+                                    <textarea name="suggestion" class="form-control" id="suggestion" rows="2" placeholder="Input Suggest" ></textarea>
                                 </div>
 
-                                <div class="col-12 mb-3">
+                                <div class="fv-row col-12 mb-5">
                                     <label class="form-label">Action <span class="text-danger">*</span></label>
-                                    <textarea name="action" class="form-control" rows="2" required></textarea>
+                                    <textarea name="action" class="form-control" id="action" rows="2" placeholder="Input Action" ></textarea>
                                 </div>  
-
-                                {{-- <div class="col-12 mb-3">
-                                    <label class="form-label">Foto (Maksimal 5) <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="file" name="photos[]" class="form-control" multiple accept="image/png, image/jpg, image/jpeg" id="photos" onchange="previewImages()">
-                                    </div>
-                                    <div id="error-photos" class="invalid-feedback"></div>
-                                    <div id="photo-preview" class="mt-2 d-grid" style="grid-template-columns: repeat(4, 1fr); gap: 5px; justify-content: center;"></div>
-                                </div> --}}
 
                                 {{-- Dropzone --}}
                                 <div class="fv-row mb-5 mt-5">
@@ -100,22 +88,33 @@
                                             </i>
                                             <div class="ms-4">
                                                 <h3 class="fs-5 fw-bold text-gray-900 mb-1">Drop files here or click to upload.</h3>
-                                                <span class="fs-7 fw-semibold text-gray-500">Upload up to 10 files</span>
+                                                <span class="fs-7 fw-semibold text-gray-500">Upload up to 5 files</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
                             <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
+                                    <span class="indicator-label">
+                                      Save Case
+                                    </span>
+                                    <span class="indicator-progress">
+                                        Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
                             </div>            
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
     </div>
 
     <!-- Modal -->
@@ -136,6 +135,14 @@
             </div>
         </div>
     </div>
+
+    <!--begin::Page loading(append to body)-->
+    <div class="page-loader flex-column bg-dark bg-opacity-25">
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+    </div>
+    <!--end::Page loading-->
+
     @include('content.case.partial.CreateJs')
 @endsection
 

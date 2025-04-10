@@ -10,7 +10,6 @@ class Position extends Model
     protected $table = 'Positions';
     protected $fillable = 
     [
-        'PS_ID',
         'PS_Name', 
         'PS_Desc'
     ];

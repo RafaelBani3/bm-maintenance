@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('Notif_To'); //Foreign Key
             $table->dateTime('Notif_Date');
             $table->enum('Notif_Type', ['BA', 'MR', 'WO'])->nullable();
+            $table->timestamps();
 
             // Foreign Key
             $table->foreign('Notif_From')->references('id')->on('users')->onDelete('cascade');

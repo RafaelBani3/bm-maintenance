@@ -1,141 +1,154 @@
+{{-- <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
+<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script> --}}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+{{-- Date Time --}}
 <script>
-    $(document).ready(function() {
-        $('#category').change(function() {
-            var cat_no = $(this).val();
-            if (cat_no) {
-                $.ajax({
-                    url: '/get-subcategories/' + cat_no,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        $('#sub_category').html('<option value="">Choose Sub Category</option>');
-                        $.each(data, function(key, subcat) {
-                            $('#sub_category').append('<option value="' + subcat.Scat_No + '">' + subcat.Scat_Name + '</option>');
+$("#date").flatpickr({
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+});
+</script>
+
+{{-- Category dan SubCategory --}}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const categorySelect = document.getElementById("category");
+        const subCategorySelect = document.getElementById("sub_category");
+        const pageLoader = document.getElementById("page_loader");
+
+        categorySelect.addEventListener("change", function() {
+            const categoryId = this.value;
+
+            if (categoryId) {
+                pageLoader.style.display = "flex";
+                subCategorySelect.innerHTML = `<option value="">Loading...</option>`;
+                subCategorySelect.disabled = true;
+
+                fetch(`/get-subcategories/${categoryId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch sub-categories');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        pageLoader.style.display = "none";
+                        subCategorySelect.innerHTML = `<option value="">Select Sub Category</option>`;
+                        data.forEach(subCat => {
+                            subCategorySelect.innerHTML += `<option value="${subCat.Scat_No}">${subCat.Scat_Name}</option>`;
                         });
-                        $('#sub_category').prop('disabled', false);
+                        subCategorySelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching subcategories:", error);
+                        pageLoader.style.display = "none";
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: 'Failed to load sub-categories. Please try again!',
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-warning"
+                            }
+                        });
+                    });
+            } else {
+                subCategorySelect.innerHTML = `<option value="">You Should Choose Category First</option>`;
+                subCategorySelect.disabled = true;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'You Should Choose Category First!',
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok, got it!",
+                    customClass: {
+                        confirmButton: "btn btn-primary"
                     }
                 });
-            } else {
-                $('#sub_category').html('<option value="">You Should Choose Category First</option>').prop('disabled', true);
+            }
+        });
+
+        subCategorySelect.addEventListener("change", function() {
+            const subCategoryId = this.value;
+
+            if (subCategoryId) {
+                pageLoader.style.display = "flex";
+
+                setTimeout(() => {
+                    pageLoader.style.display = "none";
+                }, 2000);
             }
         });
     });
 </script>
 
-<script>
-    document.getElementById('category').addEventListener('change', function() {
-        let subCategory = document.getElementById('sub_category');
-        if (this.value) {
-            subCategory.disabled = false;
-        } else {
-            subCategory.disabled = true;
-            Swal.fire({
-                icon: 'warning',
-                title: 'You Should Choose Category First!',
-                timer: 2000,
-            });
-        }
-    });
-</script>
+{{-- Validatation --}}
+{{-- <script>
+    $(document).ready(function () {
+        const form = document.getElementById('caseForm');
 
-<script>
-    $(document).ready(function() {
-        $('#caseForm').on('submit', function(e) {
-            e.preventDefault();
-            var formData = new FormData(this);
-            
-            $('.form-control, .form-select').removeClass('is-invalid');
-            $('.invalid-feedback').text('');
-
-            $.ajax({
-                url: "{{ route('case.validate') }}",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response.success) {
-                        saveCase(formData);
-                    }
+        var validator = FormValidation.formValidation(
+            form,
+            {
+                fields: {
+                    'cases': { validators: { notEmpty: { message: 'Case Name is required' } } },
+                    'date': { validators: { notEmpty: { message: 'Date is required' } } },
+                    'category': { validators: { notEmpty: { message: 'Category is required' } } },
+                    'sub_category': { validators: { notEmpty: { message: 'Sub Category is required' } } },
+                    'chronology': { validators: { notEmpty: { message: 'Chronology is required' } } },
+                    'impact': { validators: { notEmpty: { message: 'Outcome is required' } } },
+                    'suggestion': { validators: { notEmpty: { message: 'Suggestion is required' } } },
+                    'action': { validators: { notEmpty: { message: 'Action is required' } } }
                 },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        $.each(errors, function(field, messages) {
-                            if (field.includes('.')) {
-                                field = field.split('.')[0];
-                            }
-                            
-                            $('#' + field).addClass('is-invalid');
-                            $('#error-' + field).text(messages[0]);
-                        });
-                        
-                        if ($('.is-invalid').length) {
-                            $('html, body').animate({
-                                scrollTop: $('.is-invalid:first').offset().top - 100
-                            }, 200);
-                        }
-                    }
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
                 }
-            });
-        });
+            }
+        );
 
+        // Dropzone setup
         Dropzone.autoDiscover = false;
         let uploadedFiles = [];
-
         var myDropzone = new Dropzone("#case-dropzone", {
-            url: "https://keenthemes.com/scripts/void.php", 
+            url: "https://keenthemes.com/scripts/void.php",
             autoProcessQueue: false,
             addRemoveLinks: true,
             maxFiles: 5,
             acceptedFiles: 'image/jpeg,image/png,image/jpg',
             dictDefaultMessage: 'Drop files here or click to upload.',
             dictMaxFilesExceeded: 'Maximum 5 files allowed.',
-            init: function() {
-                this.on("addedfile", function(file) {
+            init: function () {
+                this.on("addedfile", function (file) {
                     if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
                         this.removeFile(file);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'File Tidak Valid',
-                            text: 'Hanya file JPG, JPEG, dan PNG yang diperbolehkan.'
-                        });
+                        Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, and PNG files are allowed' });
                         return;
                     }
-
                     if (file.size > 2 * 1024 * 1024) {
                         this.removeFile(file);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'File Terlalu Besar',
-                            text: 'Ukuran file maksimal 2MB.'
-                        });
+                        Swal.fire({ icon: 'warning', title: 'File size too large', text: 'Max file size is 2MB.' });
                         return;
                     }
-
                     if (uploadedFiles.length >= 5) {
                         this.removeFile(file);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Maksimal File',
-                            text: 'Maksimal upload 5 file.'
-                        });
+                        Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
                         return;
                     }
-
                     uploadedFiles.push(file);
                 });
 
-                this.on("removedfile", function(file) {
+                this.on("removedfile", function (file) {
                     uploadedFiles = uploadedFiles.filter(f => f !== file);
                 });
 
-                this.on("thumbnail", function(file) {
-                    file.previewElement.addEventListener("click", function() {
+                this.on("thumbnail", function (file) {
+                    file.previewElement.addEventListener("click", function () {
                         $('#modal-image').attr('src', file.dataURL);
                         $('#imageModal').modal('show');
                     });
@@ -143,18 +156,268 @@
             }
         });
 
-        $('#caseForm').submit(function(e) {
+        // Tombol Submit
+        const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+        submitButton.addEventListener('click', function (e) {
             e.preventDefault();
-            let formData = new FormData(this);
 
-            uploadedFiles.forEach((file) => {
-                formData.append('photos[]', file);
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    let formData = new FormData(form);
+
+                    // Tambahkan file dari Dropzone ke FormData
+                    uploadedFiles.forEach((file) => {
+                        formData.append('photos[]', file);
+                    });
+
+                    submitButton.setAttribute('data-kt-indicator', 'on');
+                    submitButton.disabled = true;
+
+                    // Eksekusi Save ke Backend
+                    saveCase(formData);
+                } else {
+                    Swal.fire({
+                        text: "Please fill in all required fields correctly.",
+                        icon: "warning",
+                        confirmButtonText: "Ok, I understand",
+                        customClass: { 
+                            confirmButton: "btn btn-warning" 
+                        }
+                    });
+                }
             });
-
-            saveCase(formData);
         });
 
+        // AJAX Save Case ke Backend
         function saveCase(formData) {
+            $.ajax({
+                url: "{{ route('SaveCase') }}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    submitButton.removeAttribute('data-kt-indicator');
+                    submitButton.disabled = false;
+
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            customClass: { 
+                            confirmButton: "btn btn-success" 
+                        }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                let encodedCaseNo = encodeURIComponent(response.case_no);
+                                window.location.href = "/Case/Edit?case_no=" + encodedCaseNo;
+                            }
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    submitButton.removeAttribute('data-kt-indicator');
+                    submitButton.disabled = false;
+                    Swal.fire({
+                        title: 'warning',
+                        text: 'Failed to save case. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        customClass: { 
+                            confirmButton: "btn btn-warning" 
+                        }
+                    });
+                }
+            });
+        }
+
+        $('.form-control, .form-select').on('input change', function () {
+            $(this).removeClass('is-invalid');
+            $('#error-' + $(this).attr('id')).text('');
+        });
+    });
+</script> --}}
+
+<script>
+    $(document).ready(function () {
+        const form = document.getElementById('caseForm');
+        const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+        const pageLoader = document.getElementById("page_loader");
+
+        var validator = FormValidation.formValidation(
+            form,
+            {
+                fields: {
+                    'cases': { validators: { notEmpty: { message: 'Case Name is required' } } },
+                    'date': { validators: { notEmpty: { message: 'Date is required' } } },
+                    'category': { validators: { notEmpty: { message: 'Category is required' } } },
+                    'sub_category': { validators: { notEmpty: { message: 'Sub Category is required' } } },
+                    'chronology': { validators: { notEmpty: { message: 'Chronology is required' } } },
+                    'impact': { validators: { notEmpty: { message: 'Outcome is required' } } },
+                    'suggestion': { validators: { notEmpty: { message: 'Suggestion is required' } } },
+                    'action': { validators: { notEmpty: { message: 'Action is required' } } }
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        // Dropzone setup
+        Dropzone.autoDiscover = false;
+        let uploadedFiles = [];
+        var myDropzone = new Dropzone("#case-dropzone", {
+            url: "https://keenthemes.com/scripts/void.php",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            maxFiles: 5,
+            acceptedFiles: 'image/jpeg,image/png,image/jpg',
+            dictDefaultMessage: 'Drop files here or click to upload.',
+            dictMaxFilesExceeded: 'Maximum 5 files allowed.',
+            init: function () {
+                this.on("addedfile", function (file) {
+                    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, and PNG files are allowed' });
+                        return;
+                    }
+                    if (file.size > 2 * 1024 * 1024) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'File size too large', text: 'Max file size is 2MB.' });
+                        return;
+                    }
+                    if (uploadedFiles.length >= 5) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
+                        return;
+                    }
+                    uploadedFiles.push(file);
+                });
+
+                this.on("removedfile", function (file) {
+                    uploadedFiles = uploadedFiles.filter(f => f !== file);
+                });
+            }
+        });
+
+        // Tombol Submit
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    let formData = new FormData(form);
+
+                    // Tambahkan file dari Dropzone ke FormData
+                    uploadedFiles.forEach((file) => {
+                        formData.append('photos[]', file);
+                    });
+
+                    // Tampilkan loading indicator & page loader
+                    pageLoader.style.display = "flex";
+                    submitButton.querySelector(".indicator-label").style.display = "none";
+                    submitButton.querySelector(".indicator-progress").style.display = "inline-block";
+                    submitButton.disabled = true;
+
+                    // Eksekusi Save ke Backend
+                    saveCase(formData);
+                } else {
+                    Swal.fire({
+                        text: "Please fill in all required fields correctly.",
+                        icon: "warning",
+                        confirmButtonText: "Ok, I understand",
+                        customClass: { 
+                            confirmButton: "btn btn-warning" 
+                        }
+                    });
+                }
+            });
+        });
+
+        // AJAX Save Case ke Backend
+        function saveCase(formData) {
+            $.ajax({
+                url: "{{ route('SaveCase') }}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    setTimeout(function() { // Biarkan page loader tampil selama 5 detik
+                        pageLoader.style.display = "none"; 
+                        submitButton.querySelector(".indicator-label").style.display = "inline-block";
+                        submitButton.querySelector(".indicator-progress").style.display = "none";
+                        submitButton.disabled = false;
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                                customClass: { 
+                                    confirmButton: "btn btn-success" 
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    let encodedCaseNo = encodeURIComponent(response.case_no);
+                                    window.location.href = "/Case/Edit?case_no=" + encodedCaseNo;
+                                }
+                            });
+                        }
+                    }, 5000);
+                },
+                error: function (xhr) {
+                    setTimeout(function() { // Page loader tetap muncul selama 5 detik
+                        pageLoader.style.display = "none";
+                        submitButton.querySelector(".indicator-label").style.display = "inline-block";
+                        submitButton.querySelector(".indicator-progress").style.display = "none";
+                        submitButton.disabled = false;
+
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to save case. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                            customClass: { 
+                                confirmButton: "btn btn-warning" 
+                            }
+                        });
+                    }, 5000);
+                }
+            });
+        }
+
+        // Hapus error saat input berubah
+        $('.form-control, .form-select').on('input change', function () {
+            $(this).removeClass('is-invalid');
+            $('#error-' + $(this).attr('id')).text('');
+        });
+    });
+</script>
+
+@if(session('success'))
+    <script>
+        Swal.fire({
+            title: "Success!",
+            text: "{{ session('success') }}",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+@endif
+
+
+
+{{-- function saveCase(formData) {
             $.ajax({
                 url: '/your-save-case-url',
                 type: 'POST',
@@ -178,136 +441,7 @@
                     });
                 }
             });
-        }
-
-
-        function saveCase(formData) {
-            $.ajax({
-                url: "{{ route('SaveCase') }}",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                let encodedCaseNo = encodeURIComponent(response.case_no);
-                                window.location.href = "/Case/Edit?case_no=" + encodedCaseNo;
-                            }
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText); 
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Failed to save case. Please try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        }
-
-        $('.form-control, .form-select').on('input change', function() {
-            $(this).removeClass('is-invalid');
-            $('#error-' + $(this).attr('id')).text('');
-        });
-    });
-</script>
-
-<script>
-    let selectedImageIndex = null;
-
-    function previewImages() {
-        let input = document.getElementById('photos');
-        let preview = document.getElementById('photo-preview');
-        let errorMsg = document.getElementById('error-photos');
-
-        preview.innerHTML = '';
-        errorMsg.innerText = '';
-
-        let files = input.files;
-        let allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-
-        if (files.length > 5) {
-            errorMsg.innerText = "Maksimal upload 5 gambar!";
-            input.value = ''; 
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops!',
-                text: 'Maksimal upload hanya 5 gambar!',
-                timer: 2500,
-                showConfirmButton: false
-            });
-            return;
-        }
-
-        for (let file of files) {
-            if (!allowedTypes.includes(file.type)) {
-                errorMsg.innerText = "Format harus PNG, JPG, atau JPEG!";
-                input.value = ''; 
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Format Tidak Didukung!',
-                    text: 'Hanya diperbolehkan PNG, JPG, atau JPEG!',
-                    timer: 2500,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.width = '100%';
-                img.style.maxWidth = '300px';
-                img.style.height = '320px';
-                img.style.objectFit = 'cover';
-                img.classList.add('img-thumbnail', 'm-1', 'preview-image');
-
-                img.onclick = function() {
-                    showImageModal(e.target.result);
-                };
-
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function showImageModal(src) {
-        let modalImage = document.getElementById('modal-image');
-        modalImage.src = src;
-        let imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
-        imageModal.show();
-    }
-
-</script>
-
-@if(session('success'))
-    <script>
-        Swal.fire({
-            title: "Success!",
-            text: "{{ session('success') }}",
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false
-        });
-    </script>
-
-
-
-
-    
-@endif
+        } --}}
 
 
 {{-- Dropzone.autoDiscover = false;

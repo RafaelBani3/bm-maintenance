@@ -15,10 +15,12 @@
 
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700"/>
-		<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
+		
 		<link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css"/>
 		<link href="{{ asset('assets/css/custom-style.css') }}" rel="stylesheet" type="text/css"/>
-
+		
+		<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
+		<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 		
 	</head>
 	<!--end::Head-->
@@ -41,6 +43,13 @@
 						<div class="flex-grow-1">
 							@yield('content')
 						</div>
+
+						<!--begin::Page loading(append to body)-->
+						<div class="page-loader flex-column bg-dark bg-opacity-25">
+							<span class="spinner-border text-primary" role="status"></span>
+							<span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+						</div>
+						<!--end::Page loading-->
 		
 						<!-- Footer tetap di bawah -->
 						<div class="mt-auto">
@@ -87,8 +96,7 @@
 		<script src="{{ asset('assets/js/custom/utilities/modals/user-search.js') }}"></script>
 		<!--end::Custom Javascript-->
 
-		<!--end::Javascript-->
-
+		<!--end::Javascript-->	
 	</body>
 	<!--end::Body-->
 </html>

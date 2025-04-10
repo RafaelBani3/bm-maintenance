@@ -43,6 +43,7 @@ return new class extends Migration
             $table->integer('MR_APStep')->nullable(); 
             $table->integer('MR_APMaxStep')->nullable(); 
             $table->dateTime('Update_Date')->nullable(); 
+            $table->timestamps();
 
              // Foreign Key
             $table->foreign('Case_No')->references('Case_No')->on('cases')->onDelete('cascade');

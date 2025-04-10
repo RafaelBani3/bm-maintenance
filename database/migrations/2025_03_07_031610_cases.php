@@ -10,7 +10,8 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    {   
+     
         Schema::create('cases', function (Blueprint $table) {
             $table->string('Case_No', 30)->primary();
             $table->string('Case_Name', 255);

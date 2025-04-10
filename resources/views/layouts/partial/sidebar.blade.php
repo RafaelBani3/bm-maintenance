@@ -38,19 +38,21 @@
                 <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" 
                     id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
                     <!--begin:Menu item-->
-                    <div data-kt-menu-trigger="click" class="menu-item here show">
+                    <div data-kt-menu-trigger="click" class="menu-item {{ request()->routeIs('Dashboard') ? 'show' : '' }}">
                         <!--begin:Menu link-->
-                        <span class="menu-link">
-                            <span class="menu-icon">
-                                <i class="ki-duotone ki-element-11 fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
+                        <a class="{{ request()->routeIs('Dashboard') ? 'active' : '' }}" href="{{ route('Dashboard') }}">
+                            <span class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="ki-duotone ki-element-11 fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+                                </span>
+                                <span class="menu-title">Dashboards</span>
                             </span>
-                            <span class="menu-title">Dashboards</span>
-                        </span>
+                        </a>
                         <!--end:Menu link-->
                     </div>
                     <!--end:Menu item-->
@@ -65,8 +67,8 @@
                     </div>
                     <!--end:Menu item-->
                     
-                @if(auth()->user()->hasAnyPermission(['view cr', 'view cr_ap']))
-                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                    @if(auth()->user()->hasAnyPermission(['view cr', 'view cr_ap']))
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateCase', 'ViewCase', 'ApprovalCase') ? 'show' : '' }}">
                             <span class="menu-link">
                                 <span class="menu-icon">
                                     <i class="ki-duotone ki-address-book fs-2">
@@ -78,107 +80,85 @@
                                 <span class="menu-title">Cases</span>
                                 <span class="menu-arrow"></span>
                             </span>
+
+                            <div class="menu-sub menu-sub-accordion">
+                                @if(auth()->user()->hasAnyPermission(['view cr']))
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ request()->routeIs('CreateCase') ? 'active' : '' }}" href="{{ route('CreateCase') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">Create Case</span>
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ request()->routeIs('ViewCase') ? 'active' : '' }}" href="{{ route('ViewCase') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">List Case</span>
+                                        </a>
+                                    </div>
+                                @endif
+                                
+                                @if(auth()->user()->hasAnyPermission(['view cr_ap']))
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ request()->routeIs('ApprovalCase') ? 'active' : '' }}" href="{{ route('ApprovalCase') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">Approval List</span>
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    
+                    @endif
+
+                    {{-- Page WO --}}
+                    @if(auth()->user()->hasAnyPermission(['view wo']))
+                        <!--begin:Menu item-->
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWO') ? 'show' : '' }}">
+                            <span class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="ki-duotone ki-address-book fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </span>
+                                <span class="menu-title">Work Order</span>
+                                <span class="menu-arrow"></span>
+                            </span>
                         
                             <div class="menu-sub menu-sub-accordion">
-                                @if(auth()->user()->hasAnyPermission('view cr'))
                                 <div class="menu-item">
-                                    <a class="menu-link" href="{{ route('CreateCase') }}">
+                                    <a class="menu-link {{ request()->routeIs('CreateWO') ? 'active' : '' }}" href="{{ route('CreateWO') }}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">Create Case</span>
+                                        <span class="menu-title">Create Work Orders</span>
                                     </a>
                                 </div>
-                              
+                            </div>
+
+                            <div class="menu-sub menu-sub-accordion">
                                 <div class="menu-item">
-                                    <a class="menu-link" href="{{ route('ViewCase') }}">
+                                    <a class="menu-link {{ request()->routeIs('ListWO') ? 'active' : '' }}" href="{{ route('ListWO') }}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">List Case</span>
+                                        <span class="menu-title">List Work Orders</span>
                                     </a>
                                 </div>
-                                @endif
-                      
-                                @if(auth()->user()->hasAnyPermission(['view cr_ap']))
-                                <div class="menu-item">
-                                    <a class="menu-link" href="{{ route('ApprovalCase') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Approval List</span>
-                                    </a>
-                                </div>
-                                @endif
                             </div>
                         </div>
-                @endif
-
-                @if(auth()->user()->hasAnyPermission(['view mr']))
-                    <!--begin:Menu item-->
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                        <!--begin:Menu link-->
-                        <span class="menu-link">
-                            <span class="menu-icon">
-                                <i class="ki-duotone ki-address-book fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i>
-                            </span>
-                            <span class="menu-title">Work Order</span>
-                            <span class="menu-arrow"></span>
-                        </span>
-                        <!--end:Menu link-->
-
-                        <!--begin:Menu sub-->
-                        <div class="menu-sub menu-sub-accordion">
-                            <!--begin:Menu item-->
-                            <div class="menu-item">
-                                <!--begin:Menu link-->
-                                <a class="menu-link" href="{{ route('CreateCase') }}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Create Case</span>
-                                </a>
-                                <!--end:Menu link-->
-                            </div>
-                            <!--end:Menu item-->
-
-                            <!--begin:Menu item-->
-                            <div class="menu-item">
-                                <!--begin:Menu link-->
-                                <a class="menu-link" href="">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">List Case</span>
-                                </a>
-                                <!--end:Menu link-->
-                            </div>
-                            <!--end:Menu item-->
-
-                            <!--begin:Menu item-->
-                            <div class="menu-item">
-                                <!--begin:Menu link-->
-                                <a class="menu-link" href="">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">List Case</span>
-                                </a>
-                                <!--end:Menu link-->
-                            </div>
-                            <!--end:Menu item-->
-
-                        </div>
-                        <!--end:Menu sub-->
-                    </div>
-                    <!--end:Menu item-->
-                @endif
+                    @endif
                 </div>
                 <!--end::Menu-->
+               
             </div>
             <!--end::Scroll wrapper-->
         </div>
@@ -186,3 +166,5 @@
     </div>
     <!--end::sidebar menu-->
 </div>
+
+

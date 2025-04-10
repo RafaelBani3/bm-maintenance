@@ -13,6 +13,20 @@
                         <span class="card-label fw-bold fs-3 mb-1">@yield('title')</span>
                         <span class="text-muted mt-1 fw-semibold fs-7">@yield('subtitle')</span>
                     </h3>
+                    <div class="card-toolbar">
+                        <select class="form-select form-select-sm fw-bold" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="OPEN">OPEN</option>
+                            <option value="SUBMIT">SUBMIT</option>
+                            <option value="AP1">AP1</option>
+                            <option value="AP2">AP2</option>
+                            <option value="AP3">AP3</option>
+                            <option value="AP4">AP4</option>
+                            <option value="AP5">AP5</option>
+                            <option value="CLOSE">CLOSE</option>
+                            <option value="REJECT">REJECT</option>
+                        </select>
+                    </div>
                 </div>
             
                 <div class="card-body py-3">

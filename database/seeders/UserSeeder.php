@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '1',
             'CR_DT' => now(),
         ]);
-        $user1->assignRole( 'cr', 'cr_ap');
+        $user1->assignRole( 'cr', 'cr_ap','wo','wo_ap');
 
         $user2 = User::create([
             'Fullname' => 'Berton H Sianipar',
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '1',
             'CR_DT' => now(),
         ]);
-        $user2->assignRole('cr');
+        $user2->assignRole('cr','wo');
 
         $user3 = User::create([
             'Fullname' => 'Aisyah Nuraini',
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '2',
             'CR_DT' => now(),
         ]);
-        $user3->assignRole('cr', 'mr');
+        $user3->assignRole('cr', 'mr','wo');
 
         $user4 = User::create([
             'Fullname' => 'Cece Bayu Muttaqin',
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '3', 
             'CR_DT' => now(),
         ]);
-        $user4->assignRole('cr', 'mr');
+        $user4->assignRole('cr', 'mr', 'wo');
 
         $user5 = User::create([
             'Fullname' => 'Puti Amelia',
@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '3',
             'CR_DT' => now(),
         ]);
-        $user5->assignRole('cr', 'mr');
+        $user5->assignRole('cr', 'mr', 'wo');
 
         $user6 = User::create([
             'Fullname' => 'Naswan Nusih',
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '4', 
             'CR_DT' => now(),
         ]);
-        $user6->assignRole('cr');
+        $user6->assignRole('cr', 'wo');
 
         $user7 = User::create([
             'Fullname' => 'Istifar Adi Saputra',
@@ -82,7 +82,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '5', 
             'CR_DT' => now(),
         ]);
-        $user7->assignRole('cr', 'mr');
+        $user7->assignRole('cr', 'mr', 'wo');
 
         $user8 = User::create([
             'Fullname' => 'Abdul Haris',
@@ -92,7 +92,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '6', 
             'CR_DT' => now(),
         ]);
-        $user8->assignRole('cr');
+        $user8->assignRole('cr','wo');
 
         
         $user9 = User::create([
@@ -103,7 +103,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '7', 
             'CR_DT' => now(),
         ]);
-        $user9->assignRole('cr');
+        $user9->assignRole('cr', 'wo');
 
         
         $user10 = User::create([
@@ -114,7 +114,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '8', 
             'CR_DT' => now(),
         ]);
-        $user10->assignRole('cr', 'mr', 'mr_ap');
+        $user10->assignRole('cr', 'mr', 'mr_ap', 'wo');
 
         
         $user11 = User::create([
@@ -136,7 +136,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '10',
             'CR_DT' => now(),
         ]);
-        $user12->assignRole('cr');
+        $user12->assignRole('cr_ap' );
 
         
         $user13 = User::create([
@@ -182,18 +182,6 @@ class UserSeeder extends Seeder
         $user16->assignRole('mr_ap');  
 
         
-
-
-
-
-
-
-
-
-
-
-
-
 
     //     //Create User -> Roles and Permission
     //     $admin = User::create([

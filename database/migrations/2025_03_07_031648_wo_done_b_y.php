@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('WO_DoneBy', function (Blueprint $table) {
             $table->string('WO_No', 30)->primary();
             $table->unsignedBigInteger('User_ID'); //Foreign Key
+            $table->timestamps();
 
             // Foreign  Key
             $table->foreign('User_ID')->references('id')->on('users')->onDelete('cascade');

@@ -23,6 +23,7 @@ return new class extends Migration
                 $table->string('UOM_Code', 30);
                 $table->string('UOM_Name',255);
                 $table->string('Remark',255);
+                $table->timestamps();
 
                 // Definisikan Composite Primary Key
                 $table->primary(['MR_No', 'MR_Line']);
