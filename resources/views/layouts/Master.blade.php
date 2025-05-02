@@ -21,7 +21,12 @@
 		
 		<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
 		<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-		
+		<script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
+		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
+		<!-- Tambahkan ini kalau belum ada -->
+		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
+		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script> 
+
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->
@@ -29,6 +34,7 @@
 		
 		<div class="d-flex flex-column flex-root app-root min-vh-100" id="kt_app_root">
 			<div class="app-page flex-column flex-column-fluid d-flex flex-grow-1" id="kt_app_page">
+				
 				@include('layouts.partial.header')
 		
 				<div class="app-wrapper flex-column flex-row-fluid d-flex flex-grow-1" id="kt_app_wrapper">

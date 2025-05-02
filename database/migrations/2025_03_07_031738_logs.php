@@ -20,6 +20,8 @@ return new class extends Migration
             $table->dateTime('LOG_Date');
             $table->string('LOG_Desc', 255);
             $table->foreign('LOG_User')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
+
         }); 
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cases;
 use App\Models\Logs;
+use App\Models\technician;
 use App\Models\User;
 use App\Models\WorkOrder;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class WOController extends Controller
 {
@@ -22,7 +24,7 @@ class WOController extends Controller
         return view('content.wo.CreateWO');
     }
 
-    // Get Case_No Buat Create WO
+    // Get Case_No jadi reference no Buat Create WO
     public function getCases(Request $request)
     {
         $user = Auth::user();
@@ -33,6 +35,7 @@ class WOController extends Controller
     
         $cases = Cases::select('Case_No', 'CR_BY', 'Case_Date', 'Case_ApStep', 'Case_ApMaxStep')
             ->where('CR_BY', $user->id) 
+            ->where('Case_Status', 'AP2')
             ->whereColumn('Case_ApStep', 'Case_ApMaxStep')
             ->with([
                 'user:id,Fullname,PS_ID',
@@ -54,16 +57,21 @@ class WOController extends Controller
     
     // View Page List WO
     public function ListWO(){   
-
         return view('content.wo.ListWO');
     }
 
-    // Get Case No untuk Detail Case
+    // Get Case No untuk Detail Case Pada Page Create
     public function getCaseDetails($caseNo)
     {
-        Log::info('Case No received: ' . $caseNo); 
-        $case = Cases::with(['user', 'category', 'subCategory', 'images'])->where('Case_No', $caseNo)->first();
-
+        
+        $decodedCaseNo = base64_decode($caseNo);
+    
+        Log::info('Decoded Case No: ' . $decodedCaseNo);
+    
+        $case = Cases::with(['user', 'category', 'subCategory', 'images'])
+            ->where('Case_No', $decodedCaseNo)
+            ->first();
+    
         if (!$case) {
             return response()->json(['error' => 'Case not found'], 404);
         }
@@ -95,11 +103,61 @@ class WOController extends Controller
         ]);
     }
 
+    // Ambil Data Technician 
+    public function getTechnicians()
+    {
+        $technicians = DB::table('technician')
+            ->select('technician_id', 'technician_Name')
+            ->orderBy('technician_Name', 'asc')
+            ->get();
+
+        return response()->json($technicians);
+    }
+
+    // Ambil Data User 
+    public function getIntendedUsers(Request $request)
+    {
+        $user = Auth::user();
+        $position = $user->position->PS_Name;
+    
+        Log::info('Fetching intended users for position: ' . $position . ' by user: ' . $user->Fullname);
+    
+        $users = [];
+    
+        switch ($position) {
+            case 'Spv. Engineering':
+            case 'IT Leader':
+            case 'Adm Engineering':
+            case 'Security & Parking':
+            case 'HSE Koordinator':
+                $users = User::where('Fullname', 'Istifar Adi Saputra')->get();
+                break;
+    
+            case 'HR Admin':
+                $users = User::where('Fullname', 'Aisyah Nuraini')->get();
+                break;
+    
+            case 'TR':
+                $users = User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia'])->get();
+                break;
+    
+            case 'Storekeeper':
+                $users = User::where('Fullname', 'Rizqhan Fajar Pramudita')->get();
+                break;
+    
+            default:
+                $users = collect();
+        }
+    
+        Log::info('Intended users fetched: ', $users->pluck('Fullname')->toArray());
+    
+        return response()->json($users);
+    }
+
     // Save WO
     public function SaveWO(Request $request)
     {
         try {
-            
             // Validasi 
             $request->validate([
                 'reference_number' => 'required|string',
@@ -107,7 +165,6 @@ class WOController extends Controller
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'work_description' => 'required|string|max:255',
                 'assigned_to' => 'nullable|array',
-      
             ]);
 
             $user = Auth::user(); 
@@ -119,29 +176,54 @@ class WOController extends Controller
             $workOrder->Case_No = $request->reference_number;
             $workOrder->WO_Start = $request->start_date;
             $workOrder->WO_End = $request->end_date;
-            $workOrder->WO_Status = $request->work_status;
+            $workOrder->WO_Status = 'OPEN';
             $workOrder->WO_Narative = $request->work_description;
             $workOrder->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
-            $workOrder->WO_MR = $user->id;
+            $workOrder->WO_MR = $request->intended_for;
             $workOrder->WO_IsComplete = 'N';
             $workOrder->CR_BY = $user->id;
             $workOrder->CR_DT = now();
             $workOrder->Update_Date = now();
-            $workOrder->WO_Status = 'OPEN';
             $workOrder->save();
 
             Session::put('latest_wo_no', $woNumber);
 
-            Log::info("Work Order {$woNumber} was successfully created by user ID: {$user->id}");
-
             Logs::create([
                 'LOG_Type' => 'WO',
                 'LOG_RefNo' => $woNumber,
-                'LOG_Status' => 'SUCCESS',
+                'LOG_Status' => 'CREATED',
                 'LOG_User' => $user->id,
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'Work Order was successfully created.',
+                'LOG_Desc' => 'CREATED NEW WORK ORDER ' . $woNumber,
             ]);
+
+            if ($request->has('assigned_to') && is_array($request->assigned_to)) {
+                foreach ($request->assigned_to as $technicianId) {
+                    $exists = DB::table('WO_DoneBy')
+                        ->where('WO_No', $woNumber)
+                        ->where('technician_id', $technicianId)
+                        ->exists();
+                
+                    if (!$exists) {
+                        DB::table('WO_DoneBy')->insert([
+                            'WO_No' => $woNumber,
+                            'technician_id' => $technicianId,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                
+                        Logs::create([
+                            'LOG_Type' => 'WO',
+                            'LOG_RefNo' => $woNumber,
+                            'LOG_Status' => 'TECH_ASSIGNED',
+                            'LOG_User' => $user->id,
+                            'LOG_Date' => now(),
+                            'LOG_Desc' => "Technician ID $technicianId was assigned to Work Order.",
+                        ]);
+                    }
+                }
+                
+            }
 
             return response()->json([
                 'success' => true,
@@ -149,16 +231,15 @@ class WOController extends Controller
                 'wo_no' => $woNumber 
             ]);
         } catch (\Exception $e) {
-
             Log::error('Failed to create Work Order. Error: ' . $e->getMessage());
-            
+
             Logs::create([
                 'LOG_Type' => 'WO',
-                'LOG_RefNo' => null,
+                'LOG_RefNo' =>  $woNumber ?? '',    
                 'LOG_Status' => 'FAILED',
                 'LOG_User' => Auth::id(),
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'Failed to create Work Order. Error: ' . $e->getMessage(),
+                'LOG_Desc' => 'FAILED TO CREATED WORK ORDER. ERROR: ',
             ]);
 
             return response()->json([
@@ -168,29 +249,79 @@ class WOController extends Controller
         }
     }
 
-    // Edit WO
-    public function EditWO(Request $request)
+    // View Page Edit WO
+    public function EditWO($wo_no)
     {
-        $wo_no = session('latest_wo_no');
-
+        $wo_no = base64_decode($wo_no);
+        
         if (!$wo_no) {
             return redirect('/Work-Order/Create')->with('error', 'No Work Order selected.');
         }
-
-        $wo = WorkOrder::where('WO_No', $wo_no)->firstOrFail();
-
-        $case = Cases::where('Case_No', $wo->Case_No)
-            ->with(['user.position'])
-            ->first();
-
+    
+        $wo = WorkOrder::with('case')->where('WO_No', $wo_no)->firstOrFail();
+        $user = Auth::user();
+        $position = $user->position->PS_Name;
+    
+        Log::info('Fetching intended users for position: ' . $position . ' by user: ' . $user->Fullname);
+    
+        $users = match ($position) {
+            'Spv. Engineering', 'IT Leader', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator' =>
+                User::where('Fullname', 'Istifar Adi Saputra')->get(),
+    
+            'HR Admin' =>
+                User::where('Fullname', 'Aisyah Nuraini')->get(),
+    
+            'TR' =>
+                User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia'])->get(),
+    
+            'Storekeeper' =>
+                User::where('Fullname', 'Rizqhan Fajar Pramudita')->get(),
+    
+            default => collect()
+        };
+    
+        $case = Cases::where('Case_No', $wo->Case_No)->with(['user.position'])->first();
+    
+        $allTechnicians = technician::all();
+    
+        $selectedTechnicians = DB::table('WO_DoneBy')
+            ->where('WO_No', $wo_no)
+            ->pluck('technician_id')
+            ->toArray();
+    
         return view('content.wo.EditWO', [
             'wo' => $wo,
-            'case' => $case
+            'case' => $case,
+            'users' => $users,
+            'technicians' => $allTechnicians,
+            'selectedTechnicians' => $selectedTechnicians,
         ]);
     }
 
+    // Remove/Hapus Data Teknisi yang sudah dipilih/tersimpan didatabase (di Page Edit)
+    public function removeTechnician(Request $request)
+    {
+        $request->validate([
+            'wo_no' => 'required',
+            'technician_id' => 'required'
+        ]);
+
+        DB::table('WO_DoneBy')
+            ->where('WO_No', $request->wo_no)
+            ->where('technician_id', $request->technician_id)
+            ->delete();
+
+        return response()->json(['status' => 'success']);
+    }
+
+
+    // Update WO
+   
+
     public function UpdateWO(Request $request)
     {
+        $user = Auth::user();   
+    
         try {
             // Validasi data
             $request->validate([
@@ -202,67 +333,254 @@ class WOController extends Controller
                 'assigned_to' => 'nullable|array',
                 'require_material' => 'nullable|string',
             ]);
-
-            $user = Auth::user();
+    
             $wo = WorkOrder::where('WO_No', $request->wo_no)->firstOrFail();
-
+    
             Log::info("Work Order update process {$request->wo_no} started by user ID: {$user->id}");
-            
-            // Update data
+    
             $wo->Case_No = $request->reference_number;
             $wo->WO_Start = $request->start_date;
             $wo->WO_End = $request->end_date;
             $wo->WO_Narative = $request->work_description;
             $wo->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
-            $wo->WO_Status = 'OnProgress';
+            $wo->WO_Status = 'Submit';
             $wo->Update_Date = now();
             $wo->save();
-
-            Log::info("Work Order {$request->wo_no} successfully updated by user ID: {$user->id}");
-
+    
+            $case = Cases::where('Case_No', $request->reference_number)->first();
+            if ($case) {
+                $case->Case_Status = 'INPROGRESS';
+                $case->save();
+                Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
+            
+                Logs::create([
+                    'LOG_Type' => 'BA',
+                    'LOG_RefNo' => $request->wo_no,
+                    'LOG_Status' => 'INPROGRESS',
+                    'LOG_User' => $user->id,
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => 'SENT AND CASES INPROGRESS',
+                ]);
+        
+            }
+    
+            if ($request->has('assigned_to')) {
+                $existingTechnicians = DB::table('WO_DoneBy')
+                    ->where('WO_No', $request->wo_no)
+                    ->pluck('technician_id')
+                    ->toArray();
+    
+                foreach ($request->assigned_to as $tech_id) {
+                    if (!in_array($tech_id, $existingTechnicians)) {
+                        DB::table('WO_DoneBy')->insert([
+                            'WO_No' => $request->wo_no,
+                            'technician_id' => $tech_id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+    
+                        Log::info("Technician {$tech_id} added to WO {$request->wo_no} by {$user->Fullname}");
+                    }
+                }
+            }
+    
             Logs::create([
                 'LOG_Type' => 'WO',
                 'LOG_RefNo' => $request->wo_no,
-                'LOG_Status' => 'SUCCESS',
+                'LOG_Status' => 'SUBMITTED',
                 'LOG_User' => $user->id,
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'Work Order Successfully Updated.',
+                'LOG_Desc' => 'SUCCESSFULLY SUBMITTED A WORK ORDER.',
             ]);
-            
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Work Order successfully updated!'
             ]);
+    
         } catch (\Exception $e) {
-
-            Log::error('Failed to Updated Work Order. Error:' . $e->getMessage());
-
+            Log::error('Failed to update Work Order. Error: ' . $e->getMessage());
+    
             Logs::create([
-                'Log_Type' => 'WO',
-                'Log_RefNo' => $request->wo_no,
-                'Log_Status' => 'FAILED',
-                'Log_User' => $user->id,
-                'Log_Date' => now(),
-                'Log_Desc' => 'Failed to Update Work Order. Error: ',
+                'LOG_Type' => 'WO',
+                'LOG_RefNo' => $request->wo_no,
+                'LOG_Status' => 'FAILED',
+                'LOG_User' => $user->id,
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'FAILED TO SUBMITTED WORK ORDER. Error: ' . $e->getMessage(),
             ]);
-
+    
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }
+    
 
-
+    // Mengambil data WO dari Database dan tampilkan pada table WO
     public function getWorkOrders(Request $request)
     {
         $userId = Auth::id();
-
-        $workOrders = WorkOrder::where('CR_BY', $userId)->get();
-
+    
+        $workOrders = WorkOrder::with('createdBy')
+            ->where('CR_BY', $userId)
+            ->get()
+            ->map(function ($wo) {
+                return [
+                    'WO_No' => $wo->WO_No,
+                    'Case_No' => $wo->Case_No,
+                    'created_by_fullname' => $wo->createdBy ? $wo->createdBy->Fullname : '-',
+                    'CR_DT' => $wo->CR_DT,
+                    'WO_Start' => $wo->WO_Start,
+                    'WO_End' => $wo->WO_End,
+                    'WO_Status' => $wo->WO_Status,
+                    'WO_Narative' => $wo->WO_Narative,
+                    'WO_NeedMat' => $wo->WO_NeedMat,
+                    'WO_CompDate' => $wo->WO_CompDate,
+                    'WO_CompBy' => $wo->WO_CompBy,
+                ];
+            });
+    
         return response()->json($workOrders);
     }
+
+    // Get WO NO
+    // public function GetWorkOrderNo(Request $request)
+    // {
+    //     $request->session()->put('wo_no', $request->wo_no);
+    //     return redirect('/Work-Orders/Detail');
+    // }
+    public function GetWorkOrderNo(Request $request)
+    {
+        $wo_no = $request->wo_no;
+
+        if (!$wo_no) {
+            return redirect()->back()->with('error', 'Work Order number is required.');
+        }
+
+        $request->session()->put('wo_no', $wo_no);
+        return redirect()->route('WorkOrderDetail');
+    }
+
+    // public function showDetailWO(Request $request)
+    // {
+    //     $wo_no = $request->session()->get('wo_no');
+    
+    //     if (!$wo_no) {
+    //         return redirect()->back()->with('error', 'Work Order not found.');
+    //     }
+    
+    //     $workOrder = DB::table('Work_Orders')
+    //         ->select(
+    //             'Work_Orders.WO_No',
+    //             'Work_Orders.Case_No',
+    //             'Work_Orders.WOC_No',
+    //             'Work_Orders.CR_DT',
+    //             'Work_Orders.WO_Start',
+    //             'Work_Orders.WO_End',
+    //             'Work_Orders.WO_Status',
+    //             'Work_Orders.WO_Narative',
+    //             'Work_Orders.WO_NeedMat',
+    //             'Work_Orders.WO_IsComplete',
+    //             'Work_Orders.WO_CompDate',
+    //             'Work_Orders.WO_IsReject',
+    //             'Work_Orders.WO_RejGroup',
+    //             'Work_Orders.WO_RejDate',
+    //             'Work_Orders.WO_APStep',
+    //             'Work_Orders.WO_APMaxStep',
+    //             'Work_Orders.WO_RMK1',
+    //             'Work_Orders.WO_RMK2',
+    //             'Work_Orders.WO_RMK3',
+    //             'Work_Orders.WO_RMK4',
+    //             'Work_Orders.WO_RMK5',
+    //             'Work_Orders.Update_Date',
+                
+    //             'cr.Fullname as Creator_Name',
+    //             'mr.Fullname as MR_Requestor',
+    //             // 'comp.Fullname as Completed_By',
+    //             // 'rej.Fullname as Rejected_By',
+    //             // 'ap1.Fullname as Approver_1',
+    //             // 'ap2.Fullname as Approver_2',
+    //             // 'ap3.Fullname as Approver_3',
+    //             // 'ap4.Fullname as Approver_4',
+    //             // 'ap5.Fullname as Approver_5'
+    //         )
+    //         ->leftJoin('users as cr', 'Work_Orders.CR_BY', '=', 'cr.id')
+    //         ->leftJoin('users as mr', 'Work_Orders.WO_MR', '=', 'mr.id')
+    //         // ->leftJoin('users as comp', 'Work_Orders.WO_CompBy', '=', 'comp.id')
+    //         // ->leftJoin('users as rej', 'Work_Orders.WO_RejBy', '=', 'rej.id')
+    //         // ->leftJoin('users as ap1', 'Work_Orders.WO_AP1', '=', 'ap1.id')
+    //         // ->leftJoin('users as ap2', 'Work_Orders.WO_AP2', '=', 'ap2.id')
+    //         // ->leftJoin('users as ap3', 'Work_Orders.WO_AP3', '=', 'ap3.id')
+    //         // ->leftJoin('users as ap4', 'Work_Orders.WO_AP4', '=', 'ap4.id')
+    //         // ->leftJoin('users as ap5', 'Work_Orders.WO_AP5', '=', 'ap5.id')
+    //         ->where('Work_Orders.WO_No', $wo_no)
+    //         ->first();
+    
+    //     if (!$workOrder) {
+    //         return redirect()->back()->with('error', 'Work Order not found.');
+    //     }
+    
+    //     return view('content.wo.DetailWO', compact('workOrder'));
+    // }
+    
+
+    public function showDetailWO($encodedWONo)
+    {
+        $wo_no = base64_decode($encodedWONo); 
+
+        if (!$wo_no) {
+            return redirect()->back()->with('error', 'Work Order not found.');
+        }
+
+        $workOrder = DB::table('Work_Orders')
+            ->select(
+                'Work_Orders.WO_No',
+                'Work_Orders.Case_No',
+                'Work_Orders.WOC_No',
+                'Work_Orders.CR_DT',
+                'Work_Orders.WO_Start',
+                'Work_Orders.WO_End',
+                'Work_Orders.WO_Status',
+                'Work_Orders.WO_Narative',
+                'Work_Orders.WO_NeedMat',
+                'Work_Orders.WO_IsComplete',
+                'Work_Orders.WO_CompDate',
+                'Work_Orders.WO_IsReject',
+                'Work_Orders.WO_RejGroup',
+                'Work_Orders.WO_RejDate',
+                'Work_Orders.WO_APStep',
+                'Work_Orders.WO_APMaxStep',
+                'Work_Orders.WO_RMK1',
+                'Work_Orders.WO_RMK2',
+                'Work_Orders.WO_RMK3',
+                'Work_Orders.WO_RMK4',
+                'Work_Orders.WO_RMK5',
+                'Work_Orders.Update_Date',
+                'cr.Fullname as Creator_Name',
+                'mr.Fullname as MR_Requestor'
+            )
+            ->leftJoin('users as cr', 'Work_Orders.CR_BY', '=', 'cr.id')
+            ->leftJoin('users as mr', 'Work_Orders.WO_MR', '=', 'mr.id')
+            ->where('Work_Orders.WO_No', $wo_no)
+            ->first();
+
+        if (!$workOrder) {
+            return redirect()->back()->with('error', 'Work Order not found.');
+        }
+
+        $logs = DB::table('logs')
+            ->join('users', 'logs.LOG_User', '=', 'users.id')
+            ->select('logs.*', 'users.Fullname as user_name')
+            ->where('LOG_Type', 'WO') 
+            ->where('LOG_RefNo', $workOrder->WO_No)
+            ->orderBy('LOG_Date', 'desc')
+            ->get();
+
+        return view('content.wo.DetailWO', compact('workOrder','logs'));
+    }
+
 
 }
 

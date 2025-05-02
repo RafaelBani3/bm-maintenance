@@ -70,11 +70,19 @@
                     @if(auth()->user()->hasAnyPermission(['view cr', 'view cr_ap']))
                         <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateCase', 'ViewCase', 'ApprovalCase') ? 'show' : '' }}">
                             <span class="menu-link">
-                                <span class="menu-icon">
+                                {{-- <span class="menu-icon">
                                     <i class="ki-duotone ki-address-book fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
+                                    </i>
+                                </span> --}}
+                                <span class="menu-icon">
+                                    <i class="ki-duotone ki-note-2 fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
                                     </i>
                                 </span>
                                 <span class="menu-title">Cases</span>
@@ -132,7 +140,7 @@
                                 <span class="menu-title">Work Order</span>
                                 <span class="menu-arrow"></span>
                             </span>
-                        
+                            
                             <div class="menu-sub menu-sub-accordion">
                                 <div class="menu-item">
                                     <a class="menu-link {{ request()->routeIs('CreateWO') ? 'active' : '' }}" href="{{ route('CreateWO') }}">
@@ -154,6 +162,61 @@
                                     </a>
                                 </div>
                             </div>
+                        </div>
+                    @endif
+
+                    {{-- Page MR --}}
+                    @if(auth()->user()->hasAnyPermission(['view mr', 'view mr_ap']))
+                        <!--begin:Menu item-->
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWO') ? 'show' : '' }}">
+                            <span class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="ki-duotone ki-address-book fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </span>
+                                <span class="menu-title">Material Request</span>
+                                <span class="menu-arrow"></span>
+                            </span>
+                        
+                            @if(auth()->user()->hasAnyPermission(['view mr']))
+                                <div class="menu-sub menu-sub-accordion">
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ request()->routeIs('CreateMR') ? 'active' : '' }}" href="{{ route('CreateMR') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">Create Material Request</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="menu-sub menu-sub-accordion">
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ request()->routeIs('ListMR') ? 'active' : '' }}" href="{{ route('ListMR') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">List Material Request</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if(auth()->user()->hasAnyPermission(['view mr_ap']))
+                                <div class="menu-sub menu-sub-accordion">
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ request()->routeIs('ApprovalListMR') ? 'active' : '' }}" href="{{ route('ApprovalListMR') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">Approval Material Request</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>

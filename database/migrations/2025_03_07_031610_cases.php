@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('Case_Suggest', 255);
             $table->string('Case_Action', 255);
 
-            $table->enum('Case_Status', ['OPEN', 'SUBMIT', 'AP1', 'AP2', 'AP3', 'AP4', 'AP5', 'CLOSE', 'REJECT']);
+            $table->enum('Case_Status', ['OPEN', 'SUBMIT', 'AP1', 'AP2', 'AP3', 'AP4', 'AP5', 'CLOSE', 'REJECT', 'INPROGRESS']);
             $table->enum('Case_IsReject', ['Y', 'N']);
             $table->enum('Case_RejGroup', ['AP1', 'AP2', 'AP3','AP4', 'AP5'])->nullable();
             $table->unsignedBigInteger('Case_RejBy')->nullable();; //Foreign Key

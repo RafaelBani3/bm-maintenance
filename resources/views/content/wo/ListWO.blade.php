@@ -72,24 +72,26 @@
             </div>
             <div class="card-body py-3">
                 <div class="table-responsive">
-
-                    <table id="kt_datatable_fixed_columns" class="table table-striped table-row-bordered gy-5 gs-7" style="width:100%"">
+                    <table id="kt_datatable_fixed_columns" class="table table-striped table-row-bordered gy-5 gs-7" style="width:100%;">
                         <thead>
-                            <tr class="fw-semibold fs-4 text-gray-800 text-center">
-                                <th>WO No</th>
-                                <th>Case No</th>
-                                <th>Requested By</th>
-                                <th>Created Date</th>
-                                <th>WO Start</th>
-                                <th>WO End</th>
-                                <th>Status</th>
-                                <th>Narrative</th>
-                                <th>Need Material</th>
-                                <th>Completed Date</th>
-                                <th>Completed By</th>
-                                <th>Action</th>
+                            <tr class="fw-semibold fs-6 text-gray-800">
+                                <th class="min-w-150px text-center">WO No</th>
+                                <th class="min-w-150px text-center">Case No</th>
+                                <th class="min-w-200px text-center">Requested By</th>
+                                <th class="min-w-150px text-center">Created Date</th>
+                                <th class="min-w-150px text-center">WO Start</th>
+                                <th class="min-w-150px text-center">WO End</th>
+                                <th class="min-w-150px text-center">Status</th>
+                                <th class="min-w-250px text-center">Narrative</th>
+                                <th class="min-w-150px text-center">Need Material</th>
+                                <th class="min-w-150px text-center">Completed Date</th>
+                                <th class="min-w-200px text-center">Completed By</th>
+                                <th class="min-w-100px text-center">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                        
+                        </tbody>
                     </table>
                     
                 </div>
@@ -107,78 +109,8 @@
 
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-    
-    {{-- <script>
-        $(document).ready(function () {
-            $.ajax({
-                url: '{{ route('workOrders.index') }}',
-                method: 'GET',
-                success: function (data) {
-                    var tableBody = $('#kt_datatable_fixed_columns tbody');
-                    tableBody.empty();
-    
-                    data.forEach(function (workOrder) {
-                        const formatDate = (dateStr) => {
-                            return dateStr ? new Date(dateStr).toLocaleDateString('en-CA') : 'N/A';
-                        };
-    
-                        const getStatusBadge = (status) => {
-                            let badgeClass = 'badge-light';
-                            switch (status) {
-                                case 'Pending': badgeClass = 'badge-light-warning'; break;
-                                case 'Approved': badgeClass = 'badge-light-success'; break;
-                                case 'Rejected': badgeClass = 'badge-light-danger'; break;
-                                case 'Completed': badgeClass = 'badge-light-primary'; break;
-                                default: badgeClass = 'badge-light-secondary'; break;
-                            }
-                            return `<span class="badge ${badgeClass} fw-semibold">${status}</span>`;
-                        };
-    
-                        var row = `
-                            <tr>
-                                <td><span class="text-primary text-center fw-bold">${workOrder.WO_No}</span></td>
-                                <td><span class="text-primary fw-bold text-center">${workOrder.Case_No}</span></td>
-                                <td>${workOrder.user?.fullname || '-'}</td>
-                                <td>${formatDate(workOrder.CR_DT)}</td>
-                                <td>${formatDate(workOrder.WO_Start)}</td>
-                                <td>${formatDate(workOrder.WO_End)}</td>
-                                <td>${getStatusBadge(workOrder.WO_Status)}</td>
-                                <td>${workOrder.WO_Narative || '-'}</td>
-                                <td>${workOrder.WO_NeedMat || '-'}</td>
-                                <td>${formatDate(workOrder.WO_CompDate)}</td>
-                                <td>${workOrder.WO_CompBy || 'N/A'}</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-sm">
-                                        <i class="ki-duotone ki-eye">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> View
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                        tableBody.append(row);
-                    });
-    
-                    $("#kt_datatable_fixed_columns").DataTable({
-                        destroy: true,
-                        scrollY: "300px",
-                        scrollX: true,
-                        scrollCollapse: true,
-                        fixedColumns: {
-                            left: 2
-                        }
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.log('Error:', error);
-                }
-            });
-        });
-    </script> --}}
 
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             let table = $("#kt_datatable_fixed_columns").DataTable({
                 ajax: {
@@ -200,10 +132,13 @@
                             return `<span class="text-primary fw-bold">${data}</span>`;
                         }
                     },
+                  
                     {
-                        data: "user.fullname",
+                        data: "created_by_fullname",
                         className: "text-center align-middle",
-                        defaultContent: "-"
+                        render: function (data) {
+                            return `<span class="text-gray">${data}</span>`;
+                        }
                     },
                     {
                         data: "CR_DT",
@@ -272,27 +207,35 @@
                         data: "WO_No",
                         className: "text-center align-middle",
                         render: function (data) {
+                            const encodedWONo = btoa(data);
+                            const baseUrl = window.location.origin + "/BmMaintenance/public"; 
                             return `
-                                <button type="button" class="btn btn-primary btn-sm">
+                                <a href="${baseUrl}/Work-Order/Detail/${encodedWONo}" class="btn btn-secondary">
                                     <i class="ki-duotone ki-eye">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
-                                    </i> View
-                                </button>`;
+                                    </i>
+                                    View
+                                </a>`;
                         }
                     }
+
                 ],
                 destroy: true,
                 scrollY: "300px",
                 scrollX: true,
                 scrollCollapse: true,
                 fixedColumns: {
-                    left: 2
+                    left: 2,
+                    right: 1,
                 }
             });
+
+            setInterval(function () {
+                table.ajax.reload(null, false);
+            }, 5000);
     
-            // Function to show page loading
             function showPageLoading() {
                 const loadingEl = document.createElement("div");
                 document.body.prepend(loadingEl);
@@ -304,49 +247,172 @@
                     <span class="spinner-border text-primary" role="status"></span>
                     <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
                 `;
-                // Show the loader
                 $(".page-loader").fadeIn();
             }
     
-            // Function to hide page loading
             function hidePageLoading() {
                 $(".page-loader").fadeOut();
             }
     
-            // Apply filter (search + status)
             $('#applyFilter').on('click', function () {
                 let keyword = $('#searchReport').val().toLowerCase();
                 let status = $('#statusFilter').val();
                 
-                // Show page loader
                 showPageLoading();
     
-                // Apply search and status filter
                 table.search(keyword).draw();
                 table.column(6).search(status === 'all' ? '' : status).draw();
     
-                // Hide loader after 3 seconds
                 setTimeout(function () {
                     hidePageLoading();
-                }, 3000);
+                }, 800);
             });
-    
-            // Inisialisasi ulang DataTable dengan page loader
-            $("#kt_datatable_fixed_columns").DataTable({
+        });
+    </script> --}}
+
+    <script>
+        $(document).ready(function () {
+            const baseUrl = "{{ url('/') }}"; 
+
+            let table = $("#kt_datatable_fixed_columns").DataTable({
+                ajax: {
+                    url: "{{ route('workOrders.index') }}",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "WO_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="text-primary fw-bold">${data || 'N/A'}</span>`
+                    },
+                    {
+                        data: "Case_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="text-primary fw-bold">${data || 'N/A'}</span>`
+                    },
+                    {
+                        data: "created_by_fullname",
+                        className: "text-center align-middle",
+                        render: data => `<span class="text-gray">${data || 'N/A'}</span>`
+                    },
+                    {
+                        data: "CR_DT",
+                        className: "text-center align-middle",
+                        render: data => data ? new Date(data).toLocaleDateString('en-CA') : "N/A"
+                    },
+                    {
+                        data: "WO_Start",
+                        className: "text-center align-middle",
+                        render: data => data ? new Date(data).toLocaleDateString('en-CA') : "N/A"
+                    },
+                    {
+                        data: "WO_End",
+                        className: "text-center align-middle",
+                        render: data => data ? new Date(data).toLocaleDateString('en-CA') : "N/A"
+                    },
+                    {
+                        data: "WO_Status",
+                        className: "text-center align-middle",
+                        render: function (data) {
+                            let badgeClass = "badge-light-secondary";
+                            switch (data) {
+                                case "Pending": badgeClass = "badge-secondary"; break;
+                                case "OPEN":
+                                case "Open_Completion":
+                                case "OnProgress": badgeClass = "badge-info"; break;
+                                case "AP1":
+                                case "AP2":
+                                case "AP3":
+                                case "AP4":
+                                case "AP5": badgeClass = "badge-primary"; break;
+                                case "REJECT": badgeClass = "badge-danger"; break;
+                                case "CLOSE": badgeClass = "badge-dark"; break;
+                                case "Completed": badgeClass = "badge-success"; break;
+                            }
+                            return `<span class="badge ${badgeClass} fw-semibold">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: "WO_Narative",
+                        className: "text-center align-middle",
+                        defaultContent: "-"
+                    },
+                    {
+                        data: "WO_NeedMat",
+                        className: "text-center align-middle",
+                        defaultContent: "-"
+                    },
+                    {
+                        data: "WO_CompDate",
+                        className: "text-center align-middle",
+                        render: data => data ? new Date(data).toLocaleDateString('en-CA') : "N/A"
+                    },
+                    {
+                        data: "WO_CompBy",
+                        className: "text-center align-middle",
+                        defaultContent: "N/A"
+                    },
+                    {
+                        data: "WO_No",
+                        className: "text-center align-middle",
+                        render: function (data) {
+                            const safeEncoded = data ? btoa(data) : '';
+                            return data ? `
+                                <a href="${baseUrl}/Work-Order/Detail/${safeEncoded}" class="btn btn-secondary">
+                                    <i class="ki-duotone ki-eye">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    View
+                                </a>` : '-';
+                        }
+                    }
+                ],
                 destroy: true,
                 scrollY: "300px",
                 scrollX: true,
                 scrollCollapse: true,
                 fixedColumns: {
-                    left: 2
+                    left: 2,
+                    right: 1,
                 }
+            });
+
+            setInterval(function () {
+                table.ajax.reload(null, false);
+            }, 10000);
+
+            // Page loader
+            function showPageLoading() {
+                $(".page-loader").fadeIn();
+            }
+
+            function hidePageLoading() {
+                $(".page-loader").fadeOut();
+            }
+
+            $('#applyFilter').on('click', function () {
+                let keyword = $('#searchReport').val().toLowerCase();
+                let status = $('#statusFilter').val();
+
+                showPageLoading();
+
+                table.search(keyword).draw();
+                table.column(6).search(status === 'all' ? '' : status).draw();
+
+                setTimeout(() => hidePageLoading(), 3000);
             });
         });
     </script>
 
+
+
+    <script>
+        const BASE_URL = "{{ url('/') }}";
+    </script>
+
 @endsection
-
-
 
 
 

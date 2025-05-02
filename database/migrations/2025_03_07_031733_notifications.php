@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('Notification', function (Blueprint $table) {
             $table->id('Notif_No')->primary();
+            $table->enum('Notif_Type', ['BA', 'MR', 'WO'])->nullable();
+            $table->string('Reference_No', 30);
             $table->string('Notif_Title', 255);
             $table->string('Notif_Text', 255);
             $table->enum('Notif_IsRead', ['Y', 'N']);
-            $table->unsignedBigInteger('Notif_From'); //Foreign Key
-            $table->unsignedBigInteger('Notif_To'); //Foreign Key
+            $table->unsignedBigInteger('Notif_From'); 
+            $table->unsignedBigInteger('Notif_To'); 
             $table->dateTime('Notif_Date');
-            $table->enum('Notif_Type', ['BA', 'MR', 'WO'])->nullable();
             $table->timestamps();
 
             // Foreign Key

@@ -12,12 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('WO_DoneBy', function (Blueprint $table) {
-            $table->string('WO_No', 30)->primary();
-            $table->unsignedBigInteger('User_ID'); //Foreign Key
+            // $table->bigIncrements('WO_DoneBy_No'); 
+            $table->string('WO_No', 30);
+            $table->string('technician_id', 20);
+
             $table->timestamps();
+            $table->primary(['WO_No', 'technician_id']); 
 
             // Foreign  Key
-            $table->foreign('User_ID')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('technician_id')->references('technician_id')->on('technician')->onDelete('cascade');
             $table->foreign('WO_No')->references('WO_No')->on('Work_Orders')->onDelete('cascade');
         });
 

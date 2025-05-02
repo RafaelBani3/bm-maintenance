@@ -12,8 +12,7 @@ class WorkOrder extends Model
     protected $keyType = 'string'; 
     protected $table = 'work_orders';
     public $timestamps = false; 
-
-
+    
     protected $fillable = [
         'WO_No', 'Case_No', 'WOC_No', 'CR_BY', 'CR_DT',
         'WO_Start', 'WO_End', 'WO_Status', 'WO_Narative',
@@ -23,6 +22,22 @@ class WorkOrder extends Model
         'WO_RMK4', 'WO_RMK5', 'WO_AP1', 'WO_AP2', 'WO_AP3',
         'WO_AP4', 'WO_AP5', 'WO_APStep', 'WO_APMaxStep', 'Update_Date'
     ];
+
+    public function case()
+    {
+        return $this->belongsTo(Cases::class, 'Case_No', 'Case_No');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'CR_BY');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'CR_BY', 'id');
+    }
+    
 
     public function getIncrementWONo()
     {

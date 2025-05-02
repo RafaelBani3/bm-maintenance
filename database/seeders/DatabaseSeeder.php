@@ -24,5 +24,9 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(CatSeeder::class);
         $this->call(MatrixSeeder::class);
+        $this->call(MaterialSeeder::class);
+        $this->call(TechnicianSeeder::class);
+
+
     }
 }

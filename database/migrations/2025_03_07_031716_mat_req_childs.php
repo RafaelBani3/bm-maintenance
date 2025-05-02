@@ -15,6 +15,9 @@ return new class extends Migration
                 $table->string('MR_No', 300);
                 $table->integer('MR_Line');
                 $table->integer('Item_Oty'); 
+                $table->string('CR_ITEM_UOM', 30);
+                $table->string('CR_ITEM_CODE', 30)->nullable();
+                $table->string('CR_ITEM_NAME', 30)->nullable();
 
                 $table->string('Item_Code', 255)->nullable();
                 $table->string('Item_Name', 255)->nullable();
@@ -22,18 +25,18 @@ return new class extends Migration
 
                 $table->string('UOM_Code', 30);
                 $table->string('UOM_Name',255);
-                $table->string('Remark',255);
+                $table->string('Remark',255)->nullable();
+
                 $table->timestamps();
 
-                // Definisikan Composite Primary Key
                 $table->primary(['MR_No', 'MR_Line']);
 
-                // Foreign Key Constraints
-                $table->foreign('MR_No')->references('MR_No')->on('mat_req')->onDelete('cascade');
-                
+                $table->foreign('MR_No')->references('MR_No')->on('mat_req')->onDelete('cascade');     
         });
 
+        
     }
+   
 
     /**
      * Reverse the migrations.

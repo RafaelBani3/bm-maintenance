@@ -70,6 +70,8 @@ return new class extends Migration
             $table->foreign('WO_AP5')->references('id')->on('users')->onDelete('set null');
         
         });
+
+  
     }
 
     /**

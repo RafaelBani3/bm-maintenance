@@ -1,18 +1,9 @@
 @extends('layouts.Master')
 
 @section('title', 'BM-Maintenance')
-@section('subtitle', 'BM Maintenance - List Approval Case')
+@section('subtitle', 'BM Maintenance - List Material Request')
 
 @section('content')
-
-    <style>
-        .badge {
-            padding: 0.5em 0.75em;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 0.35rem;
-        }
-    </style>
 
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
@@ -72,7 +63,7 @@
                         
                                 <!--begin::Apply Button-->
                                 <div class="col-lg-2">
-                                    <label class="form-label fw-bold text-white">.</label> 
+                                    <label class="form-label fw-bold text-white">.</label> <!-- agar tetap sejajar -->
                                     <button class="btn btn-primary w-100" id="applyFilter">
                                         <i class="fa-solid fa-filter me-1"></i> Apply
                                     </button>
@@ -98,17 +89,17 @@
                                 <div class="tab-content">
                                     <div id="kt_billing_months" class="card-body p-0 tab-pane fade show active" role="tabpanel" aria-labelledby="kt_billing_months">
                                         <div class="table-responsive">
-                                            <table class="table table-row-bordered align-middle gy-5 gs-9" id="casesTable"> 
+                                            <table class="table table-row-bordered align-middle gy-5 gs-9" id="matreq_table"> 
                                                 <thead>
-                                                    <tr class="fw-bold text-muted">
-                                                        <th class="min-w-150px text-start text-muted align-middle sortable" data-column="Case_No">Case Id</th>
-                                                        <th class="min-w-140px text-start align-middle sortable" data-column="Case_Date">Case Date</th>
-                                                        <th class="min-w-120px text-start align-middle">Case Name</th>
-                                                        <th class="min-w-120px text-start align-middle">Case Category</th>
-                                                        <th class="min-w-120px text-start align-middle">Created By</th>
-                                                        <th class="min-w-120px text-start align-middle">Position</th>
-                                                        <th class="min-w-120px text-start align-middle">Status</th>
-                                                        <th class="min-w-100px text-start align-middle">Actions</th>
+                                                    <tr class="fw-semibold fs-6 text-gray-800">
+                                                        <th class="min-w-150px ">MR No</th>
+                                                        <th class="min-w-150px ">WO No</th>
+                                                        <th class="min-w-150px ">Case No</th>
+                                                        <th class="min-w-150px ">Created Date</th>
+                                                        <th class="min-w-150px ">Status</th>
+                                                        <th class="min-w-100px ">Urgent</th>
+                                                        <th class="min-w-200px ">Created By</th>
+                                                        <th class="min-w-100px ">Action</th>
                                                     </tr>
                                                 </thead> 
                                                 <tbody class="fw-semibold text-gray-600">
@@ -128,9 +119,9 @@
         </div>
     </div>
 
+{{-- DESIGN LAMA --}}
     {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
-    
             <!--begin::Filter Card-->
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
@@ -149,11 +140,11 @@
                             </div>
                         </div>
                         <!--end::Search-->
-    
+
                         <!--begin::Filter-->
                         <div class="col-md-3">
                             <label for="statusFilter" class="form-label">Status</label>
-                            <select name="category" id="statusFilter" class="form-select form-select-solid" data-control="select2" data-hide-search="true">
+                            <select id="statusFilter" class="form-select form-select-solid" data-control="select2" data-hide-search="true">
                                 <option value="all">All Status</option>
                                 <option value="OPEN">OPEN</option>
                                 <option value="SUBMIT">SUBMIT</option>
@@ -165,16 +156,17 @@
                                 <option value="CLOSE">CLOSE</option>
                                 <option value="REJECT">REJECT</option>
                             </select>
+                
                         </div>
                         <!--end::Filter-->
-    
+
                         <!--begin::Date Range Picker-->
                         <div class="col-md-4">
                             <label for="dateFilter" class="form-label">Date Range</label>
                             <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range">
                         </div>
                         <!--end::Date Range Picker-->
-    
+
                         <!--begin::Apply Button-->
                         <div class="col-md-1 d-flex align-items-end mt-10">
                             <button class="btn btn-primary w-100" id="applyFilter">Apply</button>
@@ -183,8 +175,8 @@
                     </div>
                 </div>
             </div>
-            <!--end::Filter Card-->
-    
+            <!--end::Filter  Card-->
+
             <!--begin::Table Card-->
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
@@ -195,20 +187,22 @@
                 </div>
                 <div class="card-body py-3">
                     <div class="table-responsive">
-                        <table class="table table-striped table-row-bordered" id="casesTable"> 
+                        <table id="matreq_table" class="table table-striped table-row-bordered gy-5 gs-7" style="width:100%;">
                             <thead>
-                                <tr class="fw-bold text-muted">
-                                    <th class=" text-start sortable" data-column="Case_No">Case Id</th>
-                                    <th class=" text-start sortable" data-column="Case_Date">Case Date</th>
-                                    <th class=" text-start">Case Name</th>
-                                    <th class=" text-start">Case Category</th>
-                                    <th class=" text-start">Created By</th>
-                                    <th class=" text-start">Position</th>
-                                    <th class=" text-start">Status</th>
-                                    <th class=" text-start">Actions</th>
+                                <tr class="fw-semibold fs-6 text-gray-800">
+                                    <th class="min-w-150px text-center">MR No</th>
+                                    <th class="min-w-150px text-center">WO No</th>
+                                    <th class="min-w-150px text-center">Case No</th>
+                                    <th class="min-w-150px text-center">Created Date</th>
+                                    <th class="min-w-150px text-center">Status</th>
+                                    <th class="min-w-100px text-center">Urgent</th>
+                                    <th class="min-w-200px text-center">Created By</th>
+                                    <th class="min-w-100px text-center">Action</th>
                                 </tr>
-                            </thead> 
-                            <tbody></tbody>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -217,11 +211,70 @@
         </div>
     </div> --}}
 
-    @include('content.case.partial.ApprovalListJs')
-    
+                
+    <div class="page-loader flex-column bg-dark bg-opacity-50">
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+    </div>
+
+    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+
+
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
+
+    {{-- Ambil Data MR ke Table --}}
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '{{ route("GetDataMR") }}',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let tableBody = '';
+                    const baseUrl = window.location.origin + "/BmMaintenance/public";
+                    
+                    data.forEach(item => {
+                        const encodedMRNo = btoa(item.MR_No); 
+                        tableBody += `
+                            <tr>
+                                <td class="text-start text-primary">${item.MR_No}</td>
+                                <td class="text-start text-primary">${item.WO_No}</td>
+                                <td class="text-start text-primary">${item.Case_No}</td>
+                                <td class="text-start">${item.MR_Date}</td>
+                                <td class="text-start">${item.MR_Status}</td>
+                                <td class="text-start">
+                                    ${item.MR_IsUrgent === 'Y' 
+                                        ? '<span class="badge bg-danger">Yes</span>' 
+                                        : '<span class="badge bg-secondary">No</span>'
+                                    }
+                                </td>
+                                <td class="text-start">${item.CreatedBy ?? '-'}</td>
+                                <td class="text-start">
+                                    <a href="${baseUrl}/Material-Request/Detail/${encodedMRNo}" class="btn btn-sm btn-secondary fs-5 hover-scale d-flex align-items-center">
+                                        <i class="ki-duotone ki-eye">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                        View
+                                    </a>
+                                </td>
+                            </tr>`;
+                    });
+                    $('#matreq_table tbody').html(tableBody);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Gagal memuat data MR:", error);
+                }
+            });
+        });
+    </script>
+
+    
+
+
+
 @endsection
-
-

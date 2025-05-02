@@ -1,8 +1,9 @@
 {{-- <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script> --}}
+<script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
 
 {{-- View Image --}}
-<script>
+{{-- <script>
     document.addEventListener("DOMContentLoaded", function () {
         var imageModal = document.getElementById("imageModal");
         imageModal.addEventListener("show.bs.modal", function (event) {
@@ -11,17 +12,17 @@
             document.getElementById("modalImage").src = imageUrl;
         });
     });
-</script>
+</script> --}}
 
+{{-- Approve Case --}}
 <script>
     $(document).ready(function() {
         $(".approve-reject-btn").click(function(e) {
             e.preventDefault();
             
-            let action = $(this).data("action"); // dapetin action dari data attribute
-            let caseNo = encodeURIComponent("{{ $case->Case_No }}");
+            let action = $(this).data("action");
+            let caseNo = btoa("{{ $case->Case_No }}"); 
     
-            // Ambil isi dari Quill dan masukkan ke hidden input
             let quillContent = quill.root.innerHTML;
             $("#approvalNotes").val(quillContent);
     
@@ -35,7 +36,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/cases/${caseNo}/approve-reject`,
+                        url: `/BmMaintenance/public/cases/${caseNo}/approve-reject`,
                         type: "POST",
                         data: {
                             _token: "{{ csrf_token() }}",
@@ -48,8 +49,8 @@
                                 text: response.message,
                                 icon: "success"
                             }).then(() => {
-                                // Langsung redirect aja tanpa reload
-                                window.location.href = "/Case/Approval-list";
+                                window.location.href = `${BASE_URL}/Case/Approval-list`;
+                    
                             });
                         },
                         error: function(xhr) {
@@ -60,10 +61,10 @@
             });
         });
     });
-    </script>
+</script>
 
-
-<script>
+{{-- Script Untuk Text Area(Remark) --}}
+{{-- <script>
     var quill;
 
     $(document).ready(function() {
@@ -75,7 +76,5 @@
             }
         });
     });
-</script>
-
-
+</script> --}}
 

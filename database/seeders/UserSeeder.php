@@ -136,7 +136,7 @@ class UserSeeder extends Seeder
             'PS_ID' => '10',
             'CR_DT' => now(),
         ]);
-        $user12->assignRole('cr_ap' );
+        $user12->assignRole('cr_ap','mr_ap');
 
         
         $user13 = User::create([
@@ -162,7 +162,7 @@ class UserSeeder extends Seeder
 
         $user15 = User::create([
             'Fullname' => 'Meidiono Triandoko',
-            'Username' => ' ',
+            'Username' => 'Meidiono',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
             'PS_ID' => '13  ', 

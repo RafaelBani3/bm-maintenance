@@ -74,7 +74,7 @@
 									<!--end::Title-->
 										
                                     <!--begin::Subtitle-->
-									<div class="text-gray-500 fw-semibold fs-6">KPN CORP</div>
+									<div class="text-gray-500 fw-semibold fs-6">KPN CORPORATION</div>
 									<!--end::Subtitle=-->
 								</div>
 								<!--begin::Heading-->

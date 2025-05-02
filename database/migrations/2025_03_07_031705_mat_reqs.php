@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->string('MR_Allotment', 255);
             $table->enum('MR_IsUrgent', ['Y', 'N']); 
-            $table->enum('MR_Status', ['Open', 'SUbmit', 'AP1', 'AP2', 'AP3', 'AP4', 'AP5', 'Close']);
+            $table->enum('MR_Status', ['OPEN','SUBMITTED','AP1','AP2','AP3','AP4','AP5','CLOSE','REJECT','INPROGRESS']);
             $table->enum('MR_IsReject', ['Y', 'N']); 
             $table->enum('MR_RejGroup', ['AP1', 'AP2' ,'AP3', 'AP4', 'AP5'])->nullable();
             $table->unsignedBigInteger('MR_RejBy')->nullable(); //Foreign Key Users
