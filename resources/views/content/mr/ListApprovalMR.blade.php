@@ -25,7 +25,11 @@
                         <div class="card-body">
                             <div class="row g-5 align-items-end">
                                 <!--begin::Search-->
+<<<<<<< HEAD
                                 <div class="col-lg-4">
+=======
+                                <div class="col-lg-5">
+>>>>>>> ff25b43 (Update)
                                     <label for="searchReport" class="form-label fw-bold">Search Report</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
@@ -36,6 +40,7 @@
                                 </div>
                                 <!--end::Search-->
                         
+<<<<<<< HEAD
                                 <!--begin::Filter-->
                                 <div class="col-lg-3">
                                     <label for="statusFilter" class="form-label fw-bold">Status</label>
@@ -56,6 +61,10 @@
                         
                                 <!--begin::Date Range Picker-->
                                 <div class="col-lg-3">
+=======
+                                <!--begin::Date Range Picker-->
+                                <div class="col-lg-5">
+>>>>>>> ff25b43 (Update)
                                     <label for="dateFilter" class="form-label fw-bold">Date Range</label>
                                     <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range" />
                                 </div>
@@ -95,11 +104,19 @@
                                                     <tr class="fw-semibold fs-6 text-gray-800">
                                                         <th class="min-w-150px text-dark">MR No</th>
                                                         <th class="min-w-150px text-dark">WO No</th>
+<<<<<<< HEAD
                                                         <th class="min-w-150px text-dark">Case No</th>
                                                         <th class="min-w-150px text-dark">Created Date</th>
                                                         <th class="min-w-150px text-dark">Status</th>
                                                         <th class="min-w-100px text-dark">Urgent</th>
                                                         <th class="min-w-200px text-dark">Created By</th>
+=======
+                                                        <th class="min-w-200px text-dark">Case No</th>
+                                                        <th class="min-w-100px text-dark">Created Date</th>
+                                                        <th class="min-w-100px text-dark">Status</th>
+                                                        <th class="min-w-100px text-dark">Urgent</th>
+                                                        <th class="min-w-100px text-dark">Created By</th>
+>>>>>>> ff25b43 (Update)
                                                         <th class="min-w-100px text-dark">Action</th>
                                                     </tr>
                                                 </thead> 
@@ -128,13 +145,20 @@
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ff25b43 (Update)
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
 
     {{-- Get Data MR dan tampilkan didalam table --}}
+<<<<<<< HEAD
     <script>
+=======
+    {{-- <script>
+>>>>>>> ff25b43 (Update)
         $(document).ready(function () {
             $('#statusFilter').select2({
                 placeholder: "Pilih Status",
@@ -170,7 +194,11 @@
                         data: "MR_Status", 
                         className: "fw-semibold text-start align-middle",
                         render: function (data) {
+<<<<<<< HEAD
                             return `<span class="badge badge-primary">${data}</span>`;
+=======
+                            return `<span class="badge badge-light-primary">${data}</span>`;
+>>>>>>> ff25b43 (Update)
                         }
                     },
                     { 
@@ -228,6 +256,135 @@
                 }, 500); 
             });
         });
+<<<<<<< HEAD
+=======
+    </script> --}}
+    <script>
+        $(document).ready(function () {
+            $('#statusFilter').select2({
+                placeholder: "Pilih Status",
+                allowClear: true,
+                width: 'resolve'
+            });
+
+            function safeBtoa(str) {
+                return btoa(unescape(encodeURIComponent(str)));
+            }
+
+            const baseUrl = window.location.origin + "/BmMaintenance/public";
+
+            const table = $("#matreq_table").DataTable({
+                ajax: {
+                    url: '{{ route('matreq.list') }}',
+                    dataSrc: "",
+                    error: function (xhr, error, thrown) {
+                        console.error("AJAX Error:", xhr.responseText);
+                        $('#page_loader').hide();
+                        alert("Gagal mengambil data Material Request. Silakan cek console.");
+                    }
+                },
+                columns: [
+                    { 
+                        data: "MR_No", 
+                        className: "text-primary fw-semibold text-start align-middle",
+                        width: "150px"
+                    },
+                    { 
+                        data: "WO_No", 
+                        className: "text-primary fw-semibold text-start align-middle",
+                        width: "150px"
+                    },
+                    { 
+                        data: "Case_No", 
+                        className: "text-primary fw-semibold text-start align-middle",
+                        width: "150px"
+                    },
+                    { 
+                        data: "MR_Date", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "120px",
+                        render: function (data) {
+                            const date = new Date(data);
+                            const day = date.getDate().toString().padStart(2, '0');
+                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            const year = date.getFullYear();
+                            return `${day}/${month}/${year}`;
+                        }
+                    },
+                    { 
+                        data: "MR_Status", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "120px",
+                        render: function (data) {
+                            return `<span class="badge badge-light-primary">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: "MR_IsUrgent", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "100px",
+                        render: function (data) {
+                            return data === 'Y'
+                                ? '<span class="badge badge-danger">Urgent</span>'
+                                : '<span class="badge badge-secondary">Normal</span>';
+                        }
+                    },
+                    { 
+                        data: "CreatedBy", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "150px",
+                        render: function (data) {
+                            return data ?? '-';
+                        }
+                    },
+                    { 
+                        data: "MR_No",
+                        className: "text-start align-middle",
+                        orderable: false,
+                        width: "120px",
+                        render: function (data) {
+                            const encodedMRNo = safeBtoa(data);
+                            return `
+                                <a href="${baseUrl}/Material-Request/Approval-Detail/${encodedMRNo}" 
+                                class="btn btn-secondary hover-scale">
+                                    <i class="ki-duotone ki-eye">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> View
+                                </a>`;
+                        }
+                    }
+                ],
+                language: {
+                    emptyTable: "Tidak ada data Material Request.",
+                    zeroRecords: "Tidak ditemukan data sesuai filter.",
+                    loadingRecords: "Memuat data...",
+                    processing: "Memproses...",
+                    search: "Cari:",
+                },
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true,
+                fixedColumns: {
+                    left: 2,
+                    right: 1
+                }
+            });
+
+            $('#applyFilter').on('click', function () {
+                $('#page_loader').show();
+
+                setTimeout(() => {
+                    const selectedStatus = $('#statusFilter').val();
+                    const searchValue = (selectedStatus === 'all' || selectedStatus === null) ? '' : selectedStatus;
+                    table.column(4).search(searchValue).draw();
+
+                    $('#page_loader').hide();
+                }, 500);
+            });
+        });
+>>>>>>> ff25b43 (Update)
     </script>
 
     {{-- Script Data Range --}}
@@ -247,7 +404,21 @@
         });
     
     </script>
+<<<<<<< HEAD
     
+=======
+    	
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Akses Ditolak',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
+>>>>>>> ff25b43 (Update)
     
 
 @endsection

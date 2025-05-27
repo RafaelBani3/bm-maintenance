@@ -11,7 +11,6 @@ class Notification extends Model
 
     protected $table = 'Notification';
     protected $primaryKey = 'Notif_No';
-    public $timestamps = false; 
 
     protected $fillable = [
         'Notif_No',
@@ -40,5 +39,16 @@ class Notification extends Model
     public function receiver()
     {
         return $this->belongsTo(User::class, 'Notif_To');
+    }
+
+    public static function generateNotificationNo()
+    {
+        $lastNotifNo = self::orderByDesc('Notif_No')->first();
+    
+        if (!$lastNotifNo) {
+            return 1;
+        }
+    
+        return $lastNotifNo->Notif_No + 1;
     }
 }

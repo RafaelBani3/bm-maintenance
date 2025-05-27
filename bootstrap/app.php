@@ -11,10 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // $middleware->append([
+        //     \App\Http\Middleware\CatchUnauthorizedException::class, // tambahkan di sini sebagai global middleware
+        // ]);
+        // $middleware->prepend(\App\Http\Middleware\CatchUnauthorizedException::class);
+
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'usermiddleware' => \App\Http\Middleware\UserMiddleware::class, 
+            'CatchUnauthorizedException' => \App\Http\Middleware\CatchUnauthorizedException::class,
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

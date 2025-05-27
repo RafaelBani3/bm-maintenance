@@ -73,6 +73,30 @@ class MatReq extends Model
         return $this->belongsTo(Position::class, 'PS_ID');
     }
 
+<<<<<<< HEAD
+=======
+    public function approver1() {
+    return $this->belongsTo(User::class, 'MR_AP1','id');
+    }
+
+    public function approver2() {
+        return $this->belongsTo(User::class, 'MR_AP2','id');
+    }
+
+    public function approver3() {
+        return $this->belongsTo(User::class, 'MR_AP3','id');
+    }
+    
+
+    public function approver4() {
+        return $this->belongsTo(User::class, 'MR_AP4','id');
+    }
+
+      public function approver5() {
+        return $this->belongsTo(User::class, 'MR_AP5','id');
+    }
+
+>>>>>>> ff25b43 (Update)
     public static function generateMRNo()
     {
         $currentMonth = date('n');
@@ -97,6 +121,20 @@ class MatReq extends Model
         return "$newNumber/MR/$romanMonth/$currentYear";
     }
 
+<<<<<<< HEAD
+=======
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'CR_BY');
+    }
+
+    public function childs()
+    {
+        return $this->hasMany(MatReqChild::class, 'MR_No', 'MR_No');
+    }
+
+
+>>>>>>> ff25b43 (Update)
 }
 
 

@@ -127,6 +127,7 @@
                                                 $badgeClass = 'badge-light-info';
                                                 break;
                                             case 'Submit':
+<<<<<<< HEAD
                                                 $badgeClass = 'badge-warning';
                                                 break;
                                             case 'AP1':
@@ -137,6 +138,25 @@
                                                 break;
                                             case 'CLOSE':
                                                 $badgeClass = 'badge-dark';
+=======
+                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                break;
+                                            case 'AP1':
+                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                break;
+                                            case 'AP2':
+                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                break;  
+                                            case 'AP3':
+                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                break;
+                                            case 'AP4':
+                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                break;
+                                         
+                                            case 'CLOSE':
+                                                $badgeClass = 'badge badge-light-success';
+>>>>>>> ff25b43 (Update)
                                                 break;
                                         }
                                     @endphp
@@ -211,8 +231,11 @@
                                     <!--end::Col-->
                                 </div>
                                 <!--end::Row WO Rejected_By--> --}}
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> ff25b43 (Update)
                         </div>
                         {{-- End Detail Work Order  --}}
                     </div>
@@ -220,6 +243,7 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
     
      {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
@@ -476,6 +500,8 @@
             </div>
         </div>
     </div> --}}
+=======
+>>>>>>> ff25b43 (Update)
 
     {{-- LOG Modal --}}
     <div class="modal fade" tabindex="-1" id="kt_modal_log">

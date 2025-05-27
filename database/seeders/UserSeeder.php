@@ -136,7 +136,11 @@ class UserSeeder extends Seeder
             'PS_ID' => '10',
             'CR_DT' => now(),
         ]);
+<<<<<<< HEAD
         $user12->assignRole('cr_ap','mr_ap');
+=======
+        $user12->assignRole('cr_ap','mr_ap','wo_ap');
+>>>>>>> ff25b43 (Update)
 
         
         $user13 = User::create([

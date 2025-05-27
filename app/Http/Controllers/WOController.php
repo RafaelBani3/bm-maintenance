@@ -51,7 +51,6 @@ class WOController extends Controller
                 'date' => $case->Case_Date,
             ];
         });
-    
         return response()->json($formattedCases);
     }
     
@@ -222,7 +221,10 @@ class WOController extends Controller
                         ]);
                     }
                 }
+<<<<<<< HEAD
                 
+=======
+>>>>>>> ff25b43 (Update)
             }
 
             return response()->json([
@@ -231,7 +233,11 @@ class WOController extends Controller
                 'wo_no' => $woNumber 
             ]);
         } catch (\Exception $e) {
+<<<<<<< HEAD
             Log::error('Failed to create Work Order. Error: ' . $e->getMessage());
+=======
+            Log::error(message: 'Failed to create Work Order. Error: ' . $e->getMessage());
+>>>>>>> ff25b43 (Update)
 
             Logs::create([
                 'LOG_Type' => 'WO',
@@ -316,8 +322,11 @@ class WOController extends Controller
 
 
     // Update WO
+<<<<<<< HEAD
    
 
+=======
+>>>>>>> ff25b43 (Update)
     public function UpdateWO(Request $request)
     {
         $user = Auth::user();   
@@ -342,9 +351,22 @@ class WOController extends Controller
             $wo->WO_Start = $request->start_date;
             $wo->WO_End = $request->end_date;
             $wo->WO_Narative = $request->work_description;
+<<<<<<< HEAD
             $wo->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
             $wo->WO_Status = 'Submit';
+=======
+>>>>>>> ff25b43 (Update)
             $wo->Update_Date = now();
+            if ($request->has('require_material') && $request->require_material === 'yes') {
+                $wo->WO_NeedMat = 'Y';
+                $wo->WO_MR = $request->intended_for ?? $wo->WO_MR; 
+                $wo->WO_Status = 'Submit';
+            } else {
+                $wo->WO_NeedMat = 'N';
+                $wo->WO_MR = null;
+                $wo->WO_Status = 'INPROGRESS';
+            }
+            
             $wo->save();
     
             $case = Cases::where('Case_No', $request->reference_number)->first();
@@ -355,7 +377,11 @@ class WOController extends Controller
             
                 Logs::create([
                     'LOG_Type' => 'BA',
+<<<<<<< HEAD
                     'LOG_RefNo' => $request->wo_no,
+=======
+                    'LOG_RefNo' => $request->reference_number,
+>>>>>>> ff25b43 (Update)
                     'LOG_Status' => 'INPROGRESS',
                     'LOG_User' => $user->id,
                     'LOG_Date' => now(),
@@ -363,7 +389,11 @@ class WOController extends Controller
                 ]);
         
             }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> ff25b43 (Update)
             if ($request->has('assigned_to')) {
                 $existingTechnicians = DB::table('WO_DoneBy')
                     ->where('WO_No', $request->wo_no)
@@ -416,14 +446,24 @@ class WOController extends Controller
             ], 500);
         }
     }
+<<<<<<< HEAD
     
 
+=======
+               
+
+    
+>>>>>>> ff25b43 (Update)
     // Mengambil data WO dari Database dan tampilkan pada table WO
     public function getWorkOrders(Request $request)
     {
         $userId = Auth::id();
     
+<<<<<<< HEAD
         $workOrders = WorkOrder::with('createdBy')
+=======
+        $workOrders = WorkOrder::with('createdBy')  
+>>>>>>> ff25b43 (Update)
             ->where('CR_BY', $userId)
             ->get()
             ->map(function ($wo) {
@@ -439,18 +479,28 @@ class WOController extends Controller
                     'WO_NeedMat' => $wo->WO_NeedMat,
                     'WO_CompDate' => $wo->WO_CompDate,
                     'WO_CompBy' => $wo->WO_CompBy,
+<<<<<<< HEAD
+=======
+                    'completed_by_fullname' => $wo->completedBy ? $wo->completedBy->Fullname : '-', 
+
+>>>>>>> ff25b43 (Update)
                 ];
             });
     
         return response()->json($workOrders);
     }
 
+<<<<<<< HEAD
     // Get WO NO
     // public function GetWorkOrderNo(Request $request)
     // {
     //     $request->session()->put('wo_no', $request->wo_no);
     //     return redirect('/Work-Orders/Detail');
     // }
+=======
+
+    // Get WO NO    
+>>>>>>> ff25b43 (Update)
     public function GetWorkOrderNo(Request $request)
     {
         $wo_no = $request->wo_no;
@@ -463,6 +513,7 @@ class WOController extends Controller
         return redirect()->route('WorkOrderDetail');
     }
 
+<<<<<<< HEAD
     // public function showDetailWO(Request $request)
     // {
     //     $wo_no = $request->session()->get('wo_no');
@@ -526,6 +577,8 @@ class WOController extends Controller
     // }
     
 
+=======
+>>>>>>> ff25b43 (Update)
     public function showDetailWO($encodedWONo)
     {
         $wo_no = base64_decode($encodedWONo); 
@@ -581,6 +634,11 @@ class WOController extends Controller
         return view('content.wo.DetailWO', compact('workOrder','logs'));
     }
 
+<<<<<<< HEAD
+=======
+    
+
+>>>>>>> ff25b43 (Update)
 
 }
 

@@ -20,13 +20,13 @@ return new class extends Migration
 
             $table->dateTime('WO_Start'); 
             $table->dateTime('WO_End'); 
-            $table->enum('WO_Status', ['OPEN', 'OnProgress', 'Open_Completion', 'Submit', 'AP1', 'AP2' ,'AP3', 'AP4', 'CLOSE']);
+            $table->enum('WO_Status', ['OPEN', 'INPROGRESS', 'OPEN_COMPLETION', 'SUBMIT','SUBMIT_COMPLETION', 'AP1', 'AP2' ,'AP3', 'AP4', 'CLOSE', 'DONE']);
             // $table->string('WO_DoneBy'); //Foreign Key 
 
             $table->string('WO_Narative', 255);
-            $table->enum('WO_NeedMat', ['Y', 'N']); // WO butuh Material Atau Tidak
+            $table->enum('WO_NeedMat', ['Y', 'N']);
 
-            $table->unsignedBigInteger('WO_MR'); // User yg Req Materials
+            $table->unsignedBigInteger('WO_MR'); 
             $table->enum('WO_IsComplete', ['Y','N']);
             $table->dateTime('WO_CompDate')->nullable(); 
             $table->unsignedBigInteger('WO_CompBy')->nullable(); //Foreign Key Users

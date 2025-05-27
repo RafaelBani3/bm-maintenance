@@ -277,7 +277,10 @@
 </script>
 {{-- End script --}}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ff25b43 (Update)
 <style>
     .dz-preview {
         cursor: pointer;
@@ -297,6 +300,7 @@
 @endif
 
 
+<<<<<<< HEAD
 {{-- function saveCase(formData) {
             $.ajax({
                 url: '/your-save-case-url',
@@ -357,4 +361,6 @@
     }); --}}
 
    
+=======
+>>>>>>> ff25b43 (Update)
         

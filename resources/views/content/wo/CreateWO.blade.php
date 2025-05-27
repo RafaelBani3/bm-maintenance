@@ -208,9 +208,14 @@
                         <!--end::Card body-->
                 
                         <!-- Submit Button -->
-                        <div class="text-end mt-4">
-                            <button type="submit" class="btn btn-lg btn-primary shadow-sm px-5" id="kt_docs_formvalidation_text_submit">
-                                Save Work Order
+                        <div class="card-footer d-flex justify-content-end py-6 px-9">
+                            <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
+                                <span class="indicator-label">
+                                    Save Material Request
+                                </span>
+                                <span class="indicator-progress">
+                                    Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
                             </button>
                         </div>
                     </form>                    
@@ -219,7 +224,13 @@
         </div>
     </div>
 
+    <!-- Page Loader -->
+    <div id="material_loader" class="page-loader flex-column bg-dark bg-opacity-50 position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center d-none" style="z-index: 9999;">
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-white fs-6 fw-semibold mt-5">Loading...</span>
+    </div>
 
+<<<<<<< HEAD
 
 
     {{-- <div id="app_content" class="app-content flex-column-fluid">
@@ -466,6 +477,8 @@
         <span class="text-white fs-6 fw-semibold mt-5">Loading...</span>
     </div>
 
+=======
+>>>>>>> ff25b43 (Update)
     <div class="page-loader flex-column bg-dark bg-opacity-50" id="page-loader">
         <span class="spinner-border text-primary" role="status"></span>
         <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>

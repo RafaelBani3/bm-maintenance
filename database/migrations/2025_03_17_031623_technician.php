@@ -16,6 +16,11 @@ return new class extends Migration
             $table->string('technician_Name',50);
             $table->timestamps();
         });
+<<<<<<< HEAD
+=======
+
+        
+>>>>>>> ff25b43 (Update)
     }
 
     /**

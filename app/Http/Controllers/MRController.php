@@ -24,19 +24,40 @@ class MRController extends Controller
         return view('content.mr.CreateMR', compact('materials'));
     }
 
+<<<<<<< HEAD
+=======
+    // Ambil Data WO untuk Create MR
+>>>>>>> ff25b43 (Update)
     public function getWOByUser(Request $request)
     {
         $userId = $request->user_id;
 
+<<<<<<< HEAD
         $data = DB::table('Work_Orders')
             ->select('WO_No', 'Case_No', 'WO_Start', 'WO_End', 'WO_Narative', 'WO_Status')
             ->where('CR_BY', $userId)
             ->where('WO_Status', 'SUBMIT')
+=======
+        $data = DB::table('Work_Orders as wo')
+            ->join('users as u', 'wo.CR_BY', '=', 'u.id')
+            ->leftJoin('positions as p', 'u.PS_ID', '=', 'p.id')
+            ->select(
+                'wo.Case_No',
+                'wo.WO_No',
+                'u.Fullname as created_by',
+                'p.PS_Name as department'
+            )
+            ->where('wo.CR_BY', $userId)
+            ->where('wo.WO_Status', 'SUBMIT')
+            ->where('wo.WO_NeedMat','Y')
+            ->groupBy('wo.Case_No', 'wo.WO_No', 'u.Fullname', 'p.PS_Name')
+>>>>>>> ff25b43 (Update)
             ->get();
 
         return response()->json($data);
     }
 
+<<<<<<< HEAD
     public function getWODetails(Request $request)
     {
         $woNo = $request->wo_no;
@@ -55,6 +76,26 @@ class MRController extends Controller
         return response()->json($data);
     }
     
+=======
+    // Ambil Detail WO, Berdasarkan WO yang dipilih Oleh user untuk ditampilkan di FIeld Create
+    public function getWODetails(Request $request)
+    {
+        $caseNo = $request->case_no;
+
+        $data = DB::table('Work_Orders as wo')
+            ->join('users as u', 'wo.CR_BY', '=', 'u.id')
+            ->leftJoin('positions as p', 'u.PS_ID', '=', 'p.id')
+            ->select(
+                'wo.WO_No',
+                'u.Fullname as created_by',
+                'p.PS_Name as department'
+            )
+            ->where('wo.Case_No', $caseNo)
+            ->first();
+
+        return response()->json($data);
+    }
+>>>>>>> ff25b43 (Update)
 
     // Proses Save MR 
     public function SaveMR(Request $request)
@@ -62,7 +103,10 @@ class MRController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
+<<<<<<< HEAD
                 'case_no' => 'required',
+=======
+>>>>>>> ff25b43 (Update)
                 'reference_number' => 'required',
                 'date' => 'required|date',
                 'Designation' => 'required|string',
@@ -76,8 +120,13 @@ class MRController extends Controller
 
             $matReq = MatReq::create([
                 'MR_No' => $newMRNo,
+<<<<<<< HEAD
                 'WO_No' => $request->reference_number,
                 'Case_No' => $request->case_no,
+=======
+                'WO_No' => $request->wo_no,
+                'Case_No' => $request->reference_number,
+>>>>>>> ff25b43 (Update)
                 'MR_Date' => $request->date,
                 'MR_Allotment' => $request->Designation,
                 'CR_BY' => Auth::id(),
@@ -102,7 +151,10 @@ class MRController extends Controller
                 ]);
             }
 
+<<<<<<< HEAD
             
+=======
+>>>>>>> ff25b43 (Update)
             DB::commit();
 
             Log::info("Material Request $newMRNo saved successfully by user ID " . Auth::id());
@@ -158,6 +210,15 @@ class MRController extends Controller
         if (!$matReq) {
             return redirect('/Material-Request/Create')->with('error', 'Material Request not found.');
         }
+<<<<<<< HEAD
+=======
+
+        if ($matReq->MR_Status === 'REJECT') {
+            $matReq->MR_Status = 'OPEN';
+            $matReq->save();
+        }
+
+>>>>>>> ff25b43 (Update)
     
         return view('Content.mr.EditMR', [
             'matReq' => $matReq,
@@ -175,6 +236,35 @@ class MRController extends Controller
         try {
             $mr = MatReq::where('WO_No', $wo_no)->firstOrFail();
 
+<<<<<<< HEAD
+=======
+            if ($mr->MR_IsReject === 'Y') {
+                $mr->MR_IsReject = 'N';
+                $mr->MR_RejGroup = null;
+                $mr->MR_RejBy = null;
+                $mr->MR_RejDate = null;
+                $mr->MR_RMK1 = null;
+                $mr->MR_RMK2 = null;
+                $mr->MR_RMK3 = null;
+                $mr->MR_RMK4 = null;
+                $mr->MR_RMK5 = null;
+
+                Log::info('Update MR: Reset status REJECT karena user melakukan revisi', [
+                    'MR_No' => $mr->Case_No
+                ]);
+
+                DB::table('Logs')->insert([
+                    'LOG_Type' => 'MR',
+                    'LOG_RefNo' => $mr->MR_No,
+                    'LOG_Status' => 'REJECT_RESET',
+                    'LOG_User' => Auth::id(),
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => 'MR status and reject fields reset due to revision.',
+                ]);
+                
+            }
+
+>>>>>>> ff25b43 (Update)
             $mr->MR_Date = $request->date;
             $mr->MR_Allotment = $request->Designation;
 
@@ -199,11 +289,19 @@ class MRController extends Controller
             }
 
             $mr->Update_Date = now();
+<<<<<<< HEAD
             $mr->MR_Status = 'SUBMITTED';
             $mr->save();
 
             // Update Work Order status to OnProgress
             WorkOrder::where('WO_No', $wo_no)->update(['WO_Status' => 'OnProgress']);
+=======
+            $mr->MR_Status = 'SUBMIT';
+            $mr->save();
+
+            // Update Work Order status to OnProgress
+            WorkOrder::where('WO_No', $wo_no)->update(['WO_Status' => 'INPROGRESS']);
+>>>>>>> ff25b43 (Update)
 
             MatReqChild::where('MR_No', $mr->MR_No)->delete();
 
@@ -218,9 +316,27 @@ class MRController extends Controller
                     'Remark' => $item['desc'],
                 ]);
             }
+<<<<<<< HEAD
             Logs::create([
                 'LOG_Type'   => 'MR',
                 'LOG_RefNo'  => $request->wo_no,
+=======
+
+            Notification::create([
+                'Notif_Title' => 'Material Request Approval ',
+                'Reference_No' => $mr->MR_No,
+                'Notif_Text' => 'A Material Request has been submitted and requires your approval.',
+                'Notif_IsRead' => 'N',
+                'Notif_From' => Auth::id(),
+                'Notif_To' => $mr->MR_AP1,  
+                'Notif_Date' => now(),
+                'Notif_Type' => 'MR',
+            ]);
+
+            Logs::create([
+                'LOG_Type'   => 'MR',
+                'LOG_RefNo'  => $mr->MR_No,
+>>>>>>> ff25b43 (Update)
                 'LOG_Status' => 'SUBMITTED',
                 'LOG_User'   => $userId,
                 'LOG_Date'   => now(),
@@ -238,7 +354,11 @@ class MRController extends Controller
 
             Logs::create([
                 'LOG_Type'   => 'MR',
+<<<<<<< HEAD
                 'LOG_RefNo'  => $request->wo_no,
+=======
+                'LOG_RefNo'  => $mr->MR_No,
+>>>>>>> ff25b43 (Update)
                 'LOG_Status' => 'FAILED',
                 'LOG_User'   => $userId,
                 'LOG_Date'   => now(),
@@ -295,9 +415,16 @@ class MRController extends Controller
     {
         $mrNo = base64_decode($encodedMRNo);
 
+<<<<<<< HEAD
         $materialRequest = MatReq::where('MR_No', $mrNo)
         ->with('createdBy')
         ->first();
+=======
+        // $materialRequest = MatReq::where('MR_No', $mrNo)
+        // ->with('createdBy')
+        // ->first();
+        $materialRequest = MatReq::with(['approver1', 'approver2', 'approver3', 'approver4', 'approver5','createdBy'])->where('MR_No', $mrNo)->first();
+>>>>>>> ff25b43 (Update)
 
         if (!$materialRequest) {
             return abort(404, 'Material Request not found.');
@@ -320,6 +447,10 @@ class MRController extends Controller
         ]);
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ff25b43 (Update)
 // Hapus Baris Material Req di page edit 
     public function deleteMaterial(Request $request)
     {
@@ -363,7 +494,11 @@ class MRController extends Controller
     {
         $cases = DB::table('Mat_Req')
             ->select('Case_No')
+<<<<<<< HEAD
             ->where('MR_Status', 'SUBMITTED')
+=======
+            ->where('MR_Status', 'SUBMIT')
+>>>>>>> ff25b43 (Update)
             ->where('MR_APStep', 1)
             ->distinct()
             ->get();
@@ -389,7 +524,11 @@ class MRController extends Controller
                 'p.PS_Name' 
             )
             ->where('mr.Case_No', $caseNo)
+<<<<<<< HEAD
             ->where('mr.MR_Status', 'SUBMITTED')
+=======
+            ->where('mr.MR_Status', 'SUBMIT')
+>>>>>>> ff25b43 (Update)
             ->where('mr.MR_APStep', 1)
             ->first();
 
@@ -424,7 +563,11 @@ class MRController extends Controller
             ->where(function($q) use ($userId) {
                 $q->where(function($sub) use ($userId) {
                     $sub->where('Mat_Req.MR_APStep', 1)
+<<<<<<< HEAD
                         ->where('Mat_Req.MR_Status', 'SUBMITTED')
+=======
+                        ->where('Mat_Req.MR_Status', 'SUBMIT')
+>>>>>>> ff25b43 (Update)
                         ->where('Mat_Req.MR_AP1', $userId);
                 })
                 ->orWhere(function($sub) use ($userId) {
@@ -463,9 +606,13 @@ class MRController extends Controller
     {
         $mrNo = base64_decode($encodedMRNo);
 
+<<<<<<< HEAD
         $materialRequest = MatReq::where('MR_No', $mrNo)
         ->with('createdBy')
         ->first();
+=======
+        $materialRequest = MatReq::with(['approver1', 'approver2', 'approver3', 'approver4', 'approver5','createdBy'])->where('MR_No', $mrNo)->first();
+>>>>>>> ff25b43 (Update)
 
         if (!$materialRequest) {
             return abort(404, 'Material Request not found.');
@@ -473,9 +620,24 @@ class MRController extends Controller
 
         $materialRequestDetails = MatReqChild::where('MR_No', $mrNo)->get();
 
+<<<<<<< HEAD
         return view('content.mr.ApprovalDetailMR', [
             'materialRequest' => $materialRequest,
             'details' => $materialRequestDetails,
+=======
+        $logs = DB::table('logs')
+        ->join('users', 'logs.LOG_User', '=', 'users.id')
+        ->select('logs.*', 'users.Fullname as user_name')
+        ->where('LOG_Type', 'MR') 
+        ->where('LOG_RefNo', $materialRequest->MR_No)
+        ->orderBy('LOG_Date', 'desc')
+        ->get();
+
+        return view('content.mr.ApprovalDetailMR', [
+            'materialRequest' => $materialRequest,
+            'details' => $materialRequestDetails,
+            'logs' => $logs,
+>>>>>>> ff25b43 (Update)
         ]);
     }
 
@@ -484,7 +646,10 @@ class MRController extends Controller
     {
         $mr_no = base64_decode($mr_no); 
         $mr = MatReq::where('MR_No', $mr_no)->firstOrFail();
+<<<<<<< HEAD
         // $mrChild = MatReqChild::where('MR_No', $mr_no)->firstOrFail();
+=======
+>>>>>>> ff25b43 (Update)
 
         $hasChild = MatReqChild::where('MR_No', $mr_no)->exists();
         if (!$hasChild) {
@@ -521,7 +686,11 @@ class MRController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'APPROVED1',
+=======
+                    'LOG_Status' => 'APPROVED 1',
+>>>>>>> ff25b43 (Update)
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED MR',
@@ -541,12 +710,20 @@ class MRController extends Controller
             } elseif ($mr->MR_APStep == 2) {
                 $mr->MR_Status = 'AP2'; 
                 $mr->MR_RMK2 = $notes;
+<<<<<<< HEAD
                 $mr->MR_APStep = 2;
+=======
+                $mr->MR_APStep = 3;
+>>>>>>> ff25b43 (Update)
     
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'APPROVED2',
+=======
+                    'LOG_Status' => 'APPROVED 2',
+>>>>>>> ff25b43 (Update)
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED MR',
@@ -558,19 +735,31 @@ class MRController extends Controller
                     'Notif_Text'    => 'MR ' . $mr->MR_No . ' approved by ' . $user->Fullname,
                     'Notif_IsRead'  => 'N',
                     'Notif_From'    => $user->id,
+<<<<<<< HEAD
                     'Notif_To'      => $mr->CR_BY, 
+=======
+                    'Notif_To'      => $mr->MR_AP3, 
+>>>>>>> ff25b43 (Update)
                     'Notif_Date'    => Carbon::now(),
                     'Notif_Type'    => 'MR',
                 ]);
             } elseif ($mr->MR_APStep == 3) {
                 $mr->MR_Status = 'AP3'; 
                 $mr->MR_RMK3 = $notes;
+<<<<<<< HEAD
                 $mr->MR_APStep = 3;
+=======
+                $mr->MR_APStep = 4;
+>>>>>>> ff25b43 (Update)
     
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'APPROVED3',
+=======
+                    'LOG_Status' => 'APPROVED 3',
+>>>>>>> ff25b43 (Update)
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED MR',
@@ -582,26 +771,42 @@ class MRController extends Controller
                     'Notif_Text'    => 'MR ' . $mr->MR_No . ' approved by ' . $user->Fullname,
                     'Notif_IsRead'  => 'N',
                     'Notif_From'    => $user->id,
+<<<<<<< HEAD
                     'Notif_To'      => $mr->CR_BY, 
+=======
+                    'Notif_To'      => $mr->MR_AP4, 
+>>>>>>> ff25b43 (Update)
                     'Notif_Date'    => Carbon::now(),
                     'Notif_Type'    => 'MR',
                 ]);
             } elseif ($mr->MR_APStep == 4) {
+<<<<<<< HEAD
                 $mr->MR_Status = 'AP4'; 
+=======
+                $mr->MR_Status = 'DONE'; 
+>>>>>>> ff25b43 (Update)
                 $mr->MR_RMK4 = $notes;
                 $mr->MR_APStep = 4;
     
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'APPROVED4',
+=======
+                    'LOG_Status' => 'APPROVED 4',
+>>>>>>> ff25b43 (Update)
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED MR',
                 ]);
     
                 Notification::create([
+<<<<<<< HEAD
                     'Notif_Title'   => 'Material Request Approved',
+=======
+                    'Notif_Title'   => 'Material Request has been successfully approved.',
+>>>>>>> ff25b43 (Update)
                     'Reference_No'  => $mr->MR_No,
                     'Notif_Text'    => 'MR ' . $mr->MR_No . ' approved by ' . $user->Fullname,
                     'Notif_IsRead'  => 'N',
@@ -640,15 +845,26 @@ class MRController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'REJECTED1',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' REJECTED MR',
+=======
+                    'LOG_Status' => 'REJECTED 1',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED MR ' . $notes,
+>>>>>>> ff25b43 (Update)
                 ]);
     
             } elseif ($mr->MR_APStep == 2) {
                 $mr->MR_Status = 'REJECT';
                 $mr->MR_IsReject = 'Y';
+<<<<<<< HEAD
+=======
+                $mr->MR_APStep = 1;
+>>>>>>> ff25b43 (Update)
                 $mr->MR_RejGroup = 'AP2';
                 $mr->MR_RejBy = $user->id;
                 $mr->MR_RejDate = Carbon::now();
@@ -679,14 +895,25 @@ class MRController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'REJECTED2',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' REJECTED MR',
+=======
+                    'LOG_Status' => 'REJECTED 2',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED MR ' . $notes,
+>>>>>>> ff25b43 (Update)
                 ]);
             } elseif ($mr->MR_APStep == 3) {
                 $mr->MR_Status = 'REJECT';
                 $mr->MR_IsReject = 'Y';
+<<<<<<< HEAD
+=======
+                $mr->MR_APStep = 1;
+>>>>>>> ff25b43 (Update)
                 $mr->MR_RejGroup = 'AP3';
                 $mr->MR_RejBy = $user->id;
                 $mr->MR_RejDate = Carbon::now();
@@ -717,14 +944,25 @@ class MRController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'REJECTED3',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' REJECTED MR',
+=======
+                    'LOG_Status' => 'REJECTED 3',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED MR ' . $notes,
+>>>>>>> ff25b43 (Update)
                 ]);
             } elseif ($mr->MR_APStep == 4) {
                 $mr->MR_Status = 'REJECT';
                 $mr->MR_IsReject = 'Y';
+<<<<<<< HEAD
+=======
+                $mr->MR_APStep = 1;
+>>>>>>> ff25b43 (Update)
                 $mr->MR_RejGroup = 'AP4';
                 $mr->MR_RejBy = $user->id;
                 $mr->MR_RejDate = Carbon::now();
@@ -755,10 +993,17 @@ class MRController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'MR',
                     'LOG_RefNo'  => $mr_no,
+<<<<<<< HEAD
                     'LOG_Status' => 'REJECTED4',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' REJECTED MR',
+=======
+                    'LOG_Status' => 'REJECTED 4',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED MR ' . $notes,
+>>>>>>> ff25b43 (Update)
                 ]);
             } else {
                 return response()->json(['error' => 'Invalid approval step'], 400);

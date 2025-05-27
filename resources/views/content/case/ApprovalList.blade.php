@@ -34,7 +34,11 @@
                         <div class="card-body">
                             <div class="row g-5 align-items-end">
                                 <!--begin::Search-->
+<<<<<<< HEAD
                                 <div class="col-lg-4">
+=======
+                                <div class="col-lg-5">
+>>>>>>> ff25b43 (Update)
                                     <label for="searchReport" class="form-label fw-bold">Search Report</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
@@ -45,6 +49,7 @@
                                 </div>
                                 <!--end::Search-->
                         
+<<<<<<< HEAD
                                 <!--begin::Filter-->
                                 <div class="col-lg-3">
                                     <label for="statusFilter" class="form-label fw-bold">Status</label>
@@ -65,6 +70,10 @@
                         
                                 <!--begin::Date Range Picker-->
                                 <div class="col-lg-3">
+=======
+                                <!--begin::Date Range Picker-->
+                                <div class="col-lg-5">
+>>>>>>> ff25b43 (Update)
                                     <label for="dateFilter" class="form-label fw-bold">Date Range</label>
                                     <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range" />
                                 </div>
@@ -88,7 +97,11 @@
                         <div class="card-header card-header-stretch">
                             <!--begin::Title-->
                             <div class="card-title d-flex align-items-center">
+<<<<<<< HEAD
                                 <h3 class="fw-bold m-0 text-gray-800">Case List</h3>
+=======
+                                <h3 class="fw-bold m-0 text-gray-800">Approval Case List</h3>
+>>>>>>> ff25b43 (Update)
                             </div>
                             <!--end::Title-->
                         </div>
@@ -101,6 +114,7 @@
                                             <table class="table table-row-bordered align-middle gy-5 gs-9" id="casesTable"> 
                                                 <thead>
                                                     <tr class="fw-bold text-muted">
+<<<<<<< HEAD
                                                         <th class="min-w-150px text-start text-muted align-middle sortable" data-column="Case_No">Case Id</th>
                                                         <th class="min-w-140px text-start align-middle sortable" data-column="Case_Date">Case Date</th>
                                                         <th class="min-w-120px text-start align-middle">Case Name</th>
@@ -109,6 +123,16 @@
                                                         <th class="min-w-120px text-start align-middle">Position</th>
                                                         <th class="min-w-120px text-start align-middle">Status</th>
                                                         <th class="min-w-100px text-start align-middle">Actions</th>
+=======
+                                                        <th class="min-w-150px text-start text-muted align-middle sortable fs-6" data-column="Case_No">Case Id</th>
+                                                        <th class="min-w-140px text-start align-middle sortable fs-6" data-column="Case_Date">Case Date</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Case Name</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Case Category</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Created By</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Position</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Status</th>
+                                                        <th class="min-w-100px text-start align-middle fs-6">Actions</th>
+>>>>>>> ff25b43 (Update)
                                                     </tr>
                                                 </thead> 
                                                 <tbody class="fw-semibold text-gray-600">
@@ -121,6 +145,7 @@
                             </div>
                         </div>
                         
+<<<<<<< HEAD
                     </div>
                     <!--end::Navbar-->
                 </div>
@@ -210,7 +235,10 @@
                             </thead> 
                             <tbody></tbody>
                         </table>
+=======
+>>>>>>> ff25b43 (Update)
                     </div>
+                    <!--end::Navbar-->
                 </div>
             </div>
             <!--end::Table Card-->

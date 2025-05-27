@@ -1,5 +1,6 @@
 <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
+<script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js')}}"></script>
 
 {{-- Date Time --}}
 <script>
@@ -91,12 +92,12 @@
             let imageContainer = $('#image-container-' + imgId);
 
             Swal.fire({
-                title: "Yakin ingin menghapus foto ini?",
-                text: "Foto akan dihapus permanen dari sistem!",
+                title: "Are you sure you want to delete this photo?",
+                text: "This photo will be permanently removed from the system.",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Ya, Hapus",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, delete it",
+                cancelButtonText: "Cancel",
                 customClass: {
                     confirmButton: "btn btn-danger",
                     cancelButton: "btn btn-secondary"
@@ -113,17 +114,18 @@
                         success: function (response) {
                             if (response.success) {
                                 imageContainer.fadeOut(300, function () { $(this).remove(); });
-                                Swal.fire("Deleted!", response.message, "success");
+                                Swal.fire("Deleted!", "The photo has been successfully removed.", "success");
                             } else {
-                                Swal.fire("Error", response.message, "error");
+                                Swal.fire("Failed", response.message || "Unable to delete the photo.", "error");
                             }
                         },
                         error: function () {
-                            Swal.fire("Error", "Terjadi kesalahan saat menghapus foto.", "error");
+                            Swal.fire("Error", "An unexpected error occurred while trying to delete the photo.", "error");
                         }
                     });
                 }
             });
+
         });
     });
 </script>
@@ -131,154 +133,76 @@
 {{-- Validation & Update Case --}}
 {{-- <script>
     $(document).ready(function () {
-    Dropzone.autoDiscover = false;
-    let uploadedFiles = [];
+        Dropzone.autoDiscover = false;
+        let uploadedFiles = [];
 
-    var myDropzone = new Dropzone("#case-dropzone", {
-        url: "https://keenthemes.com/scripts/void.php", 
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        maxFiles: 5,
-        maxFilesize: 2, 
-        acceptedFiles: 'image/jpeg,image/png,image/jpg',
-        dictDefaultMessage: 'Drop files here or click to upload.',
-        dictMaxFilesExceeded: 'Maximum 5 files allowed.',
-        dictFileTooBig: 'File size must not exceed 2MB.',
-        dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
+        var myDropzone = new Dropzone("#case-dropzone", {
+            url: "https://keenthemes.com/scripts/void.php",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            maxFiles: 5,
+            maxFilesize: 2,
+            acceptedFiles: 'image/jpeg,image/png,image/jpg',
+            dictDefaultMessage: 'Drop files here or click to upload.',
+            dictMaxFilesExceeded: 'Maximum 5 files allowed.',
+            dictFileTooBig: 'File size must not exceed 2MB.',
+            dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
 
-        init: function () {
-            this.on("addedfile", function (file) {
-                if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
-                    this.removeFile(file);
-                    Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, and PNG files are allowed' });
-                    return;
-                }
+            init: function () {
+                this.on("addedfile", function (file) {
+                    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, and PNG files are allowed' });
+                        return;
+                    }
 
-                if (file.size > 2 * 1024 * 1024) {
-                    this.removeFile(file);
-                    Swal.fire({ icon: 'warning', title: 'File size too large', text: 'Max file size is 2MB.' });
-                    return;
-                }
+                    if (file.size > 2 * 1024 * 1024) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'File size too large', text: 'Max file size is 2MB.' });
+                        return;
+                    }
 
-                if (uploadedFiles.length >= 5) {
-                    this.removeFile(file);
-                    Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
-                    return;
-                }
+                    if (uploadedFiles.length >= 5) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
+                        return;
+                    }
 
-                uploadedFiles.push(file);
-            });
-
-            this.on("removedfile", function (file) {
-                uploadedFiles = uploadedFiles.filter(f => f !== file);
-            });
-        }
-    });
-
-    const form = document.getElementById('caseForm');
-    const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
-
-    var validator = FormValidation.formValidation(form, {
-        fields: {
-            'cases': { validators: { notEmpty: { message: 'Case Name is required' } } },
-            'date': { validators: { notEmpty: { message: 'Date is required' } } },
-            'category': { validators: { notEmpty: { message: 'Category is required' } } },
-            'sub_category': { validators: { notEmpty: { message: 'Sub Category is required' } } },
-            'chronology': { validators: { notEmpty: { message: 'Chronology is required' } } },
-            'impact': { validators: { notEmpty: { message: 'Outcome is required' } } },
-            'suggestion': { validators: { notEmpty: { message: 'Suggestion is required' } } },
-            'action': { validators: { notEmpty: { message: 'Action is required' } } }
-        },
-        plugins: {
-            trigger: new FormValidation.plugins.Trigger(),
-            bootstrap: new FormValidation.plugins.Bootstrap5({
-                rowSelector: '.fv-row',
-                eleInvalidClass: '',
-                eleValidClass: ''
-            })
-        }
-    });
-
-    submitButton.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        validator.validate().then(function (status) {
-            if (status === 'Valid') {
-                const formData = new FormData(form);
-
-                uploadedFiles.forEach((file, index) => {
-                    formData.append('new_images[]', file);
+                    uploadedFiles.push(file);
                 });
 
-                $('#page-loader').removeClass('d-none');
-
-                setTimeout(function () {    
-                    $.ajax({
-                        url: "{{ route('cases.update') }}",
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            $('#page-loader').addClass('d-none');
-                            submitButton.removeAttribute('data-kt-indicator');
-                            submitButton.disabled = false;
-
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK',
-                                    customClass: { confirmButton: "btn btn-success" }
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = "/Case-Report/Create";
-                                    }
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Failed',
-                                    text: response.message || 'Failed to update case.'
-                                });
-                            }
-                        },
-                        error: function () {
-                            $('#page-loader').addClass('d-none');
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'An error occurred. Please try again.'
-                            });
-                        }
-                    });
-                }, 3000);
-            } else {
-                Swal.fire({
-                    text: "Please fill in all required fields correctly.",
-                    icon: "warning",
-                    confirmButtonText: "OK",
-                    customClass: { confirmButton: "btn btn-warning" }
+                this.on("removedfile", function (file) {
+                    uploadedFiles = uploadedFiles.filter(f => f !== file);
                 });
             }
         });
-    });
 
-    // Preview Image
-    $('#existing-photos').on('click', 'img', function () {
-        const imgSrc = $(this).attr('src');
-        $('#modal-image').attr('src', imgSrc);
-        $('#imageModal').modal('show');
-    });
+        const form = document.getElementById('caseForm');
+        const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+        const pageLoader = document.getElementById("page_loader");
 
-    // Hapus error saat user mengetik ulang
-    $('.form-control, .form-select').on('input change', function () {
-        $(this).removeClass('is-invalid');
-        $('#error-' + $(this).attr('id')).text('');
-    });
-});
+        var validator = FormValidation.formValidation(form, {
+            fields: {
+                'cases': { validators: { notEmpty: { message: 'Case Name is required' } } },
+                'date': { validators: { notEmpty: { message: 'Date is required' } } },
+                'category': { validators: { notEmpty: { message: 'Category is required' } } },
+                'sub_category': { validators: { notEmpty: { message: 'Sub Category is required' } } },
+                'chronology': { validators: { notEmpty: { message: 'Chronology is required' } } },
+                'impact': { validators: { notEmpty: { message: 'Outcome is required' } } },
+                'suggestion': { validators: { notEmpty: { message: 'Suggestion is required' } } },
+                'action': { validators: { notEmpty: { message: 'Action is required' } } }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        });
 
+<<<<<<< HEAD
 </script> --}}
 
 <script>
@@ -352,6 +276,8 @@
             }
         });
 
+=======
+>>>>>>> ff25b43 (Update)
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -363,6 +289,12 @@
                         formData.append('new_images[]', file);
                     });
 
+<<<<<<< HEAD
+=======
+                    submitButton.setAttribute('data-kt-indicator', 'on');
+                    submitButton.disabled = true;
+
+>>>>>>> ff25b43 (Update)
                     pageLoader.style.display = "flex";
 
                     setTimeout(function () {
@@ -386,7 +318,11 @@
                                         customClass: { confirmButton: "btn btn-success" }
                                     }).then((result) => {
                                         if (result.isConfirmed) {
+<<<<<<< HEAD
                                             window.location.href = `${BASE_URL}/Case-Report/Create`;
+=======
+                                            window.location.href = `${BASE_URL}/Case/List`;
+>>>>>>> ff25b43 (Update)
                                             // window.location.href = "/Case-Report/Create";
                                         }
                                     });

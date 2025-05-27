@@ -113,6 +113,29 @@ class Cases extends Model
     {
         return $this->belongsTo(User::class, 'CR_BY', 'id');
     }
+
+    public function approver1()
+    {
+        return $this->belongsTo(User::class, 'Case_AP1', 'id'); 
+    }
+
+    public function approver2()
+    {
+        return $this->belongsTo(User::class, 'Case_AP2', 'id'); 
+    }
+
+    public function workOrder()
+    {
+        return $this->hasOne(WorkOrder::class, 'Case_No', 'Case_No');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'CR_BY');
+    }
+
+
+
    
    
     // protected static function boot()

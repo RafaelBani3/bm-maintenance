@@ -50,6 +50,11 @@
                                         <option value="AP5">AP5</option>
                                         <option value="CLOSE">CLOSE</option>
                                         <option value="REJECT">REJECT</option>
+<<<<<<< HEAD
+=======
+                                        <option value="INPROGRESS">INPROGRESS</option>
+                                        <option value="DONE">DONE</option>
+>>>>>>> ff25b43 (Update)
                                     </select>
                                 </div>
                                 <!--end::Filter-->
@@ -63,7 +68,11 @@
                         
                                 <!--begin::Apply Button-->
                                 <div class="col-lg-2">
+<<<<<<< HEAD
                                     <label class="form-label fw-bold text-white">.</label> <!-- agar tetap sejajar -->
+=======
+                                    <label class="form-label fw-bold text-white">.</label>
+>>>>>>> ff25b43 (Update)
                                     <button class="btn btn-primary w-100" id="applyFilter">
                                         <i class="fa-solid fa-filter me-1"></i> Apply
                                     </button>
@@ -81,6 +90,21 @@
                             <div class="card-title d-flex align-items-center">
                                 <h3 class="fw-bold m-0 text-gray-800">Case List</h3>
                             </div>
+<<<<<<< HEAD
+=======
+                            {{-- <div class="mb-4 d-flex align-items-center"> <button id="exportExcel" class="btn btn-success"> <i class="ki-duotone ki-file-excel"></i> Export Excel </button> </div> --}}
+                            <div class=" d-flex align-items-center">
+                                <!--begin::Export-->
+                                <button type="button" class="btn btn-light-primary me-3" id="exportExcel">
+                                    <i class="ki-duotone ki-exit-up fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>Export
+                                </button>
+                                <!--end::Export-->
+                            </div>
+                              
+>>>>>>> ff25b43 (Update)
                             <!--end::Title-->
                         </div>
                 
@@ -92,6 +116,7 @@
                                             <table class="table table-row-bordered align-middle gy-5 gs-9" id="casesTable"> 
                                                 <thead>
                                                     <tr class="fw-bold text-muted">
+<<<<<<< HEAD
                                                         <th class="min-w-150px text-start text-muted align-middle sortable" data-column="Case_No">Case Id</th>
                                                         <th class="min-w-140px text-start align-middle sortable" data-column="Case_Date">Case Date</th>
                                                         <th class="min-w-120px text-start align-middle">Case Name</th>
@@ -100,6 +125,16 @@
                                                         <th class="min-w-120px text-start align-middle">Position</th>
                                                         <th class="min-w-120px text-start align-middle">Status</th>
                                                         <th class="min-w-100px text-start align-middle">Actions</th>
+=======
+                                                        <th class="min-w-150px text-start text-muted align-middle sortable fs-6" data-column="Case_No">Case Id</th>
+                                                        <th class="min-w-140px text-start align-middle sortable fs-6" data-column="Case_Date">Case Date</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Case Name</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Case Category</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Created By</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Position</th>
+                                                        <th class="min-w-120px text-start align-middle fs-6">Status</th>
+                                                        <th class="min-w-100px text-start align-middle fs-6">Actions</th>
+>>>>>>> ff25b43 (Update)
                                                     </tr>
                                                 </thead> 
                                                 <tbody class="fw-semibold text-gray-600">
@@ -118,6 +153,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
                 <!--begin::Filter Card-->
@@ -208,6 +244,8 @@
             </div>
         </div> --}}
 
+=======
+>>>>>>> ff25b43 (Update)
     <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
         <span class="spinner-border text-primary" role="status"></span>
         <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>
@@ -218,4 +256,18 @@
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
+<<<<<<< HEAD
+=======
+		@if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Akses Ditolak',
+            text: '{{ session('error') }}',
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
+    <script> $('#exportExcel').on('click', function () { let status = $('#statusFilter').val() || 'all'; let search = $('#searchReport').val() || ''; let url = new URL(window.location.origin + "/BmMaintenance/public/export-cases"); url.searchParams.append('status', status); url.searchParams.append('search', search); window.open(url, '_blank');  }); </script>
+>>>>>>> ff25b43 (Update)
 @endsection

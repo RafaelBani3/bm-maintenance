@@ -41,6 +41,7 @@
                     <!--begin::Navbar-->
                     <div class="card mb-5 mb-xl-10">
                         <div class="card-header card-header-stretch">
+<<<<<<< HEAD
                         <!--begin::Title-->
                             <div class="card-title d-flex justify-content-between align-items-center w-100">
                                 <h3 class="fw-bold m-0 text-primary">Case Detail : {{ $case->Case_No }}</h3>
@@ -53,6 +54,39 @@
                                 </a>
                             </div>
                             <!--end::Title-->                          
+=======
+                            <!--begin::Title-->
+                            <div class="card-title d-flex justify-content-between align-items-center w-100">
+                                <h3 class="fw-bold m-0 text-primary">
+                                    Case Detail : {{ $case->Case_No }}
+                                </h3>
+                        
+                                <div class="d-flex gap-2">
+                                    <!-- Button LOG -->
+                                    <a href="#" 
+                                       class="btn btn-lg btn-flex btn-secondary fw-bold" 
+                                       data-bs-toggle="modal" 
+                                       data-bs-target="#kt_modal_log">
+                                        <i class="ki-duotone ki-chart fs-1 text-muted me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                        LOG
+                                    </a>
+                        
+                                    <!-- Button Revisi (hanya muncuk ketika status = REJECTED) -->
+                                    @if($case->Case_Status == 'REJECT')
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-warning btn-lg btn-flex fw-bold" 
+                                            onclick="confirmRevision('{{ $case->Case_No }}')">
+                                            <i class="fas fa-edit me-2"></i> Revisi
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                            <!--end::Title-->
+>>>>>>> ff25b43 (Update)
                         </div>
 
                         {{-- Detail Case --}}
@@ -146,6 +180,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
+<<<<<<< HEAD
                                     <p class="fs-5 fw-bold">
                                         <span class="badge
                                         {{ 
@@ -163,6 +198,29 @@
                                                 $case->Case_Status))
                                             }}
                                         </span>
+=======
+                                    <p class="fw-bold">
+                                        @php
+                                            $status = $case->Case_Status;
+                                            $statusLabels = [
+                                                'OPEN' => ['bg-light-warning', 'OPEN'],
+                                                'SUBMIT' => ['bg-light-primary text-primary', 'SUBMITTED'],
+                                                'AP1' => ['bg-light-primary text-primary', 'Approved 1'],
+                                                'AP2' => ['bg-light-primary text-primary', 'Approved 2'],
+                                                'CLOSE' => ['bg-light-success text-success', 'CLOSE'],
+                                                'INPROGRESS' => ['bg-light-info text-info', 'INPROGRESS'],
+                                                'REJECT' => ['bg-light-danger text-danger', 'REJECT'],
+                                                'DONE' => ['bg-light-success text-success', 'DONE'],
+
+                                            ];
+                                            [$badgeClass, $label] = $statusLabels[$status] ?? ['bg-secondary', $status];
+                                        @endphp
+
+                                        <span class="badge {{ $badgeClass }} fs-6 fw-bold">
+                                            {{ $label }}
+                                        </span>
+
+>>>>>>> ff25b43 (Update)
                                     </p>
                                 </div>
                                 <!--end::Col-->
@@ -176,7 +234,11 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
+<<<<<<< HEAD
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
+=======
+                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" readonly>{{ $case->Case_Chronology }}</textarea>
+>>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -189,7 +251,11 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
+<<<<<<< HEAD
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
+=======
+                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="outcome" id="outcome" readonly>{{ $case->Case_Outcome }}</textarea>
+>>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -202,7 +268,11 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
+<<<<<<< HEAD
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
+=======
+                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="suggest" id="suggest" readonly>{{ $case->Case_Suggest}}</textarea>
+>>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -215,12 +285,21 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
+<<<<<<< HEAD
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
+=======
+                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="action" id="action" readonly>{{ $case->Case_Action }}</textarea>
+>>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
                             <!--end::Row CASE ACTION-->
+<<<<<<< HEAD
 
+=======
+                            
+                            <!--Start::Row Exiciting Image-->
+>>>>>>> ff25b43 (Update)
                             <div class="row mb-5 pb-4">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -234,13 +313,20 @@
                                     </span>
                                 </label>
                                 <!--end::Label-->
+<<<<<<< HEAD
                                 <div id="existing-photos" class="d-flex flex-row flex-wrap gap-4">
                                     @if($images->isNotEmpty())
                                         <div class="row">
+=======
+                                <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
+                                    @if($images->isNotEmpty())
+                                        <div class="row gap-5">
+>>>>>>> ff25b43 (Update)
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                                                 @endphp
+<<<<<<< HEAD
                                                 <div class="col-md-3 col-sm-4 col-6 mb-3">
                                                     <!--begin::Overlay-->
                                                     <a class="d-block overlay" data-fslightbox="lightbox-basic" href="{{ $imgPath }}">
@@ -259,10 +345,25 @@
                                                     <!--end::Overlay-->
                                     
                                                     <p class="text-center small mt-1">{{ $image->IMG_Realname }}</p>
+=======
+                                                <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
+                                                    <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
+                                                        <!-- Gambar ukuran kecil -->
+                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded mx-auto"
+                                                            style="width: 100px; height: 100px; background-image: url('{{ $imgPath }}');">
+                                                        </div>
+                                                        <!-- Efek overlay -->
+                                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center"
+                                                            style="width: 100px; height: 100px;">
+                                                            <i class="bi bi-eye-fill text-white fs-2"></i>
+                                                        </div>
+                                                    </a>
+>>>>>>> ff25b43 (Update)
                                                 </div>
                                             @endforeach
                                         </div>
                                     @else
+<<<<<<< HEAD
                                         <p class="text-muted">No photos available for this case.</p>
                                     @endif
                                 </div>
@@ -270,6 +371,18 @@
                             
                             
                             <div class="row mb-5 ">
+=======
+                                        <p class="text-muted m-0">No photos available for this case.</p>
+                                    @endif
+                                </div>
+
+
+                            </div>
+                            <!--end::Row Exciting Image-->
+
+                            <!--Start::Row Approval & Remark Status-->
+                            <div class="row mb-5">
+>>>>>>> ff25b43 (Update)
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                     <span>Approval Status</span>
@@ -283,6 +396,7 @@
                                 </label>
                                 <!--end::Label-->
 
+<<<<<<< HEAD
                                 @for($i = 1; $i <= $case->Case_ApMaxStep; $i++)
                                     @php
                                         $remark = strip_tags($case['Case_RMK' . $i] ?? '');
@@ -326,6 +440,96 @@
                                     <!--end::Block-->
                                 @endfor
                             </div>
+=======
+                                <div class="timeline timeline-border-dashed">
+                                    @for($i = 1; $i <= $case->Case_ApMaxStep; $i++)
+                                        @php
+                                            $remark = strip_tags($case['Case_RMK' . $i] ?? '');
+                                            $stepCode = 'AP' . $i;
+
+                                            $logStatus = [
+                                                'approve' => 'APPROVED ' . $i,
+                                                'reject' => 'REJECTED ' . $i,
+                                            ];
+
+                                            $approvedLog = $logs->first(function($log) use ($logStatus, $stepCode) {
+                                                return in_array($log->LOG_Status, $logStatus) && $log->LOG_Type === 'BA';
+                                            });
+
+                                            if ($approvedLog) {
+                                                $status = str_contains($approvedLog->LOG_Status, 'REJECTED') ? 'Rejected' : 'Approved';
+                                                $badgeClass = $status === 'Rejected' ? 'badge badge-light-danger' : 'badge badge-light-success';
+                                                $icon = $status === 'Rejected' ? 'bi-x-circle-fill text-danger' : 'bi-check-circle-fill text-success';
+                                            } else {
+                                                $status = 'Pending';
+                                                $badgeClass = 'badge badge-light-warning text-dark';
+                                                $icon = 'bi-hourglass-split';
+                                            }
+                                        @endphp
+
+                                        <!--begin::Timeline item-->
+                                        <div class="timeline-item align-items-start">
+                                            <!--line-->
+                                            <div class="timeline-line w-40px"></div>
+
+                                            <!--icon-->
+                                            <div class="timeline-icon symbol symbol-circle symbol-40px">
+                                                <div class="symbol-label bg-light">
+                                                    <i class="ki-duotone ki-pencil fs-2 text-gray-500">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </div>
+                                            </div>
+
+                                            <!--content-->
+                                            <div class="timeline-content ps-3 mb-10 mt-n1">
+                                                <!--heading-->
+                                                <div class="pe-3 mb-5">
+                                                    <div class="fs-5 fw-semibold mb-2">
+                                                        Approval Step {{ $i }} - {{ $case->{'Approver'.$i} ?? 'Unknown User' }}
+                                                    </div>
+                                                    <div class="d-flex align-items-center mt-1 fs-6">
+                                                        <div class="text-muted me-2 fs-7">
+                                                            @if($approvedLog)
+                                                                {{ $logStatus[strtolower(str_contains($approvedLog->LOG_Status, 'REJECTED') ? 'reject' : 'approve')] }}
+                                                                on {{ \Carbon\Carbon::parse($approvedLog->LOG_Date)->format('d/m/Y H:i') }}
+                                                            @else
+                                                                Waiting for Approval...
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!--details-->
+                                                <div class="overflow-auto pb-5">
+                                                    <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed min-w-lg-600px flex-shrink-0 p-4 p-lg-5 align-items-center">
+                                                        <i class="bi {{ $icon }} fs-2tx text-gray-800 me-4"></i>
+
+                                                        <div class="flex-grow-1 d-flex justify-content-between align-items-center">
+                                                            <div class="mb-3 mb-md-0 fw-semibold">
+                                                                <h5 class="text-gray-900 fw-bold mb-2 fs-4">Remark:</h5>
+                                                                <p class="text-gray-700 fs-5">{{ $remark ?: 'No remark provided.' }}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <span class="{{ $badgeClass }} px-3 py-2 d-inline-flex align-items-center gap-1 fs-5">
+                                                                <i class="bi {{ $icon }}"></i> {{ $status }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--end::Timeline content-->
+                                        </div>
+                                        <!--end::Timeline item-->
+                                    @endfor
+                                </div>
+                            </div>
+                            <!--End::Row Approval & Remark Status-->
+
+>>>>>>> ff25b43 (Update)
                         </div>
                         {{-- End Detail Case --}}
                     </div>
@@ -333,6 +537,7 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 
     {{-- DESIGN LAMA --}}
     {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -503,6 +708,13 @@
     {{-- LOG Modal --}}
     <div class="modal fade" tabindex="-1" id="kt_modal_log">
         <div class="modal-dialog modal-lg modal-dialog-centered">
+=======
+    
+    {{-- LOG Modal --}}
+    <div class="modal fade" tabindex="-1" id="kt_modal_log">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+>>>>>>> ff25b43 (Update)
             <div class="modal-content">
                 
                 <div class="modal-header">
@@ -510,6 +722,7 @@
                     <button type="button" class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                         <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                     </button>
+<<<<<<< HEAD
                 </div>
     
                 <div class="modal-body">
@@ -557,26 +770,97 @@
                     </div>
                 </div>
     
+=======
+                </div>
+    
+                <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                    @php
+                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2'];
+                        $statusColors = [
+                            'CREATED'    => 'bg-light-warning text-warning',
+                            'SUBMITTED'  => 'bg-light-primary text-primary',
+                            'APPROVED 1'  => 'bg-light-primary text-primary',
+                            'APPROVED 2'  => 'bg-light-primary text-primary',
+                            'REJECTED 1'  => 'bg-light-danger text-danger',
+                            'REJECTED 2'  => 'bg-light-danger text-danger',
+                            'INPROGRESS' => 'bg-light-info text-info',
+                            'CLOSE'      => 'bg-light-success text-success',
+                            'REJECT'     => 'bg-light-danger text-danger',
+                        ];
+                    @endphp
+    
+                    <div class="timeline timeline-border-dashed">
+                        @foreach ($logs as $log)
+                            @if(in_array($log->LOG_Status, $allowedStatuses))
+                                @php
+                                    $colorClass = $statusColors[$log->LOG_Status] ?? 'bg-secondary text-dark';
+                                @endphp
+    
+                                <div class="timeline-item">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-icon">
+                                        <div class="symbol symbol-circle symbol-40px {{ $colorClass }}">
+                                            <i class="ki-duotone ki-document fs-2">
+                                                <span class="path1"></span><span class="path2"></span>
+                                            </i>
+                                        </div>
+                                    </div>
+    
+                                    <div class="timeline-content mb-5">
+                                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-1">
+                                            <span class="badge {{ $colorClass }} fw-semibold">{{ $log->LOG_Status }}</span>
+                                            <div class="text-muted fs-7">{{ \Carbon\Carbon::parse($log->LOG_Date)->format('d M Y, H:m') }}</div>
+                                        </div>
+                                        <div class="fw-semibold text-primary mb-1">{{ $log->user_name }}</div>
+                                        <div class="text-gray-700">{{ $log->LOG_Desc }}</div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+    
+>>>>>>> ff25b43 (Update)
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
+<<<<<<< HEAD
     
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var imageModal = document.getElementById("imageModal");
-            imageModal.addEventListener("show.bs.modal", function (event) {
-                var button = event.relatedTarget;   
-                var imageUrl = button.getAttribute("data-img");
-                document.getElementById("modalImage").src = imageUrl;
-            });
-        });
-    </script>
+=======
 
+>>>>>>> ff25b43 (Update)
     <script>
         const BASE_URL = "{{ url('/') }}";
+    </script>
+
+<<<<<<< HEAD
+    <script>
+        const BASE_URL = "{{ url('/') }}";
+=======
+    {{-- Button Revisi --}}
+    <script>
+        function confirmRevision(caseNo) {
+            Swal.fire({
+                title: 'Confirm Revision',
+                text: 'Are you sure you want to revise this case?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Revision',
+                cancelButtonText: 'Cancle'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const encodedCaseNo = encodeURIComponent(caseNo);
+                    const url = `http://localhost/BmMaintenance/public/Case/Edit?case_no=${encodedCaseNo}`;
+                    window.location.href = url;
+                }
+            });
+        }
+>>>>>>> ff25b43 (Update)
     </script>
 
     <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>

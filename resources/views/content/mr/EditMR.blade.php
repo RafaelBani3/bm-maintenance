@@ -173,7 +173,11 @@
                                                     <div class="col-lg-8">
                                                         <div class="col-lg-20 fv-row">
                                                             <input type="date" class="form-control form-control-solid" id="date" name="date" placeholder="Select the work order date"
+<<<<<<< HEAD
                                                             value="{{ \Carbon\Carbon::parse($matReq->MR_Date)->format('d/m/Y H:m') }}" />
+=======
+                                                            value="{{$matReq->MR_Date}}" />
+>>>>>>> ff25b43 (Update)
                                                         </div>
                                                     </div>
                                                 </div>
@@ -304,6 +308,7 @@
         <!--end::Content wrapper-->
     </div>
 
+<<<<<<< HEAD
 
     {{-- Design Lama --}}
     {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -451,11 +456,14 @@
         </div>
     </div> --}}
 
+=======
+>>>>>>> ff25b43 (Update)
     <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
         <span class="spinner-border text-primary" role="status"></span>
         <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>
     </div>
 
+<<<<<<< HEAD
     {{-- Date --}}
     <script>
         $("#date").flatpickr({
@@ -796,6 +804,14 @@
         const BASE_URL = "{{ url('') }}";
     </script>
                       
+=======
+    <script>
+        const BASE_URL = "{{ url('') }}";
+    </script>
+            
+    @include('content.mr.partial.EditMRJS')
+    
+>>>>>>> ff25b43 (Update)
 @endsection
 
 

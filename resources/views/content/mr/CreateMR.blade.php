@@ -88,13 +88,22 @@
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+<<<<<<< HEAD
                                                         Case No
+=======
+                                                        Work Order No
+>>>>>>> ff25b43 (Update)
                                                     </label>
                                                     <!--end::Label-->
                                                     
                                                     <div class="col-lg-8">
                                                         <div class="col-lg-20 fv-row">
+<<<<<<< HEAD
                                                             <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case No" />
+=======
+                                                            <input type="text" id="wo_no" name="wo_no" class="form-control form-control-lg form-control-solid" placeholder="Auto-generated WO No" readonly>
+                                                            {{-- <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case No" /> --}}
+>>>>>>> ff25b43 (Update)
                                                         </div>
                                                     </div>
                                                 </div>
@@ -274,6 +283,7 @@
         </div>
         <!--end::Content wrapper-->
     </div>
+<<<<<<< HEAD
     
     {{-- Design Lama --}}
     {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -379,6 +389,8 @@
             </div>
         </div>
     </div> --}}
+=======
+>>>>>>> ff25b43 (Update)
 
     <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
         <span class="spinner-border text-primary" role="status"></span>
@@ -389,6 +401,7 @@
         const BASE_URL = "{{ url('') }}";
     </script>
 
+<<<<<<< HEAD
     {{-- Script Validatation & Save MR --}}
     {{-- <script>
         const form = document.getElementById('MrForm');
@@ -864,6 +877,11 @@
         });
     
     </script>
+=======
+    @include('content.mr.partial.CreateMRJS')
+
+    
+>>>>>>> ff25b43 (Update)
     
 @endsection
 
