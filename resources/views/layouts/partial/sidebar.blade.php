@@ -70,13 +70,8 @@
                     @if(auth()->user()->hasAnyPermission(['view cr', 'view cr_ap']))
                         <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateCase', 'ViewCase', 'ApprovalCase') ? 'show' : '' }}">
                             <span class="menu-link">
-<<<<<<< HEAD
                                 {{-- <span class="menu-icon">
                                     <i class="ki-duotone ki-address-book fs-2">
-=======
-                                <span class="menu-icon">
-                                    <i class="ki-duotone ki-note-2 fs-2">
->>>>>>> ff25b43 (Update)
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
@@ -224,65 +219,6 @@
                             @endif
                         </div>
                     @endif
-<<<<<<< HEAD
-=======
-
-                    {{-- WOC --}}
-                    @if(auth()->user()->hasAnyPermission(['view cr', 'view wo','view cr_ap']))
-                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWOC', 'ListWOCPage') ? 'show' : '' }}">
-                            <span class="menu-link">
-                                <span class="menu-icon">
-                                    <i class="ki-duotone ki-note-2 fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
-                                </span>
-                                <span class="menu-title">Work Order Complition</span>
-                                <span class="menu-arrow"></span>
-                            </span>
-
-                            <div class="menu-sub menu-sub-accordion">
-                                @if(auth()->user()->hasAnyPermission(['view cr']))
-                                    <div class="menu-item">
-                                        <a class="menu-link {{ request()->routeIs('CreateWOC') ? 'active' : '' }}" href="{{ route('CreateWOC') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Create Work Order Complition</span>
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="menu-item">
-                                        <a class="menu-link {{ request()->routeIs('ListWOCPage') ? 'active' : '' }}" href="{{ route('ListWOCPage') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Work Order Complition</span>
-                                        </a>
-                                    </div>
-                                @endif
-
-                                @if(auth()->user()->hasAnyPermission(['view cr_ap']))
-                                    <div class="menu-item">
-                                        <a class="menu-link {{ request()->routeIs('ApprovalListWOC') ? 'active' : '' }}" href="{{ route('ApprovalListWOC') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Approval WOC</span>
-                                        </a>
-                                    </div>
-                                @endif
-                            
-                            </div>
-                        </div>
-                    @endif
-
-
-
-
->>>>>>> ff25b43 (Update)
                 </div>
                 <!--end::Menu-->
                

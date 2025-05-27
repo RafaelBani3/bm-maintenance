@@ -109,11 +109,7 @@
                             <!--begin::Row CASE Status-->
                             <div class="row mb-7 pb-4">
                                 <!--begin::Label-->
-<<<<<<< HEAD
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Case Created By</label>
-=======
                                 <label class="col-lg-2 fw-semibold text-muted fs-5">Case Status</label>
->>>>>>> ff25b43 (Update)
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
@@ -147,11 +143,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="chronology" id="chronology" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -164,11 +156,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Outcome }}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -181,11 +169,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="suggest" id="suggest" placeholder="Input Case Impact">{{ $case->Case_Suggest }}</textarea>
->>>>>>> ff25b43 (Update)
                                 </div>
                                 <!--end::Col-->
                             </div>
@@ -198,22 +182,14 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="action" id="action" placeholder="Input Case Impact">{{ $case->Case_Action }}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
                             <!--end::Row CASE ACTION-->
 
-<<<<<<< HEAD
-                            <div class="row mb-5 pb-4">
-=======
                             {{-- Dropzone --}}
                             {{-- <div class="row mb-5 pb-4">
->>>>>>> ff25b43 (Update)
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                     <span>Existing Image</span>
@@ -258,12 +234,10 @@
                                         <p class="text-muted">No photos available for this case.</p>
                                     @endif
                                 </div>
-<<<<<<< HEAD
                             </div>
                             
                             <div class="row mb-5 pb-5">
                                <!--begin::Label-->
-=======
                             </div> --}}
                             
                              <!--Start::Row Exiciting Image-->
@@ -314,7 +288,6 @@
                             {{-- Remark --}}
                             <div class="row mb-5 pb-5">
                                 <!--begin::Label-->
->>>>>>> ff25b43 (Update)
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                     <span>Manager Approval & Remarks</span>
                                     <span class="ms-1" data-bs-toggle="tooltip" title="Provide your formal remarks or decision (approve/reject) regarding this case.">
@@ -327,21 +300,6 @@
                                 </label>
                                 <!--end::Label-->
 
-<<<<<<< HEAD
-                                <div class="col-lg-12"> 
-                                    <form action="{{ route('cases.approveReject', $case->Case_No) }}" method="POST">
-                                        @csrf
-                                        <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
-                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
-                                        </div>
-                                        <div class="d-flex justify-content-end mt-4">
-                                            <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
-                                            <button type="button" class="btn btn-danger approve-reject-btn" data-action="reject">Reject</button>
-                                        </div>
-                                    </form>                            
-                                </div>
-                            </div>                            
-=======
                                 <div class="timeline timeline-border-dashed">
                                     <!-- Approval 1 -->
                                     <div class="timeline-item">
@@ -425,7 +383,6 @@
                                 </div>
                             </div>
 
->>>>>>> ff25b43 (Update)
                         </div>
                         {{-- End Detail Case --}}
                     </div>
@@ -433,198 +390,6 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-    
-    <script>
-        var quill = new Quill('#kt_docs_quill_basic', {
-            modules: {
-                toolbar: [
-                    [{
-                    header: [1, 2, false]
-                    }],
-                    ['bold', 'italic', 'underline'],
-                    ['image', 'code-block']
-                ]
-            },
-            placeholder: 'Type your text here...',
-            theme: 'snow' 
-        });
-    </script>
-
-
-    {{-- Desaign Lama --}}
-    {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-fluid">
-            <div class="card mb-5 mb-xl-10 p-4">
-                <div class="container">
-                    <h1 class="mb-3 text-primary fw-bold display-8 mt-3">Case Approval - {{ $case->Case_No }}</h1>
-                
-                    <div class="separator my-5"></div>
-
-                    <div class="row">
-                        <!-- Left Column -->
-                        <div class="col-md-6">
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Name</strong></label>
-                                <p class="fs-5 fw-bold text-dark">{{ $case->Case_Name }}</p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Date</strong></label>
-                                <p class="fs-5 fw-bold text-dark">{{ $case->CR_DT }}</p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Category</strong></label>
-                                <p class="fs-5 fw-bold text-dark">{{ $case->Category }}</p>
-                            </div>
-                        </div>
-                        <!-- Right Column -->
-                        <div class="col-md-6">
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>SubCategory</strong></label>
-                                <p class="fs-5 fw-bold text-dark">{{ $case->SubCategory }}</p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Created By</strong></label>
-                                <p class="fs-5 fw-bold text-dark">{{ $case->CreatedBy }}</p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Status</strong></label>
-                                <p class="fs-5 fw-bold text-dark">
-                                    @php
-                                        $statusBadge = [
-                                            'OPEN' => ['label' => 'OPEN', 'class' => 'bg-info fs-6'],
-                                            'SUBMIT' => ['label' => 'SUBMITTED', 'class' => 'bg-light-primary text-primary fs-6'],
-                                            'AP1' => ['label' => 'APPROVED 1', 'class' => 'bg-light-primary text-primary fs-6'],
-                                            'AP2' => ['label' => 'APPROVED 2', 'class' => 'bg-light-primary text-primary fs-6'],
-                                            'AP3' => ['label' => 'APPROVED 3', 'class' => 'bg-light-primary text-primary fs-6'],
-                                            'AP4' => ['label' => 'APPROVED 4', 'class' => 'bg-light-primary text-primary fs-6'],
-                                            'AP5' => ['label' => 'APPROVED 5', 'class' => 'bg-light-primary text-primary fs-6'],
-                                            'CLOSE' => ['label' => 'CLOSED', 'class' => 'bg-light-success text-success fs-6'],
-                                            'REJECT' => ['label' => 'REJECTED', 'class' => 'bg-light-danger text-danger fs-6'],
-                                        ];
-                            
-                                        $status = $case->Case_Status;
-                                        $badgeClass = $statusBadge[$status]['class'] ?? 'bg-dark';
-                                        $badgeLabel = $statusBadge[$status]['label'] ?? 'Unknown';
-                                    @endphp
-                            
-                                    <span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span>
-                                </p>
-                            </div>
-                            
-
-                        </div>
-                    </div>
-
-                    <!-- Case Details (TextArea Inputs for Chronology, Outcome, Suggest, Action) -->
-                        <div class="col-md-12">
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Chronology</strong></label>
-                                <textarea class="form-control" rows="4" readonly>{{ $case->Case_Chronology ?? 'N/A' }}</textarea>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Outcome</strong></label>
-                                <textarea class="form-control" rows="4" readonly>{{ $case->Case_Outcome ?? 'N/A' }}</textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Suggest</strong></label>
-                                <textarea class="form-control" rows="4" readonly>{{ $case->Case_Suggest ?? 'N/A' }}</textarea>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Case Action</strong></label>
-                                <textarea class="form-control" rows="4" readonly>{{ $case->Case_Action ?? 'N/A' }}</textarea>
-                            </div>
-                        </div>
-        
-
-                    <!-- Case Photos -->
-                    <div class="card-body">
-                        <h4 class="mb-3 text-primary fw-bold">Case Photos</h4>
-                        @if($images->isNotEmpty())
-                            <div class="row">
-                                @foreach($images as $image)
-                                <div class="col-md-3 col-sm-4 col-6 mb-3">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block overlay" data-fslightbox="lightbox-basic" 
-                                    href="{{ asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename) }}">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" 
-                                            style="background-image:url('{{ asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename) }}')">
-                                        </div>
-                                        <!--end::Image-->
-                                
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow">
-                                            <i class="bi bi-eye-fill text-white fs-3x"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                                
-                                    <p class="text-center small mt-1">{{ $image->IMG_Realname }}</p>
-                                </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <p class="text-muted">No photos available for this case.</p>
-                        @endif
-                    </div>
-
-                    <!-- Manager Approval Form -->
-                    <div class="card col-xl-11 mx-auto mt-4">
-                        <div class="card-header align-items-center border-0 mt-4">
-                            <h3 class="card-title fw-bold text-gray-900">Manager Approval</h3>
-                            <span class="text-muted mt-1 fw-semibold fs-7">Provide approval or rejection with notes</span>
-                        </div>
-                        <div class="card-body pt-3"> 
-                            <form action="{{ route('cases.approveReject', $case->Case_No) }}" method="POST">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="approvalNotes" class="form-label fw-bold">Approval Notes</label>
-                                    <div id="kt_docs_quill_basic">
-                                        <input type="hidden" id="approvalNotes" name="approvalNotes">
-                                        <p>Enter the approval notes here...</p>
-                                    
-                                        <ul>
-                                            <li>List item 1</li>
-                                            <li>List item 2</li>
-                                            <li>List item 3</li>
-                                            <li>List item 4</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
-                                    <button type="button" class="btn btn-danger approve-reject-btn" data-action="reject">Reject</button>
-                                </div>
-                                
-                            </form>                            
-                        </div>
-                    </div>
-
-                </div>
-            </div>  
-        </div>
-
-        <!-- Image Modal -->
-        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="imageModalLabel">Preview Image</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <img id="modalImage" src="" class="img-fluid rounded shadow">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-=======
->>>>>>> ff25b43 (Update)
 
     {{-- Page Loader --}}
     <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">

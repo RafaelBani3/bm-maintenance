@@ -16,18 +16,6 @@
                     <div class="card mb-5 mb-xl-10">
                         <div class="card-header card-header-stretch">
                         <!--begin::Title-->
-<<<<<<< HEAD
-                            <div class="card-title d-flex justify-content-between align-items-center w-100">
-                                <h3 class="fw-bold m-0 text-primary">Material Request Detail : {{ $materialRequest->MR_No }} </h3>
-                                <a href="#" class="btn btn-lg btn-flex btn-secondary fw-bold" data-bs-toggle="modal" data-bs-target="#kt_modal_log">
-                                    <i class="ki-duotone ki-chart fs-1 text-muted me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    LOG
-                                </a>
-                            </div>
-=======
                             <div class="card-title d-flex flex-wrap justify-content-between align-items-center w-100 gap-3">
                                 <!-- Title -->
                                 <h3 class="fw-bold m-0 text-primary flex-grow-1">
@@ -56,7 +44,6 @@
                                 </div>
                             </div>
                         
->>>>>>> ff25b43 (Update)
                             <!--end::Title-->                          
                         </div>
 
@@ -123,11 +110,7 @@
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
                                     <span class="fw-bold fs-5 text-dark">
-<<<<<<< HEAD
-                                        {{ \Carbon\Carbon::parse($materialRequest    ->CR_DT)->format('d/m/Y H:m') }}
-=======
                                         {{ \Carbon\Carbon::parse($materialRequest->CR_DT)->format('d/m/Y H:m') }}
->>>>>>> ff25b43 (Update)
                                     </span>
                                 </div>
                                 <!--end::Col-->
@@ -140,31 +123,12 @@
                                 <label class="col-lg-2 fw-semibold text-muted fs-5">MR Status</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
-<<<<<<< HEAD
-                                <div class="col-lg-10 fs-5">
-=======
                                 <div class="col-lg-10">
->>>>>>> ff25b43 (Update)
                                     @php
                                         // Define status class based on MR_Status
                                         $statusClass = '';
                                         switch ($materialRequest->MR_Status) {
                                             case 'OPEN':
-<<<<<<< HEAD
-                                                $statusClass = 'bg-light-warning';
-                                                break;
-                                            case 'SUBMITTED':
-                                                $statusClass = 'bg-light-primary text-primary ';
-                                                break;
-                                            case 'CLOSE':
-                                                $statusClass = 'bg-light-success';
-                                                break;
-                                            case 'REJECT':
-                                                $statusClass = 'bg-light-danger';
-                                                break;
-                                            default:
-                                                $statusClass = 'bg-light-secondary text-primary fs-6';
-=======
                                                 $statusClass = 'bg-light-warning text-warning';
                                                 break;
                                             case 'SUBMIT':
@@ -179,7 +143,6 @@
                                                 break;
                                             default:
                                                 $statusClass = 'bg-light-secondary text-gray-800';
->>>>>>> ff25b43 (Update)
                                         }
 
                                         // Define status text based on MR_Status
@@ -205,11 +168,7 @@
                                         }
                                     @endphp
 
-<<<<<<< HEAD
-                                    <span class="fw-bold fs-5 {{ $statusClass }}">
-=======
                                     <span class="fw-bold p-2 fs-7 rounded {{ $statusClass }}">
->>>>>>> ff25b43 (Update)
                                         {{ $statusText }}
                                     </span>
                                 </div>
@@ -217,8 +176,6 @@
                             </div>
                             <!--end::Row Status-->
 
-<<<<<<< HEAD
-=======
                             <!--begin::Row MR Allotment-->
                             <div class="row mb-7 pb-4">
                                 <!--begin::Label-->
@@ -234,7 +191,6 @@
 
 
                             {{-- Table --}}
->>>>>>> ff25b43 (Update)
                             <div class="row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -264,13 +220,8 @@
                                     </table>
                                 </div>
                             </div>
-
-<<<<<<< HEAD
-
-                            
                         </div>
                         {{-- End Detail Case --}}
-=======
                             {{-- Approval remark --}}
                             <div class="row mb-5 ">
                                 <!--begin::Label-->
@@ -373,7 +324,6 @@
                             </div>
                         </div>
                         {{-- End Detail Case --}}   
->>>>>>> ff25b43 (Update)
                     </div>
                 </div>
             </div>

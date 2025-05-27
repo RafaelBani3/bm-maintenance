@@ -202,7 +202,6 @@
             }
         });
 
-<<<<<<< HEAD
 </script> --}}
 
 <script>
@@ -276,8 +275,6 @@
             }
         });
 
-=======
->>>>>>> ff25b43 (Update)
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -289,12 +286,6 @@
                         formData.append('new_images[]', file);
                     });
 
-<<<<<<< HEAD
-=======
-                    submitButton.setAttribute('data-kt-indicator', 'on');
-                    submitButton.disabled = true;
-
->>>>>>> ff25b43 (Update)
                     pageLoader.style.display = "flex";
 
                     setTimeout(function () {
@@ -318,11 +309,7 @@
                                         customClass: { confirmButton: "btn btn-success" }
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-<<<<<<< HEAD
                                             window.location.href = `${BASE_URL}/Case-Report/Create`;
-=======
-                                            window.location.href = `${BASE_URL}/Case/List`;
->>>>>>> ff25b43 (Update)
                                             // window.location.href = "/Case-Report/Create";
                                         }
                                     });

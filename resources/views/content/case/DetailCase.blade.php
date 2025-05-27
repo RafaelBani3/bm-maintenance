@@ -41,20 +41,6 @@
                     <!--begin::Navbar-->
                     <div class="card mb-5 mb-xl-10">
                         <div class="card-header card-header-stretch">
-<<<<<<< HEAD
-                        <!--begin::Title-->
-                            <div class="card-title d-flex justify-content-between align-items-center w-100">
-                                <h3 class="fw-bold m-0 text-primary">Case Detail : {{ $case->Case_No }}</h3>
-                                <a href="#" class="btn btn-lg btn-flex btn-secondary fw-bold" data-bs-toggle="modal" data-bs-target="#kt_modal_log">
-                                    <i class="ki-duotone ki-chart fs-1 text-muted me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    LOG
-                                </a>
-                            </div>
-                            <!--end::Title-->                          
-=======
                             <!--begin::Title-->
                             <div class="card-title d-flex justify-content-between align-items-center w-100">
                                 <h3 class="fw-bold m-0 text-primary">
@@ -86,7 +72,6 @@
                                 </div>
                             </div>
                             <!--end::Title-->
->>>>>>> ff25b43 (Update)
                         </div>
 
                         {{-- Detail Case --}}
@@ -180,25 +165,6 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <p class="fs-5 fw-bold">
-                                        <span class="badge
-                                        {{ 
-                                            $case->Case_Status == 'OPEN' ? 'bg-light-warning text-bold fs-6' :  
-                                            ($case->Case_Status == 'SUBMIT' ? 'bg-light-primary text-primary text-bold fs-5' : 
-                                            ($case->Case_Status == 'AP1' ? 'bg-light-primary text-primary text-bold fs-6' : 
-                                            ($case->Case_Status == 'AP2' ? 'bg-light-primary text-primary text-bold fs-6' : 
-                                            ($case->Case_Status == 'CLOSE' ? 'bg-light-success text-bold fs-6' :
-                                            ($case->Case_Status == 'REJECT' ? 'bg-light-danger text-bold fs-6' : 'bg-secondary fs-6'))))) 
-                                        }}">
-                                            {{
-                                                $case->Case_Status == 'AP1' ? 'Approved 1' :
-                                                ($case->Case_Status == 'SUBMIT' ? 'SUBMITTED' :
-                                                ($case->Case_Status == 'AP2' ? 'Approved 2' :
-                                                $case->Case_Status))
-                                            }}
-                                        </span>
-=======
                                     <p class="fw-bold">
                                         @php
                                             $status = $case->Case_Status;
@@ -220,7 +186,6 @@
                                             {{ $label }}
                                         </span>
 
->>>>>>> ff25b43 (Update)
                                     </p>
                                 </div>
                                 <!--end::Col-->
@@ -234,11 +199,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" readonly>{{ $case->Case_Chronology }}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -251,11 +212,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="outcome" id="outcome" readonly>{{ $case->Case_Outcome }}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -268,11 +225,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="suggest" id="suggest" readonly>{{ $case->Case_Suggest}}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -285,21 +238,13 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-<<<<<<< HEAD
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
-=======
                                     <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="action" id="action" readonly>{{ $case->Case_Action }}</textarea>
->>>>>>> ff25b43 (Update)
                                     </div>
                                 <!--end::Col-->
                             </div>
                             <!--end::Row CASE ACTION-->
-<<<<<<< HEAD
-
-=======
                             
                             <!--Start::Row Exiciting Image-->
->>>>>>> ff25b43 (Update)
                             <div class="row mb-5 pb-4">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -313,39 +258,13 @@
                                     </span>
                                 </label>
                                 <!--end::Label-->
-<<<<<<< HEAD
-                                <div id="existing-photos" class="d-flex flex-row flex-wrap gap-4">
-                                    @if($images->isNotEmpty())
-                                        <div class="row">
-=======
                                 <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
                                     @if($images->isNotEmpty())
                                         <div class="row gap-5">
->>>>>>> ff25b43 (Update)
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                                                 @endphp
-<<<<<<< HEAD
-                                                <div class="col-md-3 col-sm-4 col-6 mb-3">
-                                                    <!--begin::Overlay-->
-                                                    <a class="d-block overlay" data-fslightbox="lightbox-basic" href="{{ $imgPath }}">
-                                                        <!--begin::Image-->
-                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
-                                                            style="background-image:url('{{ $imgPath }}')">
-                                                        </div>
-                                                        <!--end::Image-->
-                                    
-                                                        <!--begin::Action-->
-                                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center">
-                                                            <i class="bi bi-eye-fill text-white fs-3x"></i>
-                                                        </div>
-                                                        <!--end::Action-->
-                                                    </a>
-                                                    <!--end::Overlay-->
-                                    
-                                                    <p class="text-center small mt-1">{{ $image->IMG_Realname }}</p>
-=======
                                                 <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
                                                     <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
                                                         <!-- Gambar ukuran kecil -->
@@ -358,20 +277,10 @@
                                                             <i class="bi bi-eye-fill text-white fs-2"></i>
                                                         </div>
                                                     </a>
->>>>>>> ff25b43 (Update)
                                                 </div>
                                             @endforeach
                                         </div>
                                     @else
-<<<<<<< HEAD
-                                        <p class="text-muted">No photos available for this case.</p>
-                                    @endif
-                                </div>
-                            </div>
-                            
-                            
-                            <div class="row mb-5 ">
-=======
                                         <p class="text-muted m-0">No photos available for this case.</p>
                                     @endif
                                 </div>
@@ -382,7 +291,6 @@
 
                             <!--Start::Row Approval & Remark Status-->
                             <div class="row mb-5">
->>>>>>> ff25b43 (Update)
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                     <span>Approval Status</span>
@@ -396,51 +304,6 @@
                                 </label>
                                 <!--end::Label-->
 
-<<<<<<< HEAD
-                                @for($i = 1; $i <= $case->Case_ApMaxStep; $i++)
-                                    @php
-                                        $remark = strip_tags($case['Case_RMK' . $i] ?? '');
-                                        $stepCode = 'AP' . $i;
-                                        $isApproved = $case->Case_Status === $stepCode;
-                                        $isRejected = $case->Case_Status === 'Reject';
-
-                                        if ($remark) {
-                                            $status = $isRejected ? 'Rejected' : 'Approved';
-                                            $badgeClass = $isRejected ? 'badge badge-light-danger' : 'badge badge-light-success';
-                                            $icon = $isRejected ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
-                                        } else {
-                                            $status = 'Pending';
-                                            $badgeClass = 'badge badge-light-warning text-dark';
-                                            $icon = 'bi-hourglass-split';
-                                        }
-                                    @endphp
-
-                                    <!--begin::Block-->
-                                    <div class="d-flex border-2 border-dashed card-rounded p-4 p-lg-5 mb-4 align-items-center">
-                                        <!-- Approver Info -->
-                                        <div class="me-5 text-center" style="width: 100px;">
-                                            <div class="fw-bold text-gray-700 fs-5">AP{{ $i }}</div>
-                                            <div class="text-gray-500 fs-7">Step {{ $i }}</div>
-                                        </div>
-
-                                        <!-- Remark & Status -->
-                                        <div class="flex-grow-1 d-flex justify-content-between align-items-center">
-                                            <!-- Remark -->
-                                            <div class="text-muted fw-semibold lh-base me-3 fs-4">
-                                                {{ $remark ?: 'No remark provided.' }}
-                                            </div>
-                                            <!-- Status Badge -->
-                                            <div>
-                                                <span class="{{ $badgeClass }} px-3 py-2 d-inline-flex align-items-center gap-1 fs-5">
-                                                    <i class="bi {{ $icon }} text-success"></i> {{ $status }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--end::Block-->
-                                @endfor
-                            </div>
-=======
                                 <div class="timeline timeline-border-dashed">
                                     @for($i = 1; $i <= $case->Case_ApMaxStep; $i++)
                                         @php
@@ -529,7 +392,6 @@
                             </div>
                             <!--End::Row Approval & Remark Status-->
 
->>>>>>> ff25b43 (Update)
                         </div>
                         {{-- End Detail Case --}}
                     </div>
@@ -537,184 +399,11 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-
-    {{-- DESIGN LAMA --}}
-    {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-fluid">
-            <div class="card p-4">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
-                    <h1 class="text-primary fw-bold mb-0">Case Details : {{ $case->Case_No }}</h1>
-                    <button type="button" class="btn btn-secondary fw-bold py-5 px-4 align-self-start" data-bs-toggle="modal" data-bs-target="#kt_modal_log">
-                        <i class="bi bi-clock-history me-1"></i> View Log
-                    </button>
-                </div>
-                
-                <hr>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Case Name</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $case->Case_Name }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Case Date</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $case->CR_DT }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Category</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $case->Category }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>SubCategory</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $case->SubCategory }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Created By</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $case->User }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Case Status</strong></label>
-                            <p class="fs-5 fw-bold">
-                                <span class="badge
-                                {{ 
-                                    $case->Case_Status == 'OPEN' ? 'bg-light-warning text-bold fs-6' :  
-                                    ($case->Case_Status == 'SUBMIT' ? 'bg-light-primary text-primary text-bold fs-5' : 
-                                    ($case->Case_Status == 'AP1' ? 'bg-light-primary text-primary text-bold fs-6' : 
-                                    ($case->Case_Status == 'AP2' ? 'bg-light-primary text-primary text-bold fs-6' : 
-                                    ($case->Case_Status == 'CLOSE' ? 'bg-light-success text-bold fs-6' :
-                                    ($case->Case_Status == 'REJECT' ? 'bg-light-danger text-bold fs-6' : 'bg-secondary'))))) 
-                                }}">
-                                    {{
-                                        $case->Case_Status == 'AP1' ? 'Approved 1' :
-                                        ($case->Case_Status == 'SUBMIT' ? 'SUBMITTED' :
-                                        ($case->Case_Status == 'AP2' ? 'Approved 2' :
-                                        $case->Case_Status))
-                                    }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Chronology, Outcome, Suggest, and Action (Text Area) -->
-                <div class="mb-3">
-                    <label class="form-label"><strong>Case Chronology</strong></label>
-                    <textarea class="form-control" rows="3" readonly>{{ $case->Case_Chronology ?? 'N/A' }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Case Outcome</strong></label>
-                    <textarea class="form-control" rows="3" readonly>{{ $case->Case_Outcome ?? 'N/A' }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Case Suggest</strong></label>
-                    <textarea class="form-control" rows="3" readonly>{{ $case->Case_Suggest ?? 'N/A' }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Case Action</strong></label>
-                    <textarea class="form-control" rows="3" readonly>{{ $case->Case_Action ?? 'N/A' }}</textarea>
-                </div>
-
-                <!-- Image Gallery -->
-                <div class="mb-3">
-                    <h4 class="text-primary fw-bold">Case Photos</h4>
-                    @if($images->isNotEmpty())
-                        <div class="row">
-                            @foreach($images as $image)
-                                @php
-                                    $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
-                                @endphp
-                                <div class="col-md-3 col-sm-4 col-6 mb-3">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block overlay" data-fslightbox="lightbox-basic" href="{{ $imgPath }}">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
-                                            style="background-image:url('{{ $imgPath }}')">
-                                        </div>
-                                        <!--end::Image-->
-                    
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-eye-fill text-white fs-3x"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                    
-                                    <p class="text-center small mt-1">{{ $image->IMG_Realname }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-muted">No photos available for this case.</p>
-                    @endif
-                    
-                </div>
-
-                <!-- Approval Status Table -->
-                <div class="mb-3">
-                    <label class="form-label fs-5 fw-bold"><strong>Approval Status</strong></label>
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle text-center">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 20%;">Approver</th>
-                                    <th style="width: 50%;">Case Remark</th>
-                                    <th style="width: 30%;">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for($i = 1; $i <= $case->Case_ApMaxStep; $i++)
-                                    @php
-                                        $remark = $case['Case_RMK' . $i] ?? null;
-                                        $stepCode = 'AP' . $i;
-                                        $isApproved = $case->Case_Status === $stepCode;
-                                        $isRejected = $case->Case_Status === 'Reject';
-                
-                                        if ($remark) {
-                                            $status = $isRejected ? 'Rejected' : 'Approved';
-                                            $badgeClass = $isRejected ? 'bg-danger' : 'bg-success text-white';
-                                            $icon = $isRejected ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
-                                        } else {
-                                            $status = 'Pending';
-                                            $badgeClass = 'bg-warning text-dark';
-                                            $icon = 'bi-hourglass-split';
-                                        }
-                                    @endphp
-                                    <tr>
-                                        <td class="fw-semibold">AP{{ $i }}</td>
-                                        <td>{{ strip_tags($remark) ?? '-' }}</td>
-                                        <td>
-                                            <span class="badge {{ $badgeClass }} px-3 py-2 d-inline-flex align-items-center gap-1">
-                                                <i class="bi {{ $icon }} text-white"></i> {{ $status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endfor
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                
-            </div>
-        </div>
-    </div> --}}
-    
-    {{-- LOG Modal --}}
-    <div class="modal fade" tabindex="-1" id="kt_modal_log">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-=======
     
     {{-- LOG Modal --}}
     <div class="modal fade" tabindex="-1" id="kt_modal_log">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
 
->>>>>>> ff25b43 (Update)
             <div class="modal-content">
                 
                 <div class="modal-header">
@@ -722,55 +411,6 @@
                     <button type="button" class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                         <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                     </button>
-<<<<<<< HEAD
-                </div>
-    
-                <div class="modal-body">
-                    @php
-                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED1', 'APPROVED2', 'INPROGRESS', 'CLOSE', 'REJECT'];
-                        $statusColors = [
-                            'CREATED'    => 'bg-light-warning text-warning',
-                            'SUBMITTED'  => 'bg-light-primary text-primary',
-                            'APPROVED1'  => 'bg-light-primary text-primary',
-                            'APPROVED2'  => 'bg-light-primary text-primary',
-                            'INPROGRESS' => 'bg-light-info text-info',
-                            'CLOSE'      => 'bg-light-success text-success',
-                            'REJECT'     => 'bg-light-danger text-danger',
-                        ];
-                    @endphp
-    
-                    <div class="timeline timeline-border-dashed">
-                        @foreach ($logs as $log)
-                            @if(in_array($log->LOG_Status, $allowedStatuses))
-                                @php
-                                    $colorClass = $statusColors[$log->LOG_Status] ?? 'bg-secondary text-dark';
-                                @endphp
-    
-                                <div class="timeline-item">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-icon">
-                                        <div class="symbol symbol-circle symbol-40px {{ $colorClass }}">
-                                            <i class="ki-duotone ki-document fs-2">
-                                                <span class="path1"></span><span class="path2"></span>
-                                            </i>
-                                        </div>
-                                    </div>
-    
-                                    <div class="timeline-content mb-5">
-                                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-1">
-                                            <span class="badge {{ $colorClass }} fw-semibold">{{ $log->LOG_Status }}</span>
-                                            <div class="text-muted fs-7">{{ \Carbon\Carbon::parse($log->LOG_Date)->format('d M Y, H:m') }}</div>
-                                        </div>
-                                        <div class="fw-semibold text-primary mb-1">{{ $log->user_name }}</div>
-                                        <div class="text-gray-700">{{ $log->LOG_Desc }}</div>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-    
-=======
                 </div>
     
                 <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
@@ -820,26 +460,16 @@
                     </div>
                 </div>
     
->>>>>>> ff25b43 (Update)
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> ff25b43 (Update)
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
 
-<<<<<<< HEAD
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-=======
     {{-- Button Revisi --}}
     <script>
         function confirmRevision(caseNo) {
@@ -860,7 +490,6 @@
                 }
             });
         }
->>>>>>> ff25b43 (Update)
     </script>
 
     <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>

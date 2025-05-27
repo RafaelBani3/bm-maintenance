@@ -277,10 +277,6 @@
 </script>
 {{-- End script --}}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ff25b43 (Update)
 <style>
     .dz-preview {
         cursor: pointer;
@@ -300,67 +296,4 @@
 @endif
 
 
-<<<<<<< HEAD
-{{-- function saveCase(formData) {
-            $.ajax({
-                url: '/your-save-case-url',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Data berhasil disimpan.'
-                    });
-                    $('#caseForm')[0].reset();
-                    myDropzone.removeAllFiles(true);
-                },
-                error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Terjadi kesalahan saat menyimpan data.'
-                    });
-                }
-            });
-        } --}}
-
-
-{{-- Dropzone.autoDiscover = false;
-    let uploadedFiles = [];
-    
-    var myDropzone = new Dropzone("#case-dropzone", {
-        url: "https://keenthemes.com/scripts/void.php", // Tidak dipakai, karena upload saat submit
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        maxFiles: 5,
-        acceptedFiles: 'image/*',
-        dictDefaultMessage: 'Drop files here or click to upload.',
-        init: function() {
-            this.on("addedfile", function(file) {
-                uploadedFiles.push(file);
-            });
-            this.on("removedfile", function(file) {
-                uploadedFiles = uploadedFiles.filter(f => f !== file);
-            });
-        }
-    });
-  
-    $('#caseForm').submit(function(e) {
-        e.preventDefault();
-        let formData = new FormData(this);
-    
-        // Append file dari dropzone ke formData
-        uploadedFiles.forEach((file) => {
-            formData.append('photos[]', file);
-        });
-    
-        saveCase(formData);
-    }); --}}
-
    
-=======
->>>>>>> ff25b43 (Update)
-        

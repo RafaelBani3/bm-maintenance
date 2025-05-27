@@ -73,8 +73,6 @@ class MatReq extends Model
         return $this->belongsTo(Position::class, 'PS_ID');
     }
 
-<<<<<<< HEAD
-=======
     public function approver1() {
     return $this->belongsTo(User::class, 'MR_AP1','id');
     }
@@ -96,7 +94,6 @@ class MatReq extends Model
         return $this->belongsTo(User::class, 'MR_AP5','id');
     }
 
->>>>>>> ff25b43 (Update)
     public static function generateMRNo()
     {
         $currentMonth = date('n');
@@ -121,8 +118,6 @@ class MatReq extends Model
         return "$newNumber/MR/$romanMonth/$currentYear";
     }
 
-<<<<<<< HEAD
-=======
     public function creator()
     {
         return $this->belongsTo(User::class, 'CR_BY');
@@ -134,7 +129,6 @@ class MatReq extends Model
     }
 
 
->>>>>>> ff25b43 (Update)
 }
 
 

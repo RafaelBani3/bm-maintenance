@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!-- NOTIFICATION DROPDOWN -->
 <div class="menu menu-sub menu-sub-dropdown menu-column w-500px w-lg-550px" data-kt-menu="true" 
     id="kt_menu_notifications" style="position: relative;">
@@ -7,12 +6,6 @@
         <h3 class="text-white fw-semibold px-9 mt-10 mb-6">Notifications 
         <span class="fs-8 opacity-75 ps-3" id="notification-count">0 reports</span></h3>
     </div>
-=======
-    
-    <!-- NOTIFICATION DROPDOWN -->
-    <div class="menu menu-sub menu-sub-dropdown menu-column w-500px w-lg-600px" data-kt-menu="true" 
-        id="kt_menu_notifications" style="position: relative;">
->>>>>>> ff25b43 (Update)
 
         <div class="d-flex flex-column bgi-no-repeat rounded-top" style="background-color:burlywood">
             <h3 class="text-white fw-semibold px-9 mt-10 mb-6">Notifications 
@@ -28,7 +21,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
 {{-- Get Notification --}}
 {{-- <script>
     $.ajaxSetup({
@@ -63,29 +55,6 @@
                         <div class="d-flex justify-content-between align-items-start py-4 border-bottom notification-item"
                             style="cursor: pointer;"
                             onclick="window.location.href='${detailUrl}'">
-=======
-    {{-- Get Notification --}}
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script>
-        const userPermissions = @json(Auth::user()->getAllPermissions()->pluck('name'));
-    </script>
-    
-    <script>
-        $(document).ready(function () {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            function fetchNotifications() {
-                $.ajax({
-                    url: '{{ route('Notifications') }}',
-                    method: 'GET',
-                    // success: function(response) {
-                    //     $('#notification-list').empty();
-                    //     $('#notification-count').text(response.notifications.length + ' reports');
->>>>>>> ff25b43 (Update)
 
                     //     const baseUrl = window.location.origin + "/BmMaintenance/public";
 
@@ -209,7 +178,6 @@
                                 </div>
                             `;
 
-<<<<<<< HEAD
                             <div class="ms-2 mt-1">
                                 <button class="btn btn-icon btn-sm btn-light-danger"
                                         onclick="event.stopPropagation(); dismissNotification(${notification.id})">
@@ -218,22 +186,14 @@
                             </div>
                         </div>
                     `;
-=======
-                            $('#notification-list').append(notificationItem);
-                        });
-                    },
->>>>>>> ff25b43 (Update)
 
                     error: function(xhr, status, error) {
                         console.error('Gagal mengambil notifikasi:', error);
                     }
                 });
-<<<<<<< HEAD
             },
             error: function(xhr, status, error) {
                 console.error('Gagal mengambil notifikasi:', error);
-=======
->>>>>>> ff25b43 (Update)
             }
 
             setInterval(fetchNotifications, 75000);
@@ -257,7 +217,6 @@
                 });
             });
         });
-<<<<<<< HEAD
     }
 
     // function goToDetail(caseNo) {
@@ -370,8 +329,3 @@
     fetchNotifications();
 </script>
 
-=======
-    </script>
-
-
->>>>>>> ff25b43 (Update)

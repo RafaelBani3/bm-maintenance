@@ -34,10 +34,6 @@ return new class extends Migration
                 $table->foreign('MR_No')->references('MR_No')->on('mat_req')->onDelete('cascade');     
         });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> ff25b43 (Update)
         
     }
    

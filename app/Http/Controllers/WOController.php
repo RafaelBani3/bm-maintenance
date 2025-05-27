@@ -221,10 +221,6 @@ class WOController extends Controller
                         ]);
                     }
                 }
-<<<<<<< HEAD
-                
-=======
->>>>>>> ff25b43 (Update)
             }
 
             return response()->json([
@@ -233,11 +229,7 @@ class WOController extends Controller
                 'wo_no' => $woNumber 
             ]);
         } catch (\Exception $e) {
-<<<<<<< HEAD
-            Log::error('Failed to create Work Order. Error: ' . $e->getMessage());
-=======
             Log::error(message: 'Failed to create Work Order. Error: ' . $e->getMessage());
->>>>>>> ff25b43 (Update)
 
             Logs::create([
                 'LOG_Type' => 'WO',
@@ -322,11 +314,6 @@ class WOController extends Controller
 
 
     // Update WO
-<<<<<<< HEAD
-   
-
-=======
->>>>>>> ff25b43 (Update)
     public function UpdateWO(Request $request)
     {
         $user = Auth::user();   
@@ -351,11 +338,6 @@ class WOController extends Controller
             $wo->WO_Start = $request->start_date;
             $wo->WO_End = $request->end_date;
             $wo->WO_Narative = $request->work_description;
-<<<<<<< HEAD
-            $wo->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
-            $wo->WO_Status = 'Submit';
-=======
->>>>>>> ff25b43 (Update)
             $wo->Update_Date = now();
             if ($request->has('require_material') && $request->require_material === 'yes') {
                 $wo->WO_NeedMat = 'Y';
@@ -377,11 +359,7 @@ class WOController extends Controller
             
                 Logs::create([
                     'LOG_Type' => 'BA',
-<<<<<<< HEAD
-                    'LOG_RefNo' => $request->wo_no,
-=======
                     'LOG_RefNo' => $request->reference_number,
->>>>>>> ff25b43 (Update)
                     'LOG_Status' => 'INPROGRESS',
                     'LOG_User' => $user->id,
                     'LOG_Date' => now(),
@@ -389,11 +367,6 @@ class WOController extends Controller
                 ]);
         
             }
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> ff25b43 (Update)
             if ($request->has('assigned_to')) {
                 $existingTechnicians = DB::table('WO_DoneBy')
                     ->where('WO_No', $request->wo_no)
@@ -446,24 +419,15 @@ class WOController extends Controller
             ], 500);
         }
     }
-<<<<<<< HEAD
-    
-
-=======
                
 
     
->>>>>>> ff25b43 (Update)
     // Mengambil data WO dari Database dan tampilkan pada table WO
     public function getWorkOrders(Request $request)
     {
         $userId = Auth::id();
     
-<<<<<<< HEAD
-        $workOrders = WorkOrder::with('createdBy')
-=======
         $workOrders = WorkOrder::with('createdBy')  
->>>>>>> ff25b43 (Update)
             ->where('CR_BY', $userId)
             ->get()
             ->map(function ($wo) {
@@ -479,28 +443,16 @@ class WOController extends Controller
                     'WO_NeedMat' => $wo->WO_NeedMat,
                     'WO_CompDate' => $wo->WO_CompDate,
                     'WO_CompBy' => $wo->WO_CompBy,
-<<<<<<< HEAD
-=======
                     'completed_by_fullname' => $wo->completedBy ? $wo->completedBy->Fullname : '-', 
 
->>>>>>> ff25b43 (Update)
                 ];
             });
     
         return response()->json($workOrders);
     }
 
-<<<<<<< HEAD
-    // Get WO NO
-    // public function GetWorkOrderNo(Request $request)
-    // {
-    //     $request->session()->put('wo_no', $request->wo_no);
-    //     return redirect('/Work-Orders/Detail');
-    // }
-=======
 
     // Get WO NO    
->>>>>>> ff25b43 (Update)
     public function GetWorkOrderNo(Request $request)
     {
         $wo_no = $request->wo_no;
@@ -513,72 +465,6 @@ class WOController extends Controller
         return redirect()->route('WorkOrderDetail');
     }
 
-<<<<<<< HEAD
-    // public function showDetailWO(Request $request)
-    // {
-    //     $wo_no = $request->session()->get('wo_no');
-    
-    //     if (!$wo_no) {
-    //         return redirect()->back()->with('error', 'Work Order not found.');
-    //     }
-    
-    //     $workOrder = DB::table('Work_Orders')
-    //         ->select(
-    //             'Work_Orders.WO_No',
-    //             'Work_Orders.Case_No',
-    //             'Work_Orders.WOC_No',
-    //             'Work_Orders.CR_DT',
-    //             'Work_Orders.WO_Start',
-    //             'Work_Orders.WO_End',
-    //             'Work_Orders.WO_Status',
-    //             'Work_Orders.WO_Narative',
-    //             'Work_Orders.WO_NeedMat',
-    //             'Work_Orders.WO_IsComplete',
-    //             'Work_Orders.WO_CompDate',
-    //             'Work_Orders.WO_IsReject',
-    //             'Work_Orders.WO_RejGroup',
-    //             'Work_Orders.WO_RejDate',
-    //             'Work_Orders.WO_APStep',
-    //             'Work_Orders.WO_APMaxStep',
-    //             'Work_Orders.WO_RMK1',
-    //             'Work_Orders.WO_RMK2',
-    //             'Work_Orders.WO_RMK3',
-    //             'Work_Orders.WO_RMK4',
-    //             'Work_Orders.WO_RMK5',
-    //             'Work_Orders.Update_Date',
-                
-    //             'cr.Fullname as Creator_Name',
-    //             'mr.Fullname as MR_Requestor',
-    //             // 'comp.Fullname as Completed_By',
-    //             // 'rej.Fullname as Rejected_By',
-    //             // 'ap1.Fullname as Approver_1',
-    //             // 'ap2.Fullname as Approver_2',
-    //             // 'ap3.Fullname as Approver_3',
-    //             // 'ap4.Fullname as Approver_4',
-    //             // 'ap5.Fullname as Approver_5'
-    //         )
-    //         ->leftJoin('users as cr', 'Work_Orders.CR_BY', '=', 'cr.id')
-    //         ->leftJoin('users as mr', 'Work_Orders.WO_MR', '=', 'mr.id')
-    //         // ->leftJoin('users as comp', 'Work_Orders.WO_CompBy', '=', 'comp.id')
-    //         // ->leftJoin('users as rej', 'Work_Orders.WO_RejBy', '=', 'rej.id')
-    //         // ->leftJoin('users as ap1', 'Work_Orders.WO_AP1', '=', 'ap1.id')
-    //         // ->leftJoin('users as ap2', 'Work_Orders.WO_AP2', '=', 'ap2.id')
-    //         // ->leftJoin('users as ap3', 'Work_Orders.WO_AP3', '=', 'ap3.id')
-    //         // ->leftJoin('users as ap4', 'Work_Orders.WO_AP4', '=', 'ap4.id')
-    //         // ->leftJoin('users as ap5', 'Work_Orders.WO_AP5', '=', 'ap5.id')
-    //         ->where('Work_Orders.WO_No', $wo_no)
-    //         ->first();
-    
-    //     if (!$workOrder) {
-    //         return redirect()->back()->with('error', 'Work Order not found.');
-    //     }
-    
-    //     return view('content.wo.DetailWO', compact('workOrder'));
-    // }
-    
-
-=======
->>>>>>> ff25b43 (Update)
     public function showDetailWO($encodedWONo)
     {
         $wo_no = base64_decode($encodedWONo); 
@@ -634,11 +520,8 @@ class WOController extends Controller
         return view('content.wo.DetailWO', compact('workOrder','logs'));
     }
 
-<<<<<<< HEAD
-=======
     
 
->>>>>>> ff25b43 (Update)
 
 }
 

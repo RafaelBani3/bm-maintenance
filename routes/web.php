@@ -4,17 +4,19 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\MRController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\WocController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\WOController;
 use Illuminate\Support\Facades\Route;
 
     // Default
     Route::get('/', function () {
-        return redirect()->route('Login.page');
+        return redirect()->route('login');
     });
 
-
     // Login Routes
-    Route::get('/Login', [AuthController::class, 'LoginPage'])->name('Login.page');
+    Route::get('/Login', [AuthController::class, 'LoginPage'])->name('login');
     Route::post('/Login', [AuthController::class, 'LoginCheck'])->name('Login.post');
 
     // Logout
@@ -22,11 +24,28 @@ use Illuminate\Support\Facades\Route;
 
 
     // All can Access
-    Route::get('/Dashboard', function () {
-        return view('content.dashboard.Dashboard');
-    })->name('Dashboard');
+    // Dashboard
+    Route::get('/Dashboard', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
 
-    Route::group(['middleware' => ['permission:view cr']], function () { 
+    // Ambil Data Case
+    Route::get('/dashboard/case-summary', [DashboardController::class, 'caseSummary'])->name('dashboard.case-summary');
+    
+    Route::get('/dashboard/wo-summary', [DashboardController::class, 'GetWOSummary'])->name('dashboard.wo-summary');
+
+    Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary']);
+
+    // Approval
+    // Route::get('/ajax/pending-case-count', [DashboardController::class, 'getPendingCaseCount'])->name('ajax.pendingCaseCount');
+    Route::get('/dashboard/pending-woc-count', [DashboardController::class, 'getPendingWOCCount'])->name('ajax.pendingWOCCount');
+
+    Route::get('/dashboard/case-approval-progress', [DashboardController::class, 'getCaseApprovalProgress'])->name('dashboard.case-approval-progress');
+
+    Route::get('/ajax/pending-mr-count', [DashboardController::class, 'getPendingMRCount'])->name('ajax.pendingMRCount');
+
+    Route::get('/dashboard/case-wo-summary', [DashboardController::class, 'getCaseWOSummary'])->name('dashboard.case-wo-summary');
+
+
+    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' , 'permission:view cr']], function () {
     // PAGE CREATE CASE
         // Create Cases
         Route::get('/Case-Report/Create', [CaseController::class, 'CreateCase'])->name('CreateCase');
@@ -54,11 +73,15 @@ use Illuminate\Support\Facades\Route;
         Route::get('/Case/Detail/{case_no}', [CaseController::class, 'showDetailPage'])
         ->where('case_no', '.*') 
         ->name('case.detail');
+        
+        // EXPORT
+        Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
     
     // End List Case Table
     });
 
-    Route::group(['middleware' => ['permission:view cr_ap']], function () { 
+
+    Route::middleware(['auth','CatchUnauthorizedException' ,'permission:view cr_ap'])->group(function() {
     // Approval Page
         // Approval List Case
         Route::get('/Case/Approval-list', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
@@ -78,8 +101,7 @@ use Illuminate\Support\Facades\Route;
     });
 
     // Page WO
-
-    Route::group(['middleware' => ['permission:view wo']], function () { 
+    Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view wo']], function () { 
         // View Create WO Page
         Route::get('/Work-Order/Create', [WOController::class, 'CreateWO'])->name('CreateWO');
         // Get Reference No (Case No)
@@ -103,7 +125,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('/Work-Order/Update', [WOController::class, 'UpdateWO'])->name('WorkOrder.Update');
 
         // List WO Table
-        Route::get('/work-orders', [WOController::class, 'getWorkOrders'])->name('workOrders.index');
+        Route::get('/work-orders', [WOController::class, 'getWorkOrders'])->name('GetWODataTable');
 
         Route::get('/get-intended-users', [WOController::class, 'getIntendedUsers'])->name('get.intended.users');
     
@@ -114,11 +136,14 @@ use Illuminate\Support\Facades\Route;
         ->name('WorkOrderDetail');
 
         Route::post('/work-order/remove-technician', [WOController::class, 'removeTechnician'])->name('work-order.remove-technician');
+    
+        Route::get('/wo/export', [ExportController::class, 'exportWO'])->name('wo.export');
+
     });
 
 
     // Page MR  
-    Route::group(['middleware' => ['permission:view mr']], function () { 
+    Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view mr']], function () { 
 
         Route::get('/Material-Request/Create', [MRController::class, 'CreateMR'])->name('CreateMR');
 
@@ -128,7 +153,7 @@ use Illuminate\Support\Facades\Route;
 
         Route::post('/Material-Request/save', [MRController::class, 'SaveMR'])->name('SaveMR');
 
-        Route::get('/Material-Request/Edit/{mr_no}', [MRController::class, 'edit'])->name('EditWO');
+        Route::get('/Material-Request/Edit/{mr_no}', [MRController::class, 'edit'])->name('EdiMRphp ');
 
         Route::post('/Material-Request/Update', [MRController::class, 'UpdateMR'])->name('update.mr');
 
@@ -139,10 +164,12 @@ use Illuminate\Support\Facades\Route;
         Route::get('/Material-Request/Detail/{encodedMRNo}', [MRController::class, 'detail'])->name('MaterialRequest.Detail');
         
         Route::post('/Material-Request/Delete-Material', [MRController::class, 'deleteMaterial'])->name('DeleteMaterial');
-
+    
+        Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');
     });
 
-    Route::group(['middleware' => ['permission:view mr_ap']], function () { 
+    // ROLE MR AP
+    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view mr_ap']], function () { 
         // View Page MR AP
         Route::get('/Material-Request/List-Approval', [MRController::class, 'ApprovalListMR'])->name('ApprovalListMR');
         
@@ -159,16 +186,80 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('/Material-Request/Approval-Detail/{encodedMRNo}', [MRController::class, 'ApprovalDetailMR'])->name('ApprovalDetailMR');
 
-        // Approve or Reject MR
-        // Route::post('/Material-Request/{caseNo}/approve-reject', [MRController::class, 'approveReject'])
-        //     ->where('caseNo', '.*') 
-        //     ->name('cases.approveReject');
-        
-            Route::post('/material-request/approve/{mr_no}', [MRController::class, 'approveReject']);
+        // Approve or Reject MR        
+        Route::post('/material-request/approve/{mr_no}', [MRController::class, 'approveReject']);
 
     }); 
+
+
+    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view cr']], function () { 
+
+        // WOC
+        Route::get('/WorkOrder-Complition/Create', [WocController::class, 'CreateWOC'])->name('CreateWOC');
+
+        // List WOC
+        Route::get('/WorkOrder-Complition/List', [WocController::class, 'ListWOCPage'])->name('ListWOCPage');
+
+        Route::get('/get-work-orders', [WocController::class, 'getWorkOrders']);
+        Route::get('/get-work-order-details/{encoded}', [WocController::class, 'getWorkOrderDetails']);
+
+        // Save WOC
+        Route::post('/WorkOrder-Complition/Save', [WocController::class, 'saveCompletion'])->name('SaveWOC');
+
+        Route::post('/WorkOrder-Complition/delete-image', [WocController::class, 'deleteImage'])->name('WOC.deleteImage');
+
+        Route::get('/WorkOrder-Complition/Edit/{wo_no}', [WocController::class, 'EditWOC'])->name('EditWOC');
+
+        Route::post('/WorkOrder-Complition/remove-technician', [WocController::class, 'removeTechnician'])->name('WOC.remove-technician');
+        
+        Route::post('/WorkOrder-Complition/UpdateWOC', [WocController::class, 'UpdateWOC'])->name('UpdateWOC');
+
+        Route::get('/WorkOrder-Complition/GetSubmittedData', [WocController::class, 'getSubmittedData']);
+
+        Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWO'])->name('WorkOrderDetail');
     
+        Route::get('/WorkOrder-Complition/Export', [ExportController::class, 'exportWOC'])->name('woc.export');
 
+    });
+
+    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view cr_ap']], function () { 
+
+        // Page List Approval WOC
+        Route::get('/WorkOrder-Complition/List-Approval', [WocController::class, 'ApprovalListWOC'])->name('ApprovalListWOC');
+
+        // Ambil Data WOC dgn Status "SBUMIT" untuk ditampilkan pada page List Approval WOC
+        Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC']);
+
+        // Page Detail Approval WOC
+        // Route::get('/WorkOrder-Complition/Detail-ApprovalWOC', [WocController::class, 'DetailApprovalWOC'])->name('DetailApprovalWOC');
+
+        Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC']);
+        
+        // Route::post('/WorkOrder-Complition/approve-reject/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
+        
+        // Route::post('/WorkOrder-Complition/approve-reject/{woNo}', [WocController::class, 'approveReject']);
+        Route::post('/workorder/approval/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
+
+    }); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Notifikasi
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications'])->name('Notifications');
-    Route::post('/notification/read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.read');
-
+    Route::post('/notification/read/{id}', [NotificationController::class, 'markAsRead']);

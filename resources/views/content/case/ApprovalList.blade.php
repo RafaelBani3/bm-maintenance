@@ -34,11 +34,7 @@
                         <div class="card-body">
                             <div class="row g-5 align-items-end">
                                 <!--begin::Search-->
-<<<<<<< HEAD
-                                <div class="col-lg-4">
-=======
                                 <div class="col-lg-5">
->>>>>>> ff25b43 (Update)
                                     <label for="searchReport" class="form-label fw-bold">Search Report</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
@@ -49,31 +45,8 @@
                                 </div>
                                 <!--end::Search-->
                         
-<<<<<<< HEAD
-                                <!--begin::Filter-->
-                                <div class="col-lg-3">
-                                    <label for="statusFilter" class="form-label fw-bold">Status</label>
-                                    <select class="form-select form-select-solid" name="category" id="statusFilter" data-control="select2" data-hide-search="true" data-placeholder="Select Category">
-                                        <option value="all">All Status</option>
-                                        <option value="OPEN">OPEN</option>
-                                        <option value="SUBMIT">SUBMIT</option>
-                                        <option value="AP1">AP1</option>
-                                        <option value="AP2">AP2</option>
-                                        <option value="AP3">AP3</option>
-                                        <option value="AP4">AP4</option>
-                                        <option value="AP5">AP5</option>
-                                        <option value="CLOSE">CLOSE</option>
-                                        <option value="REJECT">REJECT</option>
-                                    </select>
-                                </div>
-                                <!--end::Filter-->
-                        
-                                <!--begin::Date Range Picker-->
-                                <div class="col-lg-3">
-=======
                                 <!--begin::Date Range Picker-->
                                 <div class="col-lg-5">
->>>>>>> ff25b43 (Update)
                                     <label for="dateFilter" class="form-label fw-bold">Date Range</label>
                                     <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range" />
                                 </div>
@@ -97,11 +70,7 @@
                         <div class="card-header card-header-stretch">
                             <!--begin::Title-->
                             <div class="card-title d-flex align-items-center">
-<<<<<<< HEAD
-                                <h3 class="fw-bold m-0 text-gray-800">Case List</h3>
-=======
                                 <h3 class="fw-bold m-0 text-gray-800">Approval Case List</h3>
->>>>>>> ff25b43 (Update)
                             </div>
                             <!--end::Title-->
                         </div>
@@ -114,16 +83,6 @@
                                             <table class="table table-row-bordered align-middle gy-5 gs-9" id="casesTable"> 
                                                 <thead>
                                                     <tr class="fw-bold text-muted">
-<<<<<<< HEAD
-                                                        <th class="min-w-150px text-start text-muted align-middle sortable" data-column="Case_No">Case Id</th>
-                                                        <th class="min-w-140px text-start align-middle sortable" data-column="Case_Date">Case Date</th>
-                                                        <th class="min-w-120px text-start align-middle">Case Name</th>
-                                                        <th class="min-w-120px text-start align-middle">Case Category</th>
-                                                        <th class="min-w-120px text-start align-middle">Created By</th>
-                                                        <th class="min-w-120px text-start align-middle">Position</th>
-                                                        <th class="min-w-120px text-start align-middle">Status</th>
-                                                        <th class="min-w-100px text-start align-middle">Actions</th>
-=======
                                                         <th class="min-w-150px text-start text-muted align-middle sortable fs-6" data-column="Case_No">Case Id</th>
                                                         <th class="min-w-140px text-start align-middle sortable fs-6" data-column="Case_Date">Case Date</th>
                                                         <th class="min-w-120px text-start align-middle fs-6">Case Name</th>
@@ -132,7 +91,6 @@
                                                         <th class="min-w-120px text-start align-middle fs-6">Position</th>
                                                         <th class="min-w-120px text-start align-middle fs-6">Status</th>
                                                         <th class="min-w-100px text-start align-middle fs-6">Actions</th>
->>>>>>> ff25b43 (Update)
                                                     </tr>
                                                 </thead> 
                                                 <tbody class="fw-semibold text-gray-600">
@@ -145,105 +103,13 @@
                             </div>
                         </div>
                         
-<<<<<<< HEAD
-                    </div>
-                    <!--end::Navbar-->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-fluid">
-    
-            <!--begin::Filter Card-->
-            <div class="card mb-5 mb-xl-8">
-                <div class="card-header border-0 pt-5">
-                    <h3 class="card-title">Filter</h3>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 align-items-center">
-                        <!--begin::Search-->
-                        <div class="col-md-4">
-                            <label for="searchReport" class="form-label">Search Report</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </span>
-                                <input type="text" id="searchReport" class="form-control form-control-solid" placeholder="Enter report keyword...">
-                            </div>
-                        </div>
-                        <!--end::Search-->
-    
-                        <!--begin::Filter-->
-                        <div class="col-md-3">
-                            <label for="statusFilter" class="form-label">Status</label>
-                            <select name="category" id="statusFilter" class="form-select form-select-solid" data-control="select2" data-hide-search="true">
-                                <option value="all">All Status</option>
-                                <option value="OPEN">OPEN</option>
-                                <option value="SUBMIT">SUBMIT</option>
-                                <option value="AP1">AP1</option>
-                                <option value="AP2">AP2</option>
-                                <option value="AP3">AP3</option>
-                                <option value="AP4">AP4</option>
-                                <option value="AP5">AP5</option>
-                                <option value="CLOSE">CLOSE</option>
-                                <option value="REJECT">REJECT</option>
-                            </select>
-                        </div>
-                        <!--end::Filter-->
-    
-                        <!--begin::Date Range Picker-->
-                        <div class="col-md-4">
-                            <label for="dateFilter" class="form-label">Date Range</label>
-                            <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range">
-                        </div>
-                        <!--end::Date Range Picker-->
-    
-                        <!--begin::Apply Button-->
-                        <div class="col-md-1 d-flex align-items-end mt-10">
-                            <button class="btn btn-primary w-100" id="applyFilter">Apply</button>
-                        </div>
-                        <!--end::Apply Button-->
-                    </div>
-                </div>
-            </div>
-            <!--end::Filter Card-->
-    
-            <!--begin::Table Card-->
-            <div class="card mb-5 mb-xl-8">
-                <div class="card-header border-0 pt-5">
-                    <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bold fs-3 mb-1">@yield('title')</span>
-                        <span class="text-muted mt-1 fw-semibold fs-7">@yield('subtitle')</span>
-                    </h3>
-                </div>
-                <div class="card-body py-3">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-row-bordered" id="casesTable"> 
-                            <thead>
-                                <tr class="fw-bold text-muted">
-                                    <th class=" text-start sortable" data-column="Case_No">Case Id</th>
-                                    <th class=" text-start sortable" data-column="Case_Date">Case Date</th>
-                                    <th class=" text-start">Case Name</th>
-                                    <th class=" text-start">Case Category</th>
-                                    <th class=" text-start">Created By</th>
-                                    <th class=" text-start">Position</th>
-                                    <th class=" text-start">Status</th>
-                                    <th class=" text-start">Actions</th>
-                                </tr>
-                            </thead> 
-                            <tbody></tbody>
-                        </table>
-=======
->>>>>>> ff25b43 (Update)
                     </div>
                     <!--end::Navbar-->
                 </div>
             </div>
             <!--end::Table Card-->
         </div>
-    </div> --}}
+    </div>
 
     @include('content.case.partial.ApprovalListJs')
     

@@ -20,28 +20,17 @@
 		<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 		<script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
 		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
-<<<<<<< HEAD
 		<!-- Tambahkan ini kalau belum ada -->
 		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
 		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script> 
 
-=======
-		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
-		<script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script> 
-		<script src="//www.google.com/jsapi"></script>
-		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
->>>>>>> ff25b43 (Update)
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->
 	<body id="kt_app_body" data-kt-app-layout="dark-sidebar" data-kt-app-header-fixed="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default">
 		<div class="d-flex flex-column flex-root app-root min-vh-100" id="kt_app_root">
 			<div class="app-page flex-column flex-column-fluid d-flex flex-grow-1" id="kt_app_page">
-<<<<<<< HEAD
 				
-=======
-				{{-- Header --}}
->>>>>>> ff25b43 (Update)
 				@include('layouts.partial.header')
 		
 				<div class="app-wrapper flex-column flex-row-fluid d-flex flex-grow-1" id="kt_app_wrapper">

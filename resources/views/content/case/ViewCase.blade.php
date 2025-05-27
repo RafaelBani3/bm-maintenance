@@ -50,11 +50,8 @@
                                         <option value="AP5">AP5</option>
                                         <option value="CLOSE">CLOSE</option>
                                         <option value="REJECT">REJECT</option>
-<<<<<<< HEAD
-=======
                                         <option value="INPROGRESS">INPROGRESS</option>
                                         <option value="DONE">DONE</option>
->>>>>>> ff25b43 (Update)
                                     </select>
                                 </div>
                                 <!--end::Filter-->
@@ -68,11 +65,7 @@
                         
                                 <!--begin::Apply Button-->
                                 <div class="col-lg-2">
-<<<<<<< HEAD
-                                    <label class="form-label fw-bold text-white">.</label> <!-- agar tetap sejajar -->
-=======
                                     <label class="form-label fw-bold text-white">.</label>
->>>>>>> ff25b43 (Update)
                                     <button class="btn btn-primary w-100" id="applyFilter">
                                         <i class="fa-solid fa-filter me-1"></i> Apply
                                     </button>
@@ -90,8 +83,6 @@
                             <div class="card-title d-flex align-items-center">
                                 <h3 class="fw-bold m-0 text-gray-800">Case List</h3>
                             </div>
-<<<<<<< HEAD
-=======
                             {{-- <div class="mb-4 d-flex align-items-center"> <button id="exportExcel" class="btn btn-success"> <i class="ki-duotone ki-file-excel"></i> Export Excel </button> </div> --}}
                             <div class=" d-flex align-items-center">
                                 <!--begin::Export-->
@@ -104,7 +95,6 @@
                                 <!--end::Export-->
                             </div>
                               
->>>>>>> ff25b43 (Update)
                             <!--end::Title-->
                         </div>
                 
@@ -116,16 +106,6 @@
                                             <table class="table table-row-bordered align-middle gy-5 gs-9" id="casesTable"> 
                                                 <thead>
                                                     <tr class="fw-bold text-muted">
-<<<<<<< HEAD
-                                                        <th class="min-w-150px text-start text-muted align-middle sortable" data-column="Case_No">Case Id</th>
-                                                        <th class="min-w-140px text-start align-middle sortable" data-column="Case_Date">Case Date</th>
-                                                        <th class="min-w-120px text-start align-middle">Case Name</th>
-                                                        <th class="min-w-120px text-start align-middle">Case Category</th>
-                                                        <th class="min-w-120px text-start align-middle">Created By</th>
-                                                        <th class="min-w-120px text-start align-middle">Position</th>
-                                                        <th class="min-w-120px text-start align-middle">Status</th>
-                                                        <th class="min-w-100px text-start align-middle">Actions</th>
-=======
                                                         <th class="min-w-150px text-start text-muted align-middle sortable fs-6" data-column="Case_No">Case Id</th>
                                                         <th class="min-w-140px text-start align-middle sortable fs-6" data-column="Case_Date">Case Date</th>
                                                         <th class="min-w-120px text-start align-middle fs-6">Case Name</th>
@@ -134,7 +114,6 @@
                                                         <th class="min-w-120px text-start align-middle fs-6">Position</th>
                                                         <th class="min-w-120px text-start align-middle fs-6">Status</th>
                                                         <th class="min-w-100px text-start align-middle fs-6">Actions</th>
->>>>>>> ff25b43 (Update)
                                                     </tr>
                                                 </thead> 
                                                 <tbody class="fw-semibold text-gray-600">
@@ -153,99 +132,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
-    {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div id="kt_app_content_container" class="app-container container-fluid">
-                <!--begin::Filter Card-->
-                <div class="card mb-5 mb-xl-8">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title">Filter</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3 align-items-center">
-                            <!--begin::Search-->
-                            <div class="col-md-4">
-                                <label for="searchReport" class="form-label">Search Report</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-magnifying-glass"></i>
-                                    </span>
-                                    <input type="text" id="searchReport" class="form-control form-control-solid" placeholder="Enter report keyword...">
-                                </div>
-                            </div>
-                            <!--end::Search-->
-
-                            <!--begin::Filter-->
-                            <div class="col-md-3">
-                                <label for="statusFilter" class="form-label">Status</label>
-                                <select id="statusFilter" class="form-select form-select-solid" data-control="select2" data-hide-search="true">
-                                    <option value="all">All Status</option>
-                                    <option value="OPEN">OPEN</option>
-                                    <option value="SUBMIT">SUBMIT</option>
-                                    <option value="AP1">AP1</option>
-                                    <option value="AP2">AP2</option>
-                                    <option value="AP3">AP3</option>
-                                    <option value="AP4">AP4</option>
-                                    <option value="AP5">AP5</option>
-                                    <option value="CLOSE">CLOSE</option>
-                                    <option value="REJECT">REJECT</option>
-                                </select>
-                            </div>
-                            <!--end::Filter-->
-
-                            <!--begin::Date Range Picker-->
-                            <div class="col-md-4">
-                                <label for="dateFilter" class="form-label">Date Range</label>
-                                <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range">
-                            </div>
-                            <!--end::Date Range Picker-->
-
-                            <!--begin::Apply Button-->
-                            <div class="col-md-1 d-flex align-items-end mt-10">
-                                <button class="btn btn-primary w-100" id="applyFilter">Apply</button>
-                            </div>
-                            <!--end::Apply Button-->
-                        </div>
-                    </div>
-                </div>
-                <!--end::Filter Card-->
-
-                <!--begin::Table Card-->
-                <div class="card mb-5 mb-xl-8">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold fs-3 mb-1">@yield('title')</span>
-                            <span class="text-muted mt-1 fw-semibold fs-7">@yield('subtitle')</span>
-                        </h3>
-                    </div>
-                    <div class="card-body py-3">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-row-bordered align-middle gs-0 gy-3" id="casesTable"> 
-                                <thead>
-                                    <tr class="fw-bold text-muted">
-                                        <th class="min-w-150px text-start align-middle sortable" data-column="Case_No">Case Id</th>
-                                        <th class="min-w-140px text-start align-middle sortable" data-column="Case_Date">Case Date</th>
-                                        <th class="min-w-120px text-start align-middle">Case Name</th>
-                                        <th class="min-w-120px text-start align-middle">Case Category</th>
-                                        <th class="min-w-120px text-start align-middle">Created By</th>
-                                        <th class="min-w-120px text-start align-middle">Position</th>
-                                        <th class="min-w-120px text-start align-middle">Status</th>
-                                        <th class="min-w-100px text-start align-middle">Actions</th>
-                                    </tr>
-                                </thead> 
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <!--end::Table Card-->
-            </div>
-        </div> --}}
-
-=======
->>>>>>> ff25b43 (Update)
     <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
         <span class="spinner-border text-primary" role="status"></span>
         <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>
@@ -256,8 +142,6 @@
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
-<<<<<<< HEAD
-=======
 		@if(session('error'))
     <script>
         Swal.fire({
@@ -269,5 +153,4 @@
     </script>
 @endif
     <script> $('#exportExcel').on('click', function () { let status = $('#statusFilter').val() || 'all'; let search = $('#searchReport').val() || ''; let url = new URL(window.location.origin + "/BmMaintenance/public/export-cases"); url.searchParams.append('status', status); url.searchParams.append('search', search); window.open(url, '_blank');  }); </script>
->>>>>>> ff25b43 (Update)
 @endsection

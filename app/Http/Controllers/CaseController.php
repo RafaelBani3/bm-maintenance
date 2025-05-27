@@ -116,7 +116,6 @@ class CaseController extends Controller
             Log::info('Case saved successfully', ['case_no' => $case->Case_No]);
 
             Logs::create([
-                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'BA',  
                 'LOG_RefNo' => $case->Case_No,
                 'LOG_Status' => 'CREATED',
@@ -124,7 +123,6 @@ class CaseController extends Controller
                 'LOG_Date' => now(),
                 'LOG_Desc' => 'CREATED NEW CASE : ' . $case->Case_No,
             ]);
-
 
             $uploadedPaths = [];
             if ($request->hasFile('photos')) {
@@ -154,7 +152,6 @@ class CaseController extends Controller
                 ]);
 
                 Logs::create([
-                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'BA',
                     'LOG_RefNo' => $case->Case_No,
                     'LOG_Status' => 'PHOTOS_UPLOADED',
@@ -177,9 +174,8 @@ class CaseController extends Controller
             ]);
 
             Logs::create([
-                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'BA',
-                'LOG_RefNo' => $case->Case_No,
+                'LOG_RefNo' => null,
                 'LOG_Status' => 'FAILED',
                 'LOG_User' => Auth::id(),
                 'LOG_Date' => now(),
@@ -194,24 +190,18 @@ class CaseController extends Controller
         }
     }
 
+    // Page Edit Case
     public function EditCase(Request $request)
     {
         $caseNo = $request->query('case_no');
 
         $case = Cases::where('Case_No', $caseNo)->firstOrFail();
-
-        if ($case->Case_Status === 'REJECT') {
-            $case->Case_Status = 'OPEN';
-            $case->save();
-        }
-
         $categories = Cats::all();
         $subCategories = Subcats::where('Cat_No', $case->Cat_No)->get();
         $caseImages = Imgs::where('IMG_RefNo', $case->Case_No)->get();
 
         return view('content.case.EditCase', compact('case', 'categories', 'subCategories', 'caseImages'));
     }
-
 
     public function deleteImage(Request $request)
     {
@@ -237,18 +227,18 @@ class CaseController extends Controller
         $image->delete();
 
         DB::table('Logs')->insert([
-            'Logs_No' => Logs::generateLogsNo(),
             'LOG_Type' => 'BA',
             'LOG_RefNo' => $image->IMG_RefNo,
             'LOG_Status' => 'IMAGE_DELETED',
             'LOG_User' => Auth::id(),
             'LOG_Date' => now(),
-            'LOG_Desc' => "Image deleted for case : {$image->IMG_RefNo}",
+            'LOG_Desc' => "Image deleted for case {$image->IMG_RefNo}",
         ]);
 
         return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus.']);
     }
 
+    // Update Case
     // Update Case
     public function UpdateCase(Request $request)
     {
@@ -279,16 +269,17 @@ class CaseController extends Controller
                     : redirect()->back()->with('error', 'Case tidak ditemukan.');
             }
 
-        // Update Data Case
-        $case->Case_Name = $request->cases;
-        $case->Case_Date = $request->date;
-        $case->Cat_No = $request->category;
-        $case->Scat_No = $request->sub_category;
-        $case->Case_Chronology = $request->chronology;
-        $case->Case_Outcome = $request->impact;
-        $case->Case_Suggest = $request->suggestion;
-        $case->Case_Action = $request->action;
-        $case->Update_Date = now();
+            $formattedDate = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+
+            $case->Case_Name = $request->cases;
+            $case->Case_Date = $formattedDate;
+            $case->Cat_No = $request->category;
+            $case->Scat_No = $request->sub_category;
+            $case->Case_Chronology = $request->chronology;
+            $case->Case_Outcome = $request->impact;
+            $case->Case_Suggest = $request->suggestion;
+            $case->Case_Action = $request->action;
+            $case->Update_Date = now();
 
             $user = User::find($case->CR_BY);
             if (!$user) {
@@ -319,15 +310,15 @@ class CaseController extends Controller
 
             Log::info('UpdateCase: Case berhasil diperbarui', ['case_no' => $request->case_no]);
 
-        // Logs
-        DB::table('Logs')->insert([
-            'LOG_Type' => 'BA',
-            'LOG_RefNo' => $case->Case_No,
-            'LOG_Status' => 'UPDATED',
-            'LOG_User' => Auth::id(),
-            'LOG_Date' => now(),
-            'LOG_Desc' => 'Case updated successfully',
-        ]);
+            // Logs
+            DB::table('Logs')->insert([
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $case->Case_No,
+                'LOG_Status' => 'SUBMITTED',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'SUCCESSFULLY SUBMITTED A CASE', 
+            ]);
 
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $image) {
@@ -348,44 +339,45 @@ class CaseController extends Controller
                         'IMG_Realname' => $image->getClientOriginalName(),
                     ]);
 
-                // Log image upload
-                DB::table('Logs')->insert([
-                    'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $case->Case_No,
-                    'LOG_Status' => 'IMAGE_ADDED',
-                    'LOG_User' => Auth::id(),
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => "New image for case {$case->Case_No}",
-                ]);
+                    DB::table('Logs')->insert([
+                        'LOG_Type' => 'BA',
+                        'LOG_RefNo' => $case->Case_No,
+                        'LOG_Status' => 'IMAGE_ADDED',
+                        'LOG_User' => Auth::id(),
+                        'LOG_Date' => now(),
+                        'LOG_Desc' => "New image {$case->Case_No} Uploaded",
+                    ]);
+                }
             }
-        }
 
-        // Send Notification
-        if ($case->Case_AP1) {
-            Notification::create([
-                'Notif_Title' => 'Approval Case: ' . $case->Case_No,
-                'Notif_Text' => 'A case has been updated and requires your approval.',
-                'Notif_IsRead' => 'N',
-                'Notif_From' => Auth::id(),
-                'Notif_To' => $case->Case_AP1,
-                'Notif_Date' => now(),
-                'Notif_Type' => 'BA',
-            ]);
+            if ($case->Case_AP1) {
+                Notification::create([
+                    'Notif_Title' => $case->Case_No,
+                    'Reference_No' => $case->Case_No,
+                    'Notif_Text' => 'A case has been submitted and requires your approval.',
+                    'Notif_IsRead' => 'N',
+                    'Notif_From' => Auth::id(),
+                    'Notif_To' => $case->Case_AP1,  
+                    'Notif_Date' => now(),
+                    'Notif_Type' => 'BA',
+                ]);
+                
+                
 
                 Log::info('UpdateCase: Notifikasi berhasil dikirim', [
                     'case_no' => $case->Case_No,
                     'notif_to' => $case->Case_AP1,
                 ]);
 
-            DB::table('Logs')->insert([
-                'LOG_Type' => 'BA',
-                'LOG_RefNo' => $case->Case_No,
-                'LOG_Status' => 'NOTIFICATION_SENT',
-                'LOG_User' => Auth::id(),
-                'LOG_Date' => now(),
-                'LOG_Desc' => "Notification sent to user {$case->Case_AP1}",
-            ]);
-        }
+                DB::table('Logs')->insert([
+                    'LOG_Type' => 'BA',
+                    'LOG_RefNo' => $case->Case_No,
+                    'LOG_Status' => 'NOTIFICATION_SENT',
+                    'LOG_User' => Auth::id(),
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => "Notification sent to user {$case->Case_AP1}",
+                ]);
+            }
 
             if ($request->ajax()) {
                 return response()->json([
@@ -403,14 +395,14 @@ class CaseController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-        DB::table('Logs')->insert([
-            'LOG_Type' => 'BA',
-            'LOG_RefNo' => $request->case_no,
-            'LOG_Status' => 'ERROR',
-            'LOG_User' => Auth::id(),
-            'LOG_Date' => now(),
-            'LOG_Desc' => 'Error updating case: ' . $e->getMessage(),
-        ]);
+            DB::table('Logs')->insert([
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $request->case_no,
+                'LOG_Status' => 'ERROR',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => Str::limit('Error Submitting Case: ' . $e->getMessage(), 250),
+            ]);
 
             if ($request->ajax()) {
                 return response()->json([
@@ -481,39 +473,63 @@ class CaseController extends Controller
         }
 
         $case = Cases::select(
-            'cases.Case_No',
-            'cases.Case_Name',
-            'cases.CR_DT',
-            'cases.Cat_No',
-            'Cats.Cat_Name as Category',
-            'Subcats.Scat_Name as SubCategory', 
-            'cases.CR_BY',
-            'Users.Fullname as User',
-            'cases.Case_Status',
-            'Users.PS_ID',
-            'Positions.PS_Name',
-            'cases.Case_Chronology',
-            'cases.Case_Outcome',
-            'cases.Case_Suggest',
-            'cases.Case_Action',
-            'cases.Case_ApMaxStep', 
-            'cases.Case_RMK1', 'cases.Case_RMK2', 'cases.Case_RMK3', 
-            'cases.Case_RMK4', 'cases.Case_RMK5' 
-        )
-        ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
-        ->leftJoin('Subcats', 'cases.Scat_No', '=', 'Subcats.Scat_No')
-        ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-        ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id')
-        ->where('cases.Case_No', $case_no)
-        ->first();
+                'cases.Case_No',
+                'cases.Case_Name',
+                'cases.CR_DT',
+                'cases.Cat_No',
+                'Cats.Cat_Name as Category',
+                'Subcats.Scat_Name as SubCategory', 
+                'cases.CR_BY',
+                'Users.Fullname as User',
+                'cases.Case_Status',
+                'Users.PS_ID',
+                'Positions.PS_Name',
+                'cases.Case_Chronology',
+                'cases.Case_Outcome',
+                'cases.Case_Suggest',
+                'cases.Case_Action',
+                'cases.Case_ApMaxStep', 
+                'cases.Case_RMK1', 'cases.Case_RMK2', 'cases.Case_RMK3', 
+                'cases.Case_RMK4', 'cases.Case_RMK5' 
+            )
+            ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
+            ->leftJoin('Subcats', 'cases.Scat_No', '=', 'Subcats.Scat_No')
+            ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
+            ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id')
+            ->where('cases.Case_No', $case_no)
+            ->first();
 
         if (!$case) {
             return redirect()->back()->with('error', 'Case not found.');
         }
 
-        return view('content.case.DetailCase', compact('case', 'images'));
+        $images = Imgs::where('IMG_RefNo', $case_no)->get();
+
+        $logs = DB::table('logs')
+            ->join('users', 'logs.LOG_User', '=', 'users.id')
+            ->select('logs.*', 'users.Fullname as user_name')
+            ->where('LOG_Type', 'BA') // 'BA' untuk Case
+            ->where('LOG_RefNo', $case->Case_No)
+            ->orderBy('LOG_Date', 'desc')
+            ->get();
+
+        return view('content.case.DetailCase', compact('case', 'images', 'logs'));
     }
 
+    
+    // Mengarahkan Ke Page Approval List (Table)
+    public function ApprovalListBA(){
+        
+        return view('content.case.ApprovalList');
+    }
+
+    public function storeCaseNoApprovalList(Request $request)
+    {
+        $request->session()->put('case_no', $request->case_no);
+        return redirect('/Case/Approval/Detail');
+    }
+
+    // Mengambil data Case Dan dimunculkan paga Approval List Case
     public function getApprovalCases(Request $request)
     {
         $user = Auth::user();
@@ -573,6 +589,7 @@ class CaseController extends Controller
         if ($status && $status !== '') {
             $cases->where('cases.Case_Status', $status);
         }
+        
     
         return response()->json($cases->get());
     }
@@ -621,10 +638,29 @@ class CaseController extends Controller
         if (!$case) {
             return abort(404, "Case not found");
         }
-
-        return view('content.case.ApprovalDetail', compact('case', 'images'));
+    
+        $images = Imgs::where('IMG_RefNo', $decodedCaseNo)->get();
+        
+               $logs = DB::table('logs')
+            ->join('users', 'logs.LOG_User', '=', 'users.id')
+            ->select('logs.*', 'users.Fullname as user_name')
+            ->where('LOG_Type', 'BA') // 'BA' untuk Case
+            ->where('LOG_RefNo', $case->Case_No)
+            ->orderBy('LOG_Date', 'desc')
+            ->get();
+    
+        return view('content.case.ApprovalDetail', compact('case', 'images','logs'));
     }
+    
+    // Update Notification (Terbaca)
+    public function markAsRead($id)
+    {
+        $notification = Notification::findOrFail($id);
+        $notification->Notif_IsRead = 'Y';
+        $notification->save();
 
+        return response()->json(['success' => true]);
+    }
 
     // Function Approve
     public function approveReject(Request $request, $case_no)
@@ -641,34 +677,55 @@ class CaseController extends Controller
                 $case->Case_Status = 'AP1'; 
                 $case->Case_RMK1 = $notes;
                 $case->Case_ApStep = 2;
+
+                Logs::create([
+                    'LOG_Type'   => 'BA',
+                    'LOG_RefNo'  => $case_no,
+                    'LOG_Status' => 'APPROVED1',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' APPROVED CASE' ,
+                ]);
+
+                Notification::create([
+                    'Notif_Title' => 'Case Approved',
+                    'Reference_No' => $case->Case_No,
+                    'Notif_Text'  => 'Case ' . $case->Case_No . ' approved by ' . $user->Fullname,
+                    'Notif_IsRead' => 'N',
+                    'Notif_From'  => $user->id,
+                    'Notif_To'    => $case->Case_AP2, 
+                    'Notif_Date'  => Carbon::now(),
+                    'Notif_Type'  => 'BA'
+                ]);
             } elseif ($case->Case_ApStep == 2) {
                 $case->Case_Status = 'AP2'; 
                 $case->Case_RMK2 = $notes;
                 $case->Case_ApStep = 2; 
+
+                Logs::create([
+                    'LOG_Type'   => 'BA',
+                    'LOG_RefNo'  => $case_no,
+                    'LOG_Status' => 'APPROVED2',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' APPROVED CASE' ,
+                ]);
+
+                Notification::create([
+                    'Notif_Title' => 'Case Approved',
+                    'Reference_No' => $case->Case_No,
+                    'Notif_Text'  => 'Case ' . $case->Case_No . ' approved by ' . $user->Fullname,
+                    'Notif_IsRead' => 'N',
+                    'Notif_From'  => $user->id,
+                    'Notif_To'    => $case->CR_BY, 
+                    'Notif_Date'  => Carbon::now(),
+                    'Notif_Type'  => 'BA'
+                ]);
             } else {
                 return response()->json(['error' => 'Invalid approval step'], 400);
             }
         
             $case->save();
-        
-            Logs::create([
-                'LOG_Type'   => 'BA',
-                'LOG_RefNo'  => $case_no,
-                'LOG_Status' => 'APPROVED',
-                'LOG_User'   => $user->id,
-                'LOG_Date'   => Carbon::now(),
-                'LOG_Desc'   => 'Case Approved by ' . $user->Fullname,
-            ]);
-        
-            Notification::create([
-                'Notif_Title' => 'Case Approved',
-                'Notif_Text'  => 'Case ' . $case->Case_No . ' approved by ' . $user->Fullname,
-                'Notif_IsRead' => 'N',
-                'Notif_From'  => $user->id,
-                'Notif_To'    => $case->Case_AP2, 
-                'Notif_Date'  => Carbon::now(),
-                'Notif_Type'  => 'BA'
-            ]);
         
             return response()->json(['message' => 'Case Approved Successfully']);
         } else {
@@ -679,26 +736,16 @@ class CaseController extends Controller
                 $case->Case_RejBy = $user->id;
                 $case->Case_RejDate = Carbon::now();
                 $case->Case_RMK1 = $notes;
-                
+
                 Notification::create([
-                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Rejected',
+                    'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' rejected by ' . $user->Fullname,
                     'Notif_IsRead' => 'N',
                     'Notif_From'  => $user->id,
                     'Notif_To'    => $case->CR_BY,
                     'Notif_Date'  => Carbon::now(),
-                    'Notif_Type'  => 'BA',
-                ]);
-
-                Logs::create([
-                    'Logs_No'    => Logs::generateLogsNo(),
-                    'LOG_Type'   => 'BA',
-                    'LOG_RefNo'  => $case_no,
-                    'LOG_Status' => 'REJECTED 1',
-                    'LOG_User'   => $user->id,
-                    'LOG_Date'   => Carbon::now(),
-                    'LOG_Desc'   => $user->Fullname . ' REJECTED CASE ' . $notes ,
+                    'Notif_Type'  => 'BA'
                 ]);
 
                 Logs::create([
@@ -713,16 +760,14 @@ class CaseController extends Controller
             } elseif ($case->Case_ApStep == 2) {
                 $case->Case_Status = 'REJECT';
                 $case->Case_IsReject = 'Y';
-                $case->Case_ApStep == 1;
                 $case->Case_RejGroup = 'AP2';
                 $case->Case_RejBy = $user->id;
                 $case->Case_RejDate = Carbon::now();
                 $case->Case_RMK2 = $notes;
-                
-                // Notif Ke Pihak Approval 1
+
                 Notification::create([
-                    'Notif_No' => Logs::generateLogsNo(),
                     'Notif_Title' => 'Case Rejected',
+                    'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' rejected by ' . $user->Fullname,
                     'Notif_IsRead' => 'N',
                     'Notif_From'  => $user->id,
@@ -731,10 +776,9 @@ class CaseController extends Controller
                     'Notif_Type'  => 'BA'
                 ]);
 
-                // Notif Ke Pihak Creator
                 Notification::create([
-                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Rejected',
+                    'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' rejected by ' . $user->Fullname,
                     'Notif_IsRead' => 'N',
                     'Notif_From'  => $user->id,
@@ -742,25 +786,26 @@ class CaseController extends Controller
                     'Notif_Date'  => Carbon::now(),
                     'Notif_Type'  => 'BA'
                 ]);
+
+                Logs::create([
+                    'LOG_Type'   => 'BA',
+                    'LOG_RefNo'  => $case_no,
+                    'LOG_Status' => 'REJECTED2',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED CASE',
+                ]);
             } else {
                 return response()->json(['error' => 'Invalid approval step'], 400);
             }
 
             $case->save();
         
-            Logs::create([
-                'LOG_Type'   => 'BA',
-                'LOG_RefNo'  => $case_no,
-                'LOG_Status' => 'REJECTED',
-                'LOG_User'   => $user->id,
-                'LOG_Date'   => Carbon::now(),
-                'LOG_Desc'   => 'Case Rejected by ' . $user->Fullname,
-            ]);
-        
             return response()->json(['message' => 'Case Rejected']);
         }
         
     }
+    
 
 
 }

@@ -19,11 +19,6 @@
             const table = $('#casesTable').DataTable({
                 ajax: {
                     url: window.location.origin + "/BmMaintenance/public/api/Aproval-cases",
-<<<<<<< HEAD
-
-                    // url: '/api/Aproval-cases',
-=======
->>>>>>> ff25b43 (Update)
                     dataSrc: ''
                 },
                 columns: [
@@ -66,11 +61,7 @@
                             const baseUrl = window.location.origin + "/BmMaintenance/public";
                             return `
                                 <div class="d-flex align-items-center">
-<<<<<<< HEAD
-                                    <a href="${baseUrl}/Case/Approval/Detail/${encodedCaseNo}" class="btn btn-secondary d-flex align-items-center gap-1">
-=======
                                     <a href="${baseUrl}/Case/Approval/Detail/${encodedCaseNo}" class="btn btn-secondary hover-scale d-flex align-items-center gap-1">
->>>>>>> ff25b43 (Update)
                                         <i class="ki-duotone ki-eye fs-5">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
@@ -81,14 +72,8 @@
                                 </div>`;
                         }
                     }
-<<<<<<< HEAD
-
-                ],
-                scrollY: "600px",
-=======
                 ],
                 scrollY: "350px",
->>>>>>> ff25b43 (Update)
                 scrollCollapse: true,
                 fixedColumns: {
                     left: 2

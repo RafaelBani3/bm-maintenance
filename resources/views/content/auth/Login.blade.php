@@ -74,19 +74,9 @@
 
                                 <!--begin::Heading-->
 								<div class="text-center mb-11">
-<<<<<<< HEAD
-									<!--begin::Title-->
-									<h1 class="text-gray-900 fw-bolder mb-3">Login BM-Maintenance</h1>  
-									<!--end::Title-->
-										
-                                    <!--begin::Subtitle-->
-									<div class="text-gray-500 fw-semibold fs-6">KPN CORPORATION</div>
-									<!--end::Subtitle=-->
-=======
 									<img src="assets/media/logos/kpn-corp-logo.svg" alt="KPN Logo" class="mb-5" style="height: 70px;">
 									<h1 class="text-gray-900 fw-bold fs-1 mb-3">Welcome to BM-Maintenance</h1>
 									<div class="text-muted fw-semibold fs-6">KPN CORPORATION</div>
->>>>>>> ff25b43 (Update)
 								</div>
 								<!--begin::Heading-->
 

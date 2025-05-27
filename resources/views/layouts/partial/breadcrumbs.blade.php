@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {{-- <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-center">
         <!-- Tombol Back -->
@@ -8,21 +7,6 @@
                 <span class="path2"></span>
             </i>        
         </a>
-=======
-    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-        <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
-            
-            <!-- Tombol Back -->
-            <a href="#" class="btn btn-icon btn-circle btn-primary me-3" onclick="window.history.go(-1); return false;">
-                <i class="ki-duotone ki-arrow-left fs-1">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>        
-            </a>
-                
-            <!--begin::Page title-->
-            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
->>>>>>> ff25b43 (Update)
 
                 <!--begin::Title-->
                 <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">@yield('title')</h1>
@@ -49,7 +33,6 @@
                 <!--end::Breadcrumb-->
             </div>
         </div>
-<<<<<<< HEAD
     </div>
 </div> --}}
 
@@ -91,6 +74,4 @@
                 <!--end::Breadcrumb-->
             </div>
         </div>
-=======
->>>>>>> ff25b43 (Update)
     </div>

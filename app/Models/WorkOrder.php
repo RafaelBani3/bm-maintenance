@@ -11,10 +11,6 @@ class WorkOrder extends Model
     public $incrementing = false; 
     protected $keyType = 'string'; 
     protected $table = 'work_orders';
-<<<<<<< HEAD
-    public $timestamps = false; 
-=======
->>>>>>> ff25b43 (Update)
     
     protected $fillable = [
         'WO_No', 'Case_No', 'WOC_No', 'CR_BY', 'CR_DT',
@@ -40,9 +36,6 @@ class WorkOrder extends Model
     {
         return $this->belongsTo(User::class, 'CR_BY', 'id');
     }
-<<<<<<< HEAD
-    
-=======
 
     public function completedBy()
     {
@@ -53,11 +46,6 @@ class WorkOrder extends Model
     {
         return $this->belongsTo(User::class, 'CR_BY', 'id');
     }
-
-    // public function technicians()
-    // {
-    //     return $this->belongsToMany(User::class, 'WO_DoneBy', 'WO_No', 'technician_id');
-    // }
 
     public function technicians()
     {
@@ -89,7 +77,6 @@ class WorkOrder extends Model
     public function completer() {
         return $this->belongsTo(User::class, 'WO_CompBy');
     }
->>>>>>> ff25b43 (Update)
 
     public function getIncrementWONo()
     {
@@ -154,5 +141,4 @@ class WorkOrder extends Model
         return $this->belongsTo(User::class, 'WO_AP2', 'id'); 
     }
 
-    
 }

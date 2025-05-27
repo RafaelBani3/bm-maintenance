@@ -17,14 +17,11 @@ class technician extends Model
         'technician_Name',
     ];
 
-<<<<<<< HEAD
-=======
     public function workOrders()
     {
         return $this->belongsToMany(WorkOrder::class, 'WO_DoneBy', 'technician_id', 'WO_No');
     }
 
->>>>>>> ff25b43 (Update)
     public function getIncrementTechnicianNo()
     {
         $currentYear = date('Y');
@@ -39,9 +36,6 @@ class technician extends Model
             
         return 'Technician' . str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
     }
-<<<<<<< HEAD
-=======
 
 
->>>>>>> ff25b43 (Update)
 }
