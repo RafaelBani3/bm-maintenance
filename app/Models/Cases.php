@@ -11,7 +11,7 @@ class Cases extends Model
     protected $primaryKey = 'Case_No';
     public $incrementing = false; 
     protected $keyType = 'string'; 
-    protected $table = 'Cases';
+    protected $table = 'cases';
 
     protected $fillable = [
         'Case_No',    
