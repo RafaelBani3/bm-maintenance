@@ -742,7 +742,7 @@
                                         title: 'Success',
                                         text: response.data.message,
                                     }).then(() => {
-                                        window.location.href = `${baseUrl}/Material-Request/List-Approval`;
+                                        window.location.href = window.location.origin + `/BmMaintenance/public/Material-Request/List-Approval`;
                                     });
                                 })
                                 .catch(error => {
