@@ -83,7 +83,7 @@ return [
     | "local_sites_path" is an absolute base path for your sites or projects
     | on your local computer where your IDE or code editor is running on.
     |
-    | Example values: "/Users/<name>/Code", "C:\Users\<name>\Documents\Code"
+    | Example values: "/users/<name>/Code", "C:\users\<name>\Documents\Code"
     |
     */
 

@@ -29,10 +29,10 @@ return new class extends Migration
             $table->unsignedBigInteger('WO_MR'); 
             $table->enum('WO_IsComplete', ['Y','N']);
             $table->dateTime('WO_CompDate')->nullable(); 
-            $table->unsignedBigInteger('WO_CompBy')->nullable(); //Foreign Key Users
+            $table->unsignedBigInteger('WO_CompBy')->nullable(); //Foreign Key users
             $table->enum('WO_IsReject', ['Y','N'])->nullable();
             $table->enum('WO_RejGroup', ['AP1', 'AP2' ,'AP3', 'AP4', 'AP5'])->nullable();
-            $table->unsignedBigInteger('WO_RejBy')->nullable(); //Foreign Key Users
+            $table->unsignedBigInteger('WO_RejBy')->nullable(); //Foreign Key users
             $table->dateTime('WO_RejDate')->nullable(); 
 
             $table->string('WO_RMK1',255)->nullable(); 
@@ -41,11 +41,11 @@ return new class extends Migration
             $table->string('WO_RMK4',255)->nullable(); 
             $table->string('WO_RMK5',255)->nullable(); 
             
-            $table->unsignedBigInteger('WO_AP1')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('WO_AP2')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('WO_AP3')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('WO_AP4')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('WO_AP5')->nullable(); //Foreign Key Users
+            $table->unsignedBigInteger('WO_AP1')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('WO_AP2')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('WO_AP3')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('WO_AP4')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('WO_AP5')->nullable(); //Foreign Key users
 
             $table->integer('WO_APStep')->nullable(); 
             $table->integer('WO_APMaxStep')->nullable(); 

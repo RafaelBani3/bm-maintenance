@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('MR_Status', ['OPEN','SUBMIT','AP1','AP2','AP3','AP4','AP5','CLOSE','REJECT','INPROGRESS','DONE']);
             $table->enum('MR_IsReject', ['Y', 'N']); 
             $table->enum('MR_RejGroup', ['AP1', 'AP2' ,'AP3', 'AP4', 'AP5'])->nullable();
-            $table->unsignedBigInteger('MR_RejBy')->nullable(); //Foreign Key Users
+            $table->unsignedBigInteger('MR_RejBy')->nullable(); //Foreign Key users
             $table->dateTime('MR_RejDate')->nullable(); 
 
             $table->string('MR_RMK1',255)->nullable(); 
@@ -33,11 +33,11 @@ return new class extends Migration
             $table->string('MR_RMK4',255)->nullable(); 
             $table->string('MR_RMK5',255)->nullable(); 
             
-            $table->unsignedBigInteger('MR_AP1')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('MR_AP2')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('MR_AP3')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('MR_AP4')->nullable(); //Foreign Key Users
-            $table->unsignedBigInteger('MR_AP5')->nullable(); //Foreign Key Users
+            $table->unsignedBigInteger('MR_AP1')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('MR_AP2')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('MR_AP3')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('MR_AP4')->nullable(); //Foreign Key users
+            $table->unsignedBigInteger('MR_AP5')->nullable(); //Foreign Key users
 
             
             $table->integer('MR_APStep')->nullable(); 

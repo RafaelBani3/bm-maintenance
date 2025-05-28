@@ -472,9 +472,9 @@ class MRController extends Controller
     //             'Mat_Req.MR_Status',
     //             'Mat_Req.MR_IsUrgent',
     //             'Mat_Req.CR_BY',
-    //             'Users.Fullname as CreatedBy'
+    //             'users.Fullname as CreatedBy'
     //         )
-    //         ->leftJoin('Users', 'Mat_Req.CR_BY', '=', 'Users.id')
+    //         ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
     //         ->where(function($q) use ($userId) {
     //             $q->where(function($sub) use ($userId) {
     //                 $sub->where('Mat_Req.MR_APStep', 1)
@@ -533,9 +533,9 @@ class MRController extends Controller
                     'Mat_Req.MR_Status',
                     'Mat_Req.MR_IsUrgent',
                     'Mat_Req.CR_BY',
-                    DB::raw('COALESCE(Users.Fullname, "Unknown") as CreatedBy')
+                    DB::raw('COALESCE(users.Fullname, "Unknown") as CreatedBy')
                 )
-                ->leftJoin('Users', 'Mat_Req.CR_BY', '=', 'Users.id')
+                ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
                 ->where(function($q) use ($userId) {
                     $q->where(function($sub) use ($userId) {
                         $sub->where('Mat_Req.MR_APStep', 1)

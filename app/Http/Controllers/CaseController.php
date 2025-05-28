@@ -507,9 +507,9 @@ class CaseController extends Controller
                 'Cats.Cat_Name as Category',
                 'Subcats.Scat_Name as SubCategory', 
                 'cases.CR_BY',
-                'Users.Fullname as User',
+                'users.Fullname as User',
                 'cases.Case_Status',
-                'Users.PS_ID',
+                'users.PS_ID',
                 'Positions.PS_Name',
                 'cases.Case_Chronology',
                 'cases.Case_Outcome',
@@ -521,8 +521,8 @@ class CaseController extends Controller
             )
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
             ->leftJoin('Subcats', 'cases.Scat_No', '=', 'Subcats.Scat_No')
-            ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-            ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id')
+            ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')
+            ->leftJoin('Positions', 'users.PS_ID', '=', 'Positions.id')
             ->where('cases.Case_No', $case_no)
             ->first();
 
@@ -590,16 +590,16 @@ class CaseController extends Controller
                 'cases.Cat_No',
                 'Cats.Cat_Name as Category',
                 'cases.CR_BY',
-                'Users.Fullname as User',
+                'users.Fullname as User',
                 'cases.Case_Status',
-                'Users.PS_ID',
+                'users.PS_ID',
                 'Positions.PS_Name',
                 'cases.Case_ApStep',
                 'cases.Case_ApMaxStep'
             )
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
-            ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-            ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id')
+            ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')
+            ->leftJoin('Positions', 'users.PS_ID', '=', 'Positions.id')
             ->whereNotIn('cases.Case_Status', ['CLOSE'])
             ->where(function ($query) use ($user) {
                 $query->where(function ($q) use ($user) {
@@ -656,7 +656,7 @@ class CaseController extends Controller
             'cases.*', 
             'Cats.Cat_Name as Category', 
             'Subcats.Scat_Name as SubCategory', 
-            'Users.Fullname as CreatedBy', 
+            'users.Fullname as CreatedBy', 
             'UsersReject.Fullname as Case_RejectedBy',
             'Ap1.Fullname as Approver1',    
             'Ap2.Fullname as Approver2',
@@ -666,13 +666,13 @@ class CaseController extends Controller
         )
         ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
         ->leftJoin('Subcats', 'cases.Scat_No', '=', 'Subcats.Scat_No')
-        ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-        ->leftJoin('Users as UsersReject', 'cases.Case_RejBy', '=', 'UsersReject.id')
-        ->leftJoin('Users as Ap1', 'cases.Case_AP1', '=', 'Ap1.id')
-        ->leftJoin('Users as Ap2', 'cases.Case_AP2', '=', 'Ap2.id')
-        ->leftJoin('Users as Ap3', 'cases.Case_AP3', '=', 'Ap3.id')
-        ->leftJoin('Users as Ap4', 'cases.Case_AP4', '=', 'Ap4.id')
-        ->leftJoin('Users as Ap5', 'cases.Case_AP5', '=', 'Ap5.id')
+        ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')
+        ->leftJoin('users as UsersReject', 'cases.Case_RejBy', '=', 'UsersReject.id')
+        ->leftJoin('users as Ap1', 'cases.Case_AP1', '=', 'Ap1.id')
+        ->leftJoin('users as Ap2', 'cases.Case_AP2', '=', 'Ap2.id')
+        ->leftJoin('users as Ap3', 'cases.Case_AP3', '=', 'Ap3.id')
+        ->leftJoin('users as Ap4', 'cases.Case_AP4', '=', 'Ap4.id')
+        ->leftJoin('users as Ap5', 'cases.Case_AP5', '=', 'Ap5.id')
         ->where('cases.Case_No', $decodedCaseNo)
         ->first();
     

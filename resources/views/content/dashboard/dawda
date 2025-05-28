@@ -140,7 +140,7 @@
 													<!--begin::Title-->
 													<span class="fs-6 fw-bolder text-gray-800 d-block mb-2">Today’s Heroes</span>
 													<!--end::Title-->
-													<!--begin::Users group-->
+													<!--begin::users group-->
 													<div class="symbol-group symbol-hover flex-nowrap">
 														<div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Alan Warden">
 															<span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
@@ -164,7 +164,7 @@
 															<span class="symbol-label bg-light text-gray-400 fs-8 fw-bold">+42</span>
 														</a>
 													</div>
-													<!--end::Users group-->
+													<!--end::users group-->
 												</div>
 												<!--end::Card body-->
 											</div>
@@ -180,7 +180,7 @@
 													<!--begin::Title-->
 													<h3 class="card-title align-items-start flex-column">
 														<span class="card-label fw-bold text-gray-900">Sales This Months</span>
-														<span class="text-gray-500 mt-1 fw-semibold fs-6">Users from all channels</span>
+														<span class="text-gray-500 mt-1 fw-semibold fs-6">users from all channels</span>
 													</h3>
 													<!--end::Title-->
 													<!--begin::Toolbar-->
