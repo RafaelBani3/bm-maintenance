@@ -643,8 +643,9 @@
                 const action = this.getAttribute('data-action');
                 const actionText = action === 'approve' ? 'Approve' : 'Reject';
                 const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}"; 
-                const baseUrl = "http://localhost/BmMaintenance/public";
-                const url = `${baseUrl}/material-request/approve/${mr_no_encoded}`;
+                // const baseUrl = "BmMaintenance/public";
+                const url = window.location.origin + `/BmMaintenance/public/material-request/approve/${mr_no_encoded}`;
+
 
                 const quillContentRaw = document.querySelector('#kt_docs_quill_basic .ql-editor')?.innerText.trim() || '';
                 const quillContentHTML = document.querySelector('#kt_docs_quill_basic .ql-editor')?.innerHTML || '';
