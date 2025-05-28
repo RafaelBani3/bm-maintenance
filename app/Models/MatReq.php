@@ -106,7 +106,7 @@ class MatReq extends Model
     
         $romanMonth = $monthRoman[$currentMonth];
     
-        $lastNumber = DB::table('mat_req')
+        $lastNumber = DB::table('Mat_Req')
             ->whereYear('CR_DT', $currentYear)
             ->whereMonth('CR_DT', $currentMonth)
             ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(MR_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
