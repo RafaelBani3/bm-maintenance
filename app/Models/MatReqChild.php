@@ -8,7 +8,7 @@ class MatReqChild extends Model
 {
     use HasFactory;
 
-    protected $table = 'mat_req_child';
+    protected $table = 'Mat_Req_Child';
     public $incrementing = false;
     protected $primaryKey = null;
     protected $keyType = 'string';

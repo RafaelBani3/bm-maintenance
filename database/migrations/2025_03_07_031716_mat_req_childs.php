@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mat_req_child', function (Blueprint $table) {
+        Schema::create('Mat_Req_Child', function (Blueprint $table) {
                 $table->string('MR_No', 300);
                 $table->integer('MR_Line');
                 $table->integer('Item_Oty'); 
