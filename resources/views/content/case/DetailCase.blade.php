@@ -483,10 +483,12 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, Revision',
                 cancelButtonText: 'Cancle'
-            }).then((result) => {
+            }).then((result) => {   
                 if (result.isConfirmed) {
                     const encodedCaseNo = encodeURIComponent(caseNo);
-                    const url = `http://localhost/BmMaintenance/public/Case/Edit?case_no=${encodedCaseNo}`;
+                    const url =  window.location.origin + "/BmMaintenance/public/Case/Edit?case_no=${encodedCaseNo}";
+                    // window.location.origin + "/BmMaintenance/public/api/Aproval-cases",
+
                     window.location.href = url;
                 }
             });

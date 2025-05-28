@@ -305,10 +305,10 @@
         <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>
     </div>
 
-    <script>
+     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
-
+    
     @include('content.case.partial.EditJs')
 @endsection
 
