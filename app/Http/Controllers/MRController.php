@@ -304,7 +304,7 @@ class MRController extends Controller
 
 // Page List MR
     public function PageListMR(){
-        return view('content.mr.ListMr');
+        return view('content.mr.ListMR');
     }
 
 // Ambil data MR untuk ditampilkan dalam table
