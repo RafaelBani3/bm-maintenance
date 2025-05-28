@@ -73,7 +73,7 @@ class WocController extends Controller
                 $query->where('WO_NeedMat', 'N')
                     ->orWhereIn('WO_No', function ($subquery) {
                         $subquery->select('WO_No')
-                            ->from('mat_req')
+                            ->from('Mat_Req')
                             ->whereIn('MR_Status', ['DONE', 'CLOSE']); 
                     });
             })
