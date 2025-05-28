@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Foreign key
-            $table->foreign('Cat_No')->references('Cat_No')->on('cats')->onDelete('cascade');
+            $table->foreign('Cat_No')->references('Cat_No')->on('Cats')->onDelete('cascade');
 
         });
     }
