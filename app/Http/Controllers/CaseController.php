@@ -533,9 +533,9 @@ class CaseController extends Controller
 
         $images = Imgs::where('IMG_RefNo', $case_no)->get();
 
-        $logs = DB::table('logs')
-            ->join('users', 'logs.LOG_User', '=', 'users.id')
-            ->select('logs.*', 'users.Fullname as user_name')
+        $logs = DB::table('Logs')
+            ->join('users', 'Logs.LOG_User', '=', 'users.id')
+            ->select('Logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'BA') 
             ->where('LOG_RefNo', $case->Case_No)
             ->orderBy('LOG_Date', 'asc') 
@@ -685,10 +685,10 @@ class CaseController extends Controller
     
         $images = Imgs::where('IMG_RefNo', $decodedCaseNo)->get();
         
-        $logs = DB::table('logs')
-            ->join('users', 'logs.LOG_User', '=', 'users.id')
-            ->select('logs.*', 'users.Fullname as user_name')
-            ->where('LOG_Type', 'BA') // 'BA' untuk Case
+        $logs = DB::table('Logs')
+            ->join('users', 'Logs.LOG_User', '=', 'users.id')
+            ->select('Logs.*', 'users.Fullname as user_name')
+            ->where('LOG_Type', 'BA') 
             ->where('LOG_RefNo', $case->Case_No)
             ->orderBy('LOG_Date', 'desc')
             ->get();
