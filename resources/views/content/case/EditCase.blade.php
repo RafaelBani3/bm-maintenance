@@ -279,7 +279,6 @@
                                                 </button>
                                             </div>
                                             <!--end::Actions-->   
-                                            
                                         </form>
                                         <!--end::Form-->
                                     </div>
@@ -306,16 +305,10 @@
         <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>
     </div>
 
+    <script>
+        const BASE_URL = "{{ url('/') }}";
+    </script>
+
     @include('content.case.partial.EditJs')
-
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-    </script>
-    <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js')}}"></script>
-
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-    </script>
-
 @endsection
 

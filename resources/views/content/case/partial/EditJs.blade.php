@@ -1,5 +1,4 @@
 <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
-<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js')}}"></script>
 
 {{-- Date Time --}}
@@ -357,15 +356,3 @@
         });
     });
 </script>
-
-@if(session('success'))
-    <script>
-        Swal.fire({
-            title: "Success!",
-            text: "{{ session('success') }}",
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false
-        });
-    </script>
-@endif

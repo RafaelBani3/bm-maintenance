@@ -175,7 +175,7 @@ class DashboardController extends Controller
                 ->where('CR_BY', $userId)
                 ->count();
 
-            $woCount = DB::table('work_orders')
+            $woCount = DB::table('Work_Orders')
                 ->whereMonth('created_at', $i)
                 ->whereYear('created_at', now()->year)
                 ->where('CR_BY', $userId)

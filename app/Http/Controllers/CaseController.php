@@ -263,8 +263,8 @@ class CaseController extends Controller
             'case_no' => 'required|string|exists:cases,Case_No',
             'cases' => 'required|string|max:255',
             'date' => 'required|string',
-            'category' => 'required|string|exists:cats,Cat_No',
-            'sub_category' => 'required|string|exists:subcats,Scat_No',
+            'category' => 'required|string|exists:Cats,Cat_No',
+            'sub_category' => 'required|string|exists:Subcats,Scat_No',
             'chronology' => 'required|string|max:255',
             'impact' => 'required|string|max:255',
             'suggestion' => 'required|string|max:255',
@@ -277,6 +277,7 @@ class CaseController extends Controller
             Log::info('UpdateCase: Memulai proses update case', ['case_no' => $request->case_no]);
 
             $case = Cases::where('Case_No', $request->case_no)->first();
+            
             if (!$case) {
                 Log::warning('UpdateCase: Case tidak ditemukan', ['case_no' => $request->case_no]);
                 return $request->ajax()
