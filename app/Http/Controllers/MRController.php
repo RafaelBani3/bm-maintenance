@@ -31,7 +31,7 @@ class MRController extends Controller
 
         $data = DB::table('Work_Orders as wo')
             ->join('users as u', 'wo.CR_BY', '=', 'u.id')
-            ->leftJoin('positions as p', 'u.PS_ID', '=', 'p.id')
+            ->leftJoin('Positions as p', 'u.PS_ID', '=', 'p.id')
             ->select(
                 'wo.Case_No',
                 'wo.WO_No',
@@ -54,7 +54,7 @@ class MRController extends Controller
 
         $data = DB::table('Work_Orders as wo')
             ->join('users as u', 'wo.CR_BY', '=', 'u.id')
-            ->leftJoin('positions as p', 'u.PS_ID', '=', 'p.id')
+            ->leftJoin('Positions as p', 'u.PS_ID', '=', 'p.id')
             ->select(
                 'wo.WO_No',
                 'u.Fullname as created_by',
@@ -431,7 +431,7 @@ class MRController extends Controller
         $data = DB::table('Mat_Req as mr')
             ->join('users as u', 'u.id', '=', 'mr.CR_BY')
             ->join('cases as c', 'c.Case_No', '=', 'mr.Case_No')
-            ->join('positions as p', 'p.id', '=', 'u.PS_ID')
+            ->join('Positions as p', 'p.id', '=', 'u.PS_ID')
             ->select(
                 'mr.MR_No',
                 'mr.WO_No',
