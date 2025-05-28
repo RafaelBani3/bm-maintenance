@@ -173,7 +173,7 @@ class MRController extends Controller
         }
 
     
-        return view('Content.mr.EditMR', [
+        return view('content.mr.EditMR', [
             'matReq' => $matReq,
             'matReqChilds' => $matReq->children,
         ]);
