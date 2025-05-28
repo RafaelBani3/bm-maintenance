@@ -520,9 +520,9 @@ class WocController extends Controller
             return redirect()->back()->with('error', 'Work Order not found.');
         }
 
-        $logs = DB::table('logs')
-            ->join('users', 'logs.LOG_User', '=', 'users.id')
-            ->select('logs.*', 'users.Fullname as user_name')
+        $logs = DB::table('Logs')
+            ->join('users', 'Logs.LOG_User', '=', 'users.id')
+            ->select('Logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'WO') 
             ->where('LOG_RefNo', $wo_no)
             ->orderBy('LOG_Date', 'desc')
@@ -624,9 +624,9 @@ class WocController extends Controller
             ->get()
             ->groupBy('MR_No');
 
-        $logs = DB::table('logs')
-            ->join('users', 'logs.LOG_User', '=', 'users.id')
-            ->select('logs.*', 'users.Fullname as user_name')
+        $logs = DB::table('Logs')
+            ->join('users', 'Logs.LOG_User', '=', 'users.id')
+            ->select('Logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'WO') 
             ->where('LOG_RefNo', $WO_No)
             ->orderBy('LOG_Date', 'desc')

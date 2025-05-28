@@ -358,9 +358,9 @@ class MRController extends Controller
 
         $materialRequestDetails = MatReqChild::where('MR_No', $mrNo)->get();
 
-        $logs = DB::table('logs')
-        ->join('users', 'logs.LOG_User', '=', 'users.id')
-        ->select('logs.*', 'users.Fullname as user_name')
+        $logs = DB::table('Logs')
+        ->join('users', 'Logs.LOG_User', '=', 'users.id')
+        ->select('Logs.*', 'users.Fullname as user_name')
         ->where('LOG_Type', 'MR') 
         ->where('LOG_RefNo', $materialRequest->MR_No)
         ->orderBy('LOG_Date', 'desc')
@@ -591,9 +591,9 @@ class MRController extends Controller
 
         $materialRequestDetails = MatReqChild::where('MR_No', $mrNo)->get();
 
-        $logs = DB::table('logs')
-        ->join('users', 'logs.LOG_User', '=', 'users.id')
-        ->select('logs.*', 'users.Fullname as user_name')
+        $logs = DB::table('Logs')
+        ->join('users', 'Logs.LOG_User', '=', 'users.id')
+        ->select('Logs.*', 'users.Fullname as user_name')
         ->where('LOG_Type', 'MR') 
         ->where('LOG_RefNo', $materialRequest->MR_No)
         ->orderBy('LOG_Date', 'desc')
