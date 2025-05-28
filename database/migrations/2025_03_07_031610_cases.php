@@ -56,7 +56,7 @@ return new class extends Migration
 
         // Foreign Key
             $table->foreign('CR_BY')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('Cat_No')->references('Cat_No')->on('cats')->onDelete('cascade');
+            $table->foreign('Cat_No')->references('Cat_No')->on('Cats')->onDelete('cascade');
             $table->foreign('Scat_No')->references('Scat_No')->on('Subcats')->onDelete('cascade');
             $table->foreign('Case_RejBy')->references('id')->on('users')->onDelete('cascade');
         
