@@ -26,7 +26,5 @@ class DatabaseSeeder extends Seeder
         $this->call(MatrixSeeder::class);
         $this->call(MaterialSeeder::class);
         $this->call(TechnicianSeeder::class);
-
-
     }
 }

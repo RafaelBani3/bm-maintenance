@@ -278,7 +278,8 @@
                                                     </span>
                                                 </button>
                                             </div>
-                                            <!--end::Actions-->      
+                                            <!--end::Actions-->   
+                                            
                                         </form>
                                         <!--end::Form-->
                                     </div>
@@ -306,6 +307,7 @@
     </div>
 
     @include('content.case.partial.EditJs')
+
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>

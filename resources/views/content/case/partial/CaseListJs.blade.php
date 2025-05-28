@@ -42,7 +42,7 @@
                         className: "text-start align-middle",
                         render: function (data) {
                             let badgeClass = "badge-light-secondary";
-                            if (data === "OPEN") badgeClass = "badge-light-primary";
+                            if (data === "OPEN") badgeClass = "badge-light-warning";
                             else if (data === "SUBMIT") badgeClass = "badge-light-primary";
                             else if (data === "CLOSE") badgeClass = "badge-light-success";
                             else if (data === "REJECT") badgeClass = "badge-light-danger";
@@ -70,7 +70,7 @@
                                     </i>
                                     View
                                 </a>`;
-                        }
+                        }   
                     }
                 ],
                 scrollY: "350px",

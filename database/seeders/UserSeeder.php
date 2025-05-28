@@ -181,6 +181,16 @@ class UserSeeder extends Seeder
         ]);
         $user16->assignRole('mr_ap');  
 
+        $user17 = User::create([
+            'Fullname' => 'Admin',
+            'Username' => 'Admin',
+            'Password' => bcrypt('admin123'),
+            'Remember_Token' => Str::random(60),
+            'PS_ID' => '14  ', 
+            'CR_DT' => now(),
+        ]);
+        $user17->assignRole('Admin');  
+
         
 
     //     //Create User -> Roles and Permission

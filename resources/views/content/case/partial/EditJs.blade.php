@@ -286,6 +286,8 @@
                         formData.append('new_images[]', file);
                     });
 
+                    submitButton.setAttribute('data-kt-indicator', 'on');
+                    submitButton.disabled = true;
                     pageLoader.style.display = "flex";
 
                     setTimeout(function () {

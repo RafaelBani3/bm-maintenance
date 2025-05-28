@@ -169,7 +169,7 @@
                                         @php
                                             $status = $case->Case_Status;
                                             $statusLabels = [
-                                                'OPEN' => ['bg-light-warning', 'OPEN'],
+                                                'OPEN' => ['bg-light-warning text-warning', 'OPEN'],
                                                 'SUBMIT' => ['bg-light-primary text-primary', 'SUBMITTED'],
                                                 'AP1' => ['bg-light-primary text-primary', 'Approved 1'],
                                                 'AP2' => ['bg-light-primary text-primary', 'Approved 2'],
@@ -260,7 +260,7 @@
                                 <!--end::Label-->
                                 <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
                                     @if($images->isNotEmpty())
-                                        <div class="row gap-5">
+                                        <div class="row gap-7">
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
@@ -315,7 +315,7 @@
                                                 'reject' => 'REJECTED ' . $i,
                                             ];
 
-                                            $approvedLog = $logs->first(function($log) use ($logStatus, $stepCode) {
+                                            $approvedLog = $approvalLogs->first(function($log) use ($logStatus, $stepCode) {
                                                 return in_array($log->LOG_Status, $logStatus) && $log->LOG_Type === 'BA';
                                             });
 
@@ -390,7 +390,7 @@
                                     @endfor
                                 </div>
                             </div>
-                            <!--End::Row Approval & Remark Status-->
+                            <!--End::Row Approval & Remark Status-->                            
 
                         </div>
                         {{-- End Detail Case --}}
@@ -415,7 +415,7 @@
     
                 <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
                     @php
-                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2'];
+                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2','REVISION'];
                         $statusColors = [
                             'CREATED'    => 'bg-light-warning text-warning',
                             'SUBMITTED'  => 'bg-light-primary text-primary',
@@ -426,6 +426,7 @@
                             'INPROGRESS' => 'bg-light-info text-info',
                             'CLOSE'      => 'bg-light-success text-success',
                             'REJECT'     => 'bg-light-danger text-danger',
+                            'REVISION'   => 'bg-light-info text-info'
                         ];
                     @endphp
     

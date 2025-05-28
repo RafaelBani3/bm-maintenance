@@ -122,29 +122,34 @@
                             
                                         switch ($status) {
                                             case 'OPEN':
-                                            case 'Open_Completion':
-                                            case 'OnProgress':
+                                            case 'OPEN_COMPLETION':
+                                            case 'INPROGRESS':
                                                 $badgeClass = 'badge-light-info';
                                                 break;
-                                            case 'Submit':
-                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                            case 'SUBMIT':
+                                            case 'SUBMIT_COMPLETION':
+                                                $badgeClass = 'badge-light-primary fw-bold ';
                                                 break;
                                             case 'AP1':
-                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                $badgeClass = 'badge-light-primary fw-bold';
                                                 break;
                                             case 'AP2':
-                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                $badgeClass = 'badge-light-primary fw-bold';
                                                 break;  
                                             case 'AP3':
-                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                $badgeClass = 'badge-light-primary fw-bold';
                                                 break;
                                             case 'AP4':
-                                                $badgeClass = 'badge-light-primary fw-bold fs-5';
+                                                $badgeClass = 'badge-light-primary fw-bold';
                                                 break;
-                                         
                                             case 'CLOSE':
+                                            case 'DONE':
                                                 $badgeClass = 'badge badge-light-success';
                                                 break;
+                                            case 'REJECT':
+                                            case 'REJECT_COMPLETION':
+                                                $badgeClass = 'badge badge-light-danger';
+                                            
                                         }
                                     @endphp
                             
@@ -192,32 +197,6 @@
                                     <!--end::Col-->
                                 </div>
                                 <!--end::Row WO Completed-->
-
-                                {{-- <!--begin::Row WO REject By-->
-                                <div class="row mb-7 pb-4">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted fs-5">Rejected By</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-10">
-                                        <span class="fw-bold fs-5 text-dark">{{ $workOrder->WO_IsReject }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Row WO Rejected_By-->
-
-                                 <!--begin::Row WO REject By-->
-                                 <div class="row mb-7 pb-4">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted fs-5">Rejection Date</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-10">
-                                        <span class="fw-bold fs-5 text-dark">{{ $workOrder->WO_RejDate }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Row WO Rejected_By--> --}}
                         </div>
                         {{-- End Detail Work Order  --}}
                     </div>
@@ -228,7 +207,7 @@
 
     {{-- LOG Modal --}}
     <div class="modal fade" tabindex="-1" id="kt_modal_log">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 
                 <div class="modal-header">

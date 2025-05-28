@@ -74,7 +74,9 @@
                             case "Pending": badgeClass = "badge-light-secondary text-success"; break;
                             case "OPEN":
                             case "Open_Completion":
-                            case "OnProgress": badgeClass = "badge-light-info text-info"; break;
+                            case "INPROGRESS": 
+                                badgeClass = "badge-light-info text-info"; 
+                                break;
                             case "SUBMIT": 
                             case "Submit_Complition":
                             case "AP1":

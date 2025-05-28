@@ -175,7 +175,7 @@ class CaseController extends Controller
 
             Logs::create([
                 'LOG_Type' => 'BA',
-                'LOG_RefNo' => null,
+                'LOG_RefNo' => $case->Case_No,
                 'LOG_Status' => 'FAILED',
                 'LOG_User' => Auth::id(),
                 'LOG_Date' => now(),
@@ -196,6 +196,22 @@ class CaseController extends Controller
         $caseNo = $request->query('case_no');
 
         $case = Cases::where('Case_No', $caseNo)->firstOrFail();
+
+        if ($case->Case_Status === 'REJECT') {
+            $case->Case_Status = 'OPEN';
+            $case->save();
+
+            Logs::create([
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $case->Case_No,
+                'LOG_Status' => 'REVISION',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'A revision was made to the case data due to the rejection of the previous submission.',
+            ]);
+
+        }
+
         $categories = Cats::all();
         $subCategories = Subcats::where('Cat_No', $case->Cat_No)->get();
         $caseImages = Imgs::where('IMG_RefNo', $case->Case_No)->get();
@@ -238,7 +254,6 @@ class CaseController extends Controller
         return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus.']);
     }
 
-    // Update Case
     // Update Case
     public function UpdateCase(Request $request)
     {
@@ -286,6 +301,19 @@ class CaseController extends Controller
                 return $request->ajax()
                     ? response()->json(['success' => false, 'message' => 'User Not Found'])
                     : redirect()->back()->with('error', 'User Not Found');
+            }
+
+            if ($case->Case_Status === 'OPEN' && $case->Case_IsReject === 'Y') {
+                $case->Case_RejGroup = null;
+                $case->Case_RejBy = null;
+                $case->Case_IsReject = 'N';
+                $case->Case_RejDate = null;
+                $case->Case_RMK1 = null;
+                $case->Case_RMK2 = null;
+
+                Log::info('UpdateCase: Reset data penolakan karena case dibuka kembali', [
+                    'case_no' => $case->Case_No
+                ]);
             }
 
             $matrix = Matrix::where('Position', $user->PS_ID)
@@ -361,7 +389,6 @@ class CaseController extends Controller
                     'Notif_Date' => now(),
                     'Notif_Type' => 'BA',
                 ]);
-                
                 
 
                 Log::info('UpdateCase: Notifikasi berhasil dikirim', [
@@ -508,12 +535,28 @@ class CaseController extends Controller
         $logs = DB::table('logs')
             ->join('users', 'logs.LOG_User', '=', 'users.id')
             ->select('logs.*', 'users.Fullname as user_name')
-            ->where('LOG_Type', 'BA') // 'BA' untuk Case
+            ->where('LOG_Type', 'BA') 
             ->where('LOG_RefNo', $case->Case_No)
-            ->orderBy('LOG_Date', 'desc')
+            ->orderBy('LOG_Date', 'asc') 
             ->get();
 
-        return view('content.case.DetailCase', compact('case', 'images', 'logs'));
+        $lastResetLog = $logs->last(function ($log) {
+            return in_array($log->LOG_Status, ['SUBMITTED', 'REVISION']);
+        });
+
+        $resetTime = $lastResetLog ? $lastResetLog->LOG_Date : null;
+
+        $approvalLogs = $logs->filter(function ($log) use ($resetTime) {
+            return $resetTime &&
+                $log->LOG_Date > $resetTime &&
+                (
+                    Str::startsWith($log->LOG_Status, 'APPROVED') ||
+                    Str::startsWith($log->LOG_Status, 'REJECTED')
+                );
+        });
+    
+        return view('content.case.DetailCase', compact('case', 'images', 'logs', 'approvalLogs'));
+
     }
 
     
@@ -641,7 +684,7 @@ class CaseController extends Controller
     
         $images = Imgs::where('IMG_RefNo', $decodedCaseNo)->get();
         
-               $logs = DB::table('logs')
+        $logs = DB::table('logs')
             ->join('users', 'logs.LOG_User', '=', 'users.id')
             ->select('logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'BA') // 'BA' untuk Case
@@ -652,15 +695,6 @@ class CaseController extends Controller
         return view('content.case.ApprovalDetail', compact('case', 'images','logs'));
     }
     
-    // Update Notification (Terbaca)
-    public function markAsRead($id)
-    {
-        $notification = Notification::findOrFail($id);
-        $notification->Notif_IsRead = 'Y';
-        $notification->save();
-
-        return response()->json(['success' => true]);
-    }
 
     // Function Approve
     public function approveReject(Request $request, $case_no)
@@ -681,7 +715,7 @@ class CaseController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
-                    'LOG_Status' => 'APPROVED1',
+                    'LOG_Status' => 'APPROVED 1',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED CASE' ,
@@ -705,7 +739,7 @@ class CaseController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
-                    'LOG_Status' => 'APPROVED2',
+                    'LOG_Status' => 'APPROVED 2',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED CASE' ,
@@ -751,7 +785,7 @@ class CaseController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
-                    'LOG_Status' => 'REJECTED1',
+                    'LOG_Status' => 'REJECTED 1',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' REJECTED CASE',
@@ -790,7 +824,7 @@ class CaseController extends Controller
                 Logs::create([
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
-                    'LOG_Status' => 'REJECTED2',
+                    'LOG_Status' => 'REJECTED 2',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' REJECTED CASE',

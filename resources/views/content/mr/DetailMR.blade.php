@@ -330,91 +330,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
-{{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-fluid">
-            <div class="card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
-                    <h1 class="text-primary fw-bold mb-0">Material Request Details: {{ $materialRequest->MR_No }}</h1>
-                </div>
-
-                <hr>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Work Order No</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $materialRequest->WO_No }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Case No</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $materialRequest->Case_No }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Request Date</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $materialRequest->MR_Date }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Urgent</strong></label>
-                            <p class="fs-5 fw-bold text-dark">{{ $materialRequest->MR_IsUrgent == 'Y' ? 'Yes' : 'No' }}</p>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted"><strong>Status</strong></label>
-                            <p class="fs-5 fw-bold">
-                                <span class="badge 
-                                    {{
-                                        $materialRequest->MR_Status == 'Open' ? 'bg-light-warning' :
-                                        ($materialRequest->MR_Status == 'Close' ? 'bg-light-success' :
-                                        ($materialRequest->MR_Status == 'Reject' ? 'bg-light-danger' : 'bg-light-primary text-primary fs-6'))
-                                    }}">
-                                    {{
-                                        $materialRequest->MR_Status == 'AP1' ? 'Approved 1' :
-                                        ($materialRequest->MR_Status == 'AP2' ? 'Approved 2' :
-                                        ($materialRequest->MR_Status == 'AP3' ? 'Approved 3' :
-                                        ($materialRequest->MR_Status == 'AP4' ? 'Approved 4' :
-                                        ($materialRequest->MR_Status == 'AP5' ? 'Approved 5' :
-                                        strtoupper($materialRequest->MR_Status)))))
-                                    }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <hr>
-
-                <div class="mb-3">
-                    <h4 class="text-primary fw-bold">Material Items</h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 40%;">Item</th>
-                                    <th style="width: 15%;">Qty</th>
-                                    <th style="width: 15%;">Unit</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($details as $detail)
-                                    <tr>
-                                        <td>{{ $detail->CR_ITEM_NAME }}</td>
-                                        <td>{{ $detail->Item_Oty }}</td>
-                                        <td>{{ $detail->CR_ITEM_SATUAN }}</td>
-                                        <td>{{ $detail->Remark }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div> --}}
-=======
     {{-- LOG Modal --}}
     <div class="modal fade" tabindex="-1" id="kt_modal_scrollable_2">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -513,12 +428,10 @@
             }
         });
     </script>
->>>>>>> ff25b43 (Update)
 
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
-<<<<<<< HEAD
 
         {{-- LOG Modal --}}
         <div class="modal fade" tabindex="-1" id="kt_modal_log">
@@ -583,7 +496,5 @@
                 </div>
             </div>
         </div>
-=======
->>>>>>> ff25b43 (Update)
 @endsection
 

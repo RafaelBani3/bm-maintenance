@@ -9,6 +9,7 @@
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
 		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
 
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700"/>
@@ -129,4 +130,3 @@
 	</body>
 	<!--end::Body-->
 </html>
-

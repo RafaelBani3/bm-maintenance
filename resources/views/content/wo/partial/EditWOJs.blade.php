@@ -18,84 +18,6 @@
 
     {{-- Script Validation dan Update WO --}}
     <script>
-<<<<<<< HEAD
-        $(document).ready(function () {
-            $('#kt_docs_formvalidation_text').on('submit', function (e) {
-                e.preventDefault();
-
-                let isValid = true;
-                const requiredFields = ['#reference_number', '#start_date', '#end_date', 'textarea[name="work_description"]'];
-
-                requiredFields.forEach(function (selector) {
-                    if (!$(selector).val()) {
-                        isValid = false;
-                        $(selector).addClass('is-invalid');
-                    } else {
-                        $(selector).removeClass('is-invalid');
-                    }
-                });
-
-                if (!isValid) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Please fill all required fields.'
-                    });
-                    return;
-                }
-
-                const loadingEl = document.createElement("div");
-                document.body.prepend(loadingEl);
-                loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25");
-                loadingEl.innerHTML = `
-                        <span class="spinner-border text-primary" role="status"></span>
-                        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
-                    `;
-
-                KTApp.showPageLoading();
-
-                setTimeout(() => {
-                    $.ajax({
-                        url: "{{ route('WorkOrder.Update') }}",
-                        type: "POST",
-                        data: $(this).serialize(),
-                        success: function (response) {
-                            KTApp.hidePageLoading();  
-                            loadingEl.remove();
-                            
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: response.message
-                                }).then(() => {
-                                    window.location.href = `${BASE_URL}/Work-Order/Create`;  
-                                    // window.location.href = "/Work-Order/Create";
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Failed!',
-                                    text: response.message
-                                });
-                            }
-                        },
-                        error: function (xhr) {
-                            KTApp.hidePageLoading();  
-                            loadingEl.remove();  
-                            
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: xhr.responseJSON?.message || 'Something went wrong.'
-                            });
-                        }
-                    });
-                }, 500); 
-            });
-        });
-    </script>
-=======
     $(document).ready(function () {
         $('#kt_docs_formvalidation_text_submit').on('click', function (e) {
             e.preventDefault();
@@ -191,7 +113,6 @@
         });
     });
 </script>
->>>>>>> ff25b43 (Update)
 
     {{-- Checkbox Ditujukan Oleh --}}
     <script>

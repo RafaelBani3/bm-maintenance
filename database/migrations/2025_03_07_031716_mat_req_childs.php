@@ -15,7 +15,7 @@ return new class extends Migration
                 $table->string('MR_No', 300);
                 $table->integer('MR_Line');
                 $table->integer('Item_Oty'); 
-                $table->string('CR_ITEM_UOM', 30);
+                $table->string('CR_ITEM_SATUAN', 30);
                 $table->string('CR_ITEM_CODE', 30)->nullable();
                 $table->string('CR_ITEM_NAME', 30)->nullable();
 
@@ -23,8 +23,8 @@ return new class extends Migration
                 $table->string('Item_Name', 255)->nullable();
                 $table->integer('Item_Stock')->nullable();
 
-                $table->string('UOM_Code', 30);
-                $table->string('UOM_Name',255);
+                $table->string('UOM_Code', 30)->nullable();
+                $table->string('UOM_Name',255)->nullable();
                 $table->string('Remark',255)->nullable();
 
                 $table->timestamps();

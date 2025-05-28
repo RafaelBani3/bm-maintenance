@@ -26,7 +26,6 @@ class WocController extends Controller
     {
         $technicians = DB::table('technician')->get();
 
-        // Ambil yang sudah terassign, misalnya dari WO yang sedang diedit
         $woNo = $request->input('wo_no');
         $selectedTechnicians = DB::table('wo_doneby')
             ->where('WO_No', $woNo)
@@ -397,7 +396,7 @@ class WocController extends Controller
                 DB::table('Logs')->insert([
                     'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $wo->Case_No,
+                    'LOG_RefNo' => $wo->WO_No,
                     'LOG_Status' => 'REJECT_RESET',
                     'LOG_User' => Auth::id(),
                     'LOG_Date' => now(),
@@ -438,7 +437,7 @@ class WocController extends Controller
 
             Notification::create([
                 'Notif_Title'   => 'Work Order Completion Request Approval',
-                'Reference_No'  => $wocNo,
+                'Reference_No'  => $wo->WO_No,
                 'Notif_Text'    => 'A Work Order Completion has been submitted and requires your approval.',
                 'Notif_IsRead'  => 'N',
                 'Notif_From'    => $user->id,

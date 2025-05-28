@@ -451,64 +451,131 @@ class MRController extends Controller
 
 
     // Ambil data MR yang hendak di approval dan tampilkan di table 
+    // Versi 26 May
+    // public function getApprovalMR(Request $request)
+    // {
+    //     $userId = Auth::id();
+    //     $status = $request->query('status');
+    //     $sortColumn = $request->query('sortColumn', 'MR_No');
+    //     $sortDirection = $request->query('sortDirection', 'ASC');
+
+    //     $validColumns = ['MR_No', 'WO_No', 'Case_No', 'MR_Date', 'MR_Status'];
+    //     if (!in_array($sortColumn, $validColumns)) {
+    //         $sortColumn = 'MR_No'; 
+    //     }
+
+    //     $query = MatReq::select(
+    //             'Mat_Req.MR_No',
+    //             'Mat_Req.WO_No',
+    //             'Mat_Req.Case_No',
+    //             'Mat_Req.MR_Date',
+    //             'Mat_Req.MR_Status',
+    //             'Mat_Req.MR_IsUrgent',
+    //             'Mat_Req.CR_BY',
+    //             'Users.Fullname as CreatedBy'
+    //         )
+    //         ->leftJoin('Users', 'Mat_Req.CR_BY', '=', 'Users.id')
+    //         ->where(function($q) use ($userId) {
+    //             $q->where(function($sub) use ($userId) {
+    //                 $sub->where('Mat_Req.MR_APStep', 1)
+    //                     ->where('Mat_Req.MR_Status', 'SUBMIT')
+    //                     ->where('Mat_Req.MR_AP1', $userId);
+    //             })
+    //             ->orWhere(function($sub) use ($userId) {
+    //                 $sub->where('Mat_Req.MR_APStep', 2)
+    //                     ->where('Mat_Req.MR_Status', 'AP1')
+    //                     ->where('Mat_Req.MR_AP2', $userId);
+    //             })
+    //             ->orWhere(function($sub) use ($userId) {
+    //                 $sub->where('Mat_Req.MR_APStep', 3)
+    //                     ->where('Mat_Req.MR_Status', 'AP2')
+    //                     ->where('Mat_Req.MR_AP3', $userId);
+    //             })
+    //             ->orWhere(function($sub) use ($userId) {
+    //                 $sub->where('Mat_Req.MR_APStep', 4)
+    //                     ->where('Mat_Req.MR_Status', 'AP3')
+    //                     ->where('Mat_Req.MR_AP4', $userId);
+    //             })
+    //             ->orWhere(function($sub) use ($userId) {
+    //                 $sub->where('Mat_Req.MR_APStep', 5)
+    //                     ->where('Mat_Req.MR_Status', 'AP4')
+    //                     ->where('Mat_Req.MR_AP5', $userId);
+    //             });
+    //         });
+
+    //     if (!empty($status)) {
+    //         $query->where('Mat_Req.MR_Status', $status);
+    //     }
+
+    //     $matreq = $query->orderBy($sortColumn, $sortDirection)->get();
+
+    //     return response()->json($matreq);
+    // }
+
     public function getApprovalMR(Request $request)
     {
-        $userId = Auth::id();
-        $status = $request->query('status');
-        $sortColumn = $request->query('sortColumn', 'MR_No');
-        $sortDirection = $request->query('sortDirection', 'ASC');
+        try {
+            $userId = Auth::id();
+            $status = $request->query('status');
+            $sortColumn = $request->query('sortColumn', 'MR_No');
+            $sortDirection = $request->query('sortDirection', 'ASC');
 
-        $validColumns = ['MR_No', 'WO_No', 'Case_No', 'MR_Date', 'MR_Status'];
-        if (!in_array($sortColumn, $validColumns)) {
-            $sortColumn = 'MR_No'; 
-        }
+            $validColumns = ['MR_No', 'WO_No', 'Case_No', 'MR_Date', 'MR_Status'];
+            if (!in_array($sortColumn, $validColumns)) {
+                $sortColumn = 'MR_No'; 
+            }
 
-        $query = MatReq::select(
-                'Mat_Req.MR_No',
-                'Mat_Req.WO_No',
-                'Mat_Req.Case_No',
-                'Mat_Req.MR_Date',
-                'Mat_Req.MR_Status',
-                'Mat_Req.MR_IsUrgent',
-                'Mat_Req.CR_BY',
-                'Users.Fullname as CreatedBy'
-            )
-            ->leftJoin('Users', 'Mat_Req.CR_BY', '=', 'Users.id')
-            ->where(function($q) use ($userId) {
-                $q->where(function($sub) use ($userId) {
-                    $sub->where('Mat_Req.MR_APStep', 1)
-                        ->where('Mat_Req.MR_Status', 'SUBMIT')
-                        ->where('Mat_Req.MR_AP1', $userId);
-                })
-                ->orWhere(function($sub) use ($userId) {
-                    $sub->where('Mat_Req.MR_APStep', 2)
-                        ->where('Mat_Req.MR_Status', 'AP1')
-                        ->where('Mat_Req.MR_AP2', $userId);
-                })
-                ->orWhere(function($sub) use ($userId) {
-                    $sub->where('Mat_Req.MR_APStep', 3)
-                        ->where('Mat_Req.MR_Status', 'AP2')
-                        ->where('Mat_Req.MR_AP3', $userId);
-                })
-                ->orWhere(function($sub) use ($userId) {
-                    $sub->where('Mat_Req.MR_APStep', 4)
-                        ->where('Mat_Req.MR_Status', 'AP3')
-                        ->where('Mat_Req.MR_AP4', $userId);
-                })
-                ->orWhere(function($sub) use ($userId) {
-                    $sub->where('Mat_Req.MR_APStep', 5)
-                        ->where('Mat_Req.MR_Status', 'AP4')
-                        ->where('Mat_Req.MR_AP5', $userId);
+            $query = MatReq::select(
+                    'Mat_Req.MR_No',
+                    'Mat_Req.WO_No',
+                    'Mat_Req.Case_No',
+                    'Mat_Req.MR_Date',
+                    'Mat_Req.MR_Status',
+                    'Mat_Req.MR_IsUrgent',
+                    'Mat_Req.CR_BY',
+                    DB::raw('COALESCE(Users.Fullname, "Unknown") as CreatedBy')
+                )
+                ->leftJoin('Users', 'Mat_Req.CR_BY', '=', 'Users.id')
+                ->where(function($q) use ($userId) {
+                    $q->where(function($sub) use ($userId) {
+                        $sub->where('Mat_Req.MR_APStep', 1)
+                            ->where('Mat_Req.MR_Status', 'SUBMIT')
+                            ->where('Mat_Req.MR_AP1', $userId);
+                    })
+                    ->orWhere(function($sub) use ($userId) {
+                        $sub->where('Mat_Req.MR_APStep', 2)
+                            ->where('Mat_Req.MR_Status', 'AP1')
+                            ->where('Mat_Req.MR_AP2', $userId);
+                    })
+                    ->orWhere(function($sub) use ($userId) {
+                        $sub->where('Mat_Req.MR_APStep', 3)
+                            ->where('Mat_Req.MR_Status', 'AP2')
+                            ->where('Mat_Req.MR_AP3', $userId);
+                    })
+                    ->orWhere(function($sub) use ($userId) {
+                        $sub->where('Mat_Req.MR_APStep', 4)
+                            ->where('Mat_Req.MR_Status', 'AP3')
+                            ->where('Mat_Req.MR_AP4', $userId);
+                    })
+                    ->orWhere(function($sub) use ($userId) {
+                        $sub->where('Mat_Req.MR_APStep', 5)
+                            ->where('Mat_Req.MR_Status', 'AP4')
+                            ->where('Mat_Req.MR_AP5', $userId);
+                    });
                 });
-            });
 
-        if (!empty($status)) {
-            $query->where('Mat_Req.MR_Status', $status);
+            if (!empty($status)) {
+                $query->where('Mat_Req.MR_Status', $status);
+            }
+
+            $matreq = $query->orderBy($sortColumn, $sortDirection)->get();
+
+            return response()->json($matreq);
+
+        } catch (\Exception $e) {
+            Log::error('Error getApprovalMR: ' . $e->getMessage());
+            return response()->json(['message' => 'Server Error', 'error' => $e->getMessage()], 500);
         }
-
-        $matreq = $query->orderBy($sortColumn, $sortDirection)->get();
-
-        return response()->json($matreq);
     }
 
     // Page Approval Detail

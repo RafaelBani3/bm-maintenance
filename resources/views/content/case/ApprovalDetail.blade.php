@@ -156,7 +156,7 @@
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Chronology }}</textarea>
+                                    <textarea class="form-control form-control-solid fw-bold fs-5 text-gray-900" rows="3" name="impact" id="impact" placeholder="Input Case Impact">{{ $case->Case_Outcome }}</textarea>
                                     </div>
                                 <!--end::Col-->
                             </div>
@@ -234,10 +234,6 @@
                                         <p class="text-muted">No photos available for this case.</p>
                                     @endif
                                 </div>
-                            </div>
-                            
-                            <div class="row mb-5 pb-5">
-                               <!--begin::Label-->
                             </div> --}}
                             
                              <!--Start::Row Exiciting Image-->
@@ -256,18 +252,16 @@
                                 <!--end::Label-->
                                 <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
                                     @if($images->isNotEmpty())
-                                        <div class="row gap-5">
+                                        <div class="row gap-7">
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                                                 @endphp
                                                 <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
                                                     <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
-                                                        <!-- Gambar ukuran kecil -->
                                                         <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded mx-auto"
                                                             style="width: 100px; height: 100px; background-image: url('{{ $imgPath }}');">
                                                         </div>
-                                                        <!-- Efek overlay -->
                                                         <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center"
                                                             style="width: 100px; height: 100px;">
                                                             <i class="bi bi-eye-fill text-white fs-2"></i>
@@ -300,7 +294,8 @@
                                 </label>
                                 <!--end::Label-->
 
-                                <div class="timeline timeline-border-dashed">
+                                {{-- Versi Lama (26 May) --}}
+                                {{-- <div class="timeline timeline-border-dashed">
                                     <!-- Approval 1 -->
                                     <div class="timeline-item">
                                         <div class="timeline-line"></div>
@@ -380,9 +375,96 @@
                                             </div>
                                         </div>
                                     @endif
+                                </div> --}}
+
+                                @php
+                                    use Illuminate\Support\Facades\Auth;
+
+                                    $logAp1 = $logs->first(function($log) {
+                                        return $log->LOG_Status === 'APPROVED 1' && $log->LOG_Type === 'BA';
+                                    });
+
+                                    $canApprove = $case->Case_Status === 'SUBMIT' && $case->Case_ApStep == 1 && $case->Case_AP1 == Auth::id();
+                                @endphp
+
+                                <div class="timeline timeline-border-dashed">
+                                    <!-- Approval 1 -->
+                                    <div class="timeline-item">
+                                        <div class="timeline-line"></div>
+                                        <div class="timeline-icon">
+                                            <i class="ki-duotone ki-folder-added text-gray-500 fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>                                        
+                                        </div>
+                                        <div class="timeline-content mb-10 mt-n1">
+                                            <div class="pe-3 mb-5">
+                                                <div class="fs-5 fw-semibold mb-2">Approval by {{ $case->Approver1 ?? 'Unknown User' }}</div>
+                                                <div class="d-flex align-items-center mt-1 fs-6">
+                                                    <div class="text-muted me-2 fs-7">
+                                                        @if($logAp1)
+                                                            Approved at {{ \Carbon\Carbon::parse($logAp1->LOG_Date)->format('d/m/Y   H:i') }}
+                                                        @else
+                                                            Approval date not found.
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @if($canApprove)
+                                                <!-- APPROVER 1 -->
+                                                <div class="col-lg-12"> 
+                                                    <form action="{{ route('cases.approveReject', $case->Case_No) }}" method="POST">
+                                                        @csrf
+                                                        <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
+                                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
+                                                        </div>
+                                                        <div class="d-flex justify-content-end mt-4">
+                                                            <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
+                                                            <button type="button" class="btn btn-danger approve-reject-btn" data-action="reject">Reject</button>
+                                                        </div>
+                                                    </form>                            
+                                                </div>
+                                            @else
+                                                <div class="border border-dashed border-primary rounded px-7 py-3 bg-light-primary align-item-center">
+                                                    <h5 class="text-gray-900 fw-bold mb-2 fs-4">Remark:</h5>
+                                                    <div class="text-gray-700 fs-5">{{ strip_tags($case->Case_RMK1) ?: 'No remark provided.' }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- Approval Step 2 (AP1 Done) --}}
+                                    @if($case->Case_Status === 'AP1' && $case->Case_ApStep == 2 && $case->Case_AP2 == Auth::id())
+                                        <div class="timeline-item">
+                                            <div class="timeline-line"></div>
+                                            <div class="timeline-icon">
+                                                <i class="ki-duotone ki-notepad-edit text-gray-900 fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>                                        
+                                            </div>
+                                            <div class="timeline-content mb-10 mt-n1">
+                                                <div class="pe-3 mb-5">
+                                                    <div class="fs-5 fw-semibold mb-2">Require Your Approval</div>
+                                                </div>
+                                                <div class="col-lg-12"> 
+                                                    <form action="{{ route('cases.approveReject', $case->Case_No) }}" method="POST">
+                                                        @csrf
+                                                        <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
+                                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
+                                                        </div>
+                                                        <div class="d-flex justify-content-end mt-4">
+                                                            <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
+                                                            <button type="button" class="btn btn-danger approve-reject-btn" data-action="reject">Reject</button>
+                                                        </div>
+                                                    </form>                            
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-
                         </div>
                         {{-- End Detail Case --}}
                     </div>

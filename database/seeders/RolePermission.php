@@ -50,7 +50,7 @@ class RolePermission extends Seeder
         $wo = Role::create(['name' => 'wo']);
         $wo_ap = Role::create(['name' => 'wo_ap']);
 
-        $admin->givePermissionTo('view dashboard', 'view cr', 'edit cr', 'delete cr', 'submit cr');
+        $admin->givePermissionTo('view dashboard', 'view cr', 'edit cr', 'delete cr', 'submit cr','view mr','view wo','view mr_ap','view cr_ap');
 
         $cr->givePermissionTo('view cr', 'edit cr', 'delete cr', 'submit cr');
         $cr_ap->givePermissionTo('view cr_ap', 'approve cr_ap');

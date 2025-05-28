@@ -25,11 +25,7 @@
                         <div class="card-body">
                             <div class="row g-5 align-items-end">
                                 <!--begin::Search-->
-<<<<<<< HEAD
-                                <div class="col-lg-4">
-=======
                                 <div class="col-lg-5">
->>>>>>> ff25b43 (Update)
                                     <label for="searchReport" class="form-label fw-bold">Search Report</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
@@ -40,31 +36,8 @@
                                 </div>
                                 <!--end::Search-->
                         
-<<<<<<< HEAD
-                                <!--begin::Filter-->
-                                <div class="col-lg-3">
-                                    <label for="statusFilter" class="form-label fw-bold">Status</label>
-                                    <select class="form-select form-select-solid" name="category" id="statusFilter" data-control="select2" data-hide-search="true" data-placeholder="Select Category">
-                                        <option value="all">All Status</option>
-                                        <option value="OPEN">OPEN</option>
-                                        <option value="SUBMIT">SUBMIT</option>
-                                        <option value="AP1">AP1</option>
-                                        <option value="AP2">AP2</option>
-                                        <option value="AP3">AP3</option>
-                                        <option value="AP4">AP4</option>
-                                        <option value="AP5">AP5</option>
-                                        <option value="CLOSE">CLOSE</option>
-                                        <option value="REJECT">REJECT</option>
-                                    </select>
-                                </div>
-                                <!--end::Filter-->
-                        
-                                <!--begin::Date Range Picker-->
-                                <div class="col-lg-3">
-=======
                                 <!--begin::Date Range Picker-->
                                 <div class="col-lg-5">
->>>>>>> ff25b43 (Update)
                                     <label for="dateFilter" class="form-label fw-bold">Date Range</label>
                                     <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range" />
                                 </div>
@@ -104,19 +77,11 @@
                                                     <tr class="fw-semibold fs-6 text-gray-800">
                                                         <th class="min-w-150px text-dark">MR No</th>
                                                         <th class="min-w-150px text-dark">WO No</th>
-<<<<<<< HEAD
-                                                        <th class="min-w-150px text-dark">Case No</th>
-                                                        <th class="min-w-150px text-dark">Created Date</th>
-                                                        <th class="min-w-150px text-dark">Status</th>
-                                                        <th class="min-w-100px text-dark">Urgent</th>
-                                                        <th class="min-w-200px text-dark">Created By</th>
-=======
                                                         <th class="min-w-200px text-dark">Case No</th>
                                                         <th class="min-w-100px text-dark">Created Date</th>
                                                         <th class="min-w-100px text-dark">Status</th>
                                                         <th class="min-w-100px text-dark">Urgent</th>
                                                         <th class="min-w-100px text-dark">Created By</th>
->>>>>>> ff25b43 (Update)
                                                         <th class="min-w-100px text-dark">Action</th>
                                                     </tr>
                                                 </thead> 
@@ -137,28 +102,32 @@
         </div>
     </div>
                 
-    <div class="page-loader flex-column bg-dark bg-opacity-50">
-        <span class="spinner-border text-primary" role="status"></span>
-        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+    <div id="page_loader" class="page-loader d-none flex-column bg-dark bg-opacity-25" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;">
+        <div class="text-center">
+            <span class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></span>
+            <div class="fs-6 fw-semibold mt-4 text-white">Loading...</div>
+        </div>
     </div>
+
 
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ff25b43 (Update)
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
 
     {{-- Get Data MR dan tampilkan didalam table --}}
-<<<<<<< HEAD
-    <script>
-=======
     {{-- <script>
->>>>>>> ff25b43 (Update)
         $(document).ready(function () {
             $('#statusFilter').select2({
                 placeholder: "Pilih Status",
@@ -194,11 +163,7 @@
                         data: "MR_Status", 
                         className: "fw-semibold text-start align-middle",
                         render: function (data) {
-<<<<<<< HEAD
-                            return `<span class="badge badge-primary">${data}</span>`;
-=======
                             return `<span class="badge badge-light-primary">${data}</span>`;
->>>>>>> ff25b43 (Update)
                         }
                     },
                     { 
@@ -256,10 +221,8 @@
                 }, 500); 
             });
         });
-<<<<<<< HEAD
-=======
     </script> --}}
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             $('#statusFilter').select2({
                 placeholder: "Pilih Status",
@@ -384,8 +347,234 @@
                 }, 500);
             });
         });
->>>>>>> ff25b43 (Update)
+    </script> --}}
+    {{-- <script>
+        $(document).ready(function () {
+            function safeBtoa(str) {
+                return btoa(unescape(encodeURIComponent(str)));
+            }
+
+            const baseUrl = window.location.origin + "/BmMaintenance/public";
+
+            const table = $("#matreq_table").DataTable({
+                ajax: {
+                    url: '{{ route('matreq.list') }}',
+                    dataSrc: "",
+                    error: function (xhr, error, thrown) {
+                        console.error("AJAX Error:", xhr.responseText);
+                        $('#page_loader').hide();
+                        alert("Gagal mengambil data Material Request. Silakan cek console.");
+                    }
+                },
+                columns: [
+                    { 
+                        data: "MR_No", 
+                        className: "text-primary fw-semibold text-start align-middle",
+                        width: "150px"
+                    },
+                    { 
+                        data: "WO_No", 
+                        className: "text-primary fw-semibold text-start align-middle",
+                        width: "150px"
+                    },
+                    { 
+                        data: "Case_No", 
+                        className: "text-primary fw-semibold text-start align-middle",
+                        width: "150px"
+                    },
+                    { 
+                        data: "MR_Date", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "120px",
+                        render: function (data) {
+                            const date = new Date(data);
+                            const day = date.getDate().toString().padStart(2, '0');
+                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            const year = date.getFullYear();
+                            return `${day}/${month}/${year}`;
+                        }
+                    },
+                    { 
+                        data: "MR_Status", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "120px",
+                        render: function (data) {
+                            return `<span class="badge badge-light-primary">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: "MR_IsUrgent", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "100px",
+                        render: function (data) {
+                            return data === 'Y'
+                                ? '<span class="badge badge-danger">Urgent</span>'
+                                : '<span class="badge badge-secondary">Normal</span>';
+                        }
+                    },
+                    { 
+                        data: "CreatedBy", 
+                        className: "fw-semibold text-start align-middle",
+                        width: "150px",
+                        render: function (data) {
+                            return data ?? '-';
+                        }
+                    },
+                    { 
+                        data: "MR_No",
+                        className: "text-start align-middle",
+                        orderable: false,
+                        width: "120px",
+                        render: function (data) {
+                            const encodedMRNo = safeBtoa(data);
+                            return `
+                                <a href="${baseUrl}/Material-Request/Approval-Detail/${encodedMRNo}" 
+                                class="btn btn-secondary hover-scale">
+                                    <i class="ki-duotone ki-eye">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> View
+                                </a>`;
+                        }
+                    }
+                ],
+                language: {
+                    emptyTable: "Tidak ada data Material Request.",
+                    zeroRecords: "Tidak ditemukan data sesuai filter.",
+                    loadingRecords: "Memuat data...",
+                    processing: "Memproses...",
+                    search: "Cari:",
+                },
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true,
+                fixedColumns: {
+                    left: 2,
+                    right: 1
+                }
+            });
+
+            $('#applyFilter').on('click', function () {
+                $('#page_loader').removeClass('d-none'); 
+
+                setTimeout(() => {
+                    const keyword = $('#searchReport').val().trim().toLowerCase();
+
+                    $.fn.dataTable.ext.search = [];
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        const mrNo = data[0].toLowerCase(); 
+                        const woNo = data[1].toLowerCase();
+                        const caseNo = data[2].toLowerCase(); 
+
+                        return mrNo.includes(keyword) || woNo.includes(keyword) || caseNo.includes(keyword);
+                    });
+
+                    table.draw();
+                    $('#page_loader').addClass('d-none');  
+
+                }, 300);
+            });
+        });
+    </script> --}}
+
+    <script>
+        $(document).ready(function () {
+            function safeBtoa(str) {
+                return btoa(unescape(encodeURIComponent(str)));
+            }
+
+            const baseUrl = window.location.origin + "/BmMaintenance/public";
+
+            const table = $("#matreq_table").DataTable({
+                ajax: {
+                    url: "{{ route('matreq.list') }}",
+                    dataSrc: "",
+                    error: function (xhr, error, thrown) {
+                        console.error("AJAX Error:", xhr.status, xhr.responseText);
+                        alert("Gagal mengambil data Material Request.\n" + xhr.responseJSON?.message || "Server Error");
+                        $('#page_loader').hide();
+                    }
+                },
+                columns: [
+                    { data: "MR_No", className: "text-primary fw-semibold text-start align-middle", width: "150px" },
+                    { data: "WO_No", className: "text-primary fw-semibold text-start align-middle", width: "150px" },
+                    { data: "Case_No", className: "text-primary fw-semibold text-start align-middle", width: "150px" },
+                    { 
+                        data: "MR_Date", className: "fw-semibold text-start align-middle", width: "120px",
+                        render: function (data) {
+                            if (!data) return "-";
+                            const date = new Date(data);
+                            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+                        }
+                    },
+                    { 
+                        data: "MR_Status", className: "fw-semibold text-start align-middle", width: "120px",
+                        render: function (data) {
+                            return `<span class="badge badge-light-primary">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: "MR_IsUrgent", className: "fw-semibold text-start align-middle", width: "100px",
+                        render: function (data) {
+                            return data === 'Y'
+                                ? '<span class="badge badge-danger">Urgent</span>'
+                                : '<span class="badge badge-secondary">Normal</span>';
+                        }
+                    },
+                    { 
+                        data: "CreatedBy", className: "fw-semibold text-start align-middle", width: "150px",
+                        render: function (data) {
+                            return data ?? '-';
+                        }
+                    },
+                    { 
+                        data: "MR_No", className: "text-start align-middle", orderable: false, width: "120px",
+                        render: function (data) {
+                            const encodedMRNo = safeBtoa(data);
+                            return `
+                                <a href="${baseUrl}/Material-Request/Approval-Detail/${encodedMRNo}" 
+                                class="btn btn-secondary hover-scale">
+                                    <i class="ki-duotone ki-eye"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> View
+                                </a>`;
+                        }
+                    }
+                ],
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true,
+                fixedColumns: {
+                    left: 2,
+                    right: 1
+                },
+                language: {
+                    emptyTable: "Tidak ada data Material Request.",
+                    zeroRecords: "Tidak ditemukan data sesuai filter.",
+                    loadingRecords: "Memuat data...",
+                    processing: "Memproses...",
+                    search: "Cari:",
+                }
+            });
+
+            $('#applyFilter').on('click', function () {
+                $('#page_loader').removeClass('d-none'); 
+
+                setTimeout(() => {
+                    const keyword = $('#searchReport').val().trim().toLowerCase();
+                    $.fn.dataTable.ext.search = [];
+                    $.fn.dataTable.ext.search.push(function (settings, data) {
+                        return data[0].toLowerCase().includes(keyword) || 
+                            data[1].toLowerCase().includes(keyword) ||
+                            data[2].toLowerCase().includes(keyword);
+                    });
+                    table.draw();
+                    $('#page_loader').addClass('d-none');  
+                }, 300);
+            });
+        });
     </script>
+
+    
 
     {{-- Script Data Range --}}
     <script>
@@ -404,9 +593,6 @@
         });
     
     </script>
-<<<<<<< HEAD
-    
-=======
     	
     @if(session('error'))
         <script>
@@ -418,7 +604,6 @@
             });
         </script>
     @endif
->>>>>>> ff25b43 (Update)
     
 
 @endsection

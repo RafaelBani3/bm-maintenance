@@ -175,7 +175,7 @@ use Illuminate\Support\Facades\Route;
         
         // Get Data MR untuk Approvel
         Route::get('/Api/List-MR-Approval', [MRController::class, 'getApprovalMR'])->name('matreq.list');
-
+        
         // Get Case Data dari table WO untuk Create MR
         Route::get('/Api/List-MR-Approval/get-cases', [MRController::class, 'getCases'])->name('api.getCases');
 
@@ -216,7 +216,7 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('/WorkOrder-Complition/GetSubmittedData', [WocController::class, 'getSubmittedData']);
 
-        Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWO'])->name('WorkOrderDetail');
+        Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWO'])->name('WocDetail');
     
         Route::get('/WorkOrder-Complition/Export', [ExportController::class, 'exportWOC'])->name('woc.export');
 

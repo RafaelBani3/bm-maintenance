@@ -407,62 +407,6 @@
     <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
 
     {{-- Script Approve & Remark --}}
-    {{-- <script>
-        $(document).ready(function () {
-            $(".approve-reject-btn").click(function (e) {
-                e.preventDefault();
-
-                let action = $(this).data("action");
-                let woNo = encodeURIComponent(btoa("{{ $workOrder->WO_No }}"));
-                let quillContent = quill.root.innerHTML;    
-
-                $("#page_loader").css("display", "flex");
-
-                setTimeout(() => {
-                    $("#page_loader").hide();
-
-                    Swal.fire({
-                        title: (action === "approve") ? "Approve Work Order?" : "Reject Work Order?",
-                        text: (action === "approve") ? "Are you sure you want to approve this work order?" : "Are you sure you want to reject this work order?",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: (action === "approve") ? "Yes, Approve" : "Yes, Reject",
-                        cancelButtonText: "Cancel"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $("#page_loader").css("display", "flex");
-
-                            $.ajax({
-                                url: `/WorkOrder-Complition/approve-reject/${woNo}`,
-                                type: "POST",
-                                data: {
-                                    _token: "{{ csrf_token() }}",
-                                    action: action,
-                                    approvalNotes: quillContent
-                                },
-                                success: function (response) {
-                                    $("#page_loader").hide();
-                                    Swal.fire({
-                                        title: "Success!",
-                                        text: response.message,
-                                        icon: "success"
-                                    }).then(() => {
-                                        window.location.href = `${BASE_URL}/WorkOrder/Approval-list`;
-                                    });
-                                },
-                                error: function (xhr) {
-                                    $("#page_loader").hide();
-                                    Swal.fire("Error", xhr.responseJSON?.message || "An error occurred while processing", "error");
-                                    console.log('Error');
-                                }
-                            });
-                        }
-                    });
-                }, 1000);
-            });
-        });
-    </script> --}}
-
     <script>
        var quill = new Quill('#kt_docs_quill_basic', {
             theme: 'snow'
