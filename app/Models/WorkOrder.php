@@ -10,7 +10,7 @@ class WorkOrder extends Model
     protected $primaryKey = 'WO_No';
     public $incrementing = false; 
     protected $keyType = 'string'; 
-    protected $table = 'work_orders';
+    protected $table = 'Work_Orders';
     
     protected $fillable = [
         'WO_No', 'Case_No', 'WOC_No', 'CR_BY', 'CR_DT',

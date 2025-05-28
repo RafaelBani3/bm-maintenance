@@ -469,15 +469,15 @@ class CaseController extends Controller
                 'cases.Cat_No',
                 'Cats.Cat_Name as Category',
                 'cases.CR_BY',
-                'Users.Fullname as CreatedBy', 
-                'Users.Fullname as User',
+                'users.Fullname as CreatedBy', 
+                'users.Fullname as User',
                 'cases.Case_Status',
-                'Users.PS_ID',
+                'users.PS_ID',
                 'Positions.PS_Name'
             )
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
-            ->leftJoin('Users', 'cases.CR_BY', '=', 'Users.id')
-            ->leftJoin('Positions', 'Users.PS_ID', '=', 'Positions.id')
+            ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')
+            ->leftJoin('Positions', 'users.PS_ID', '=', 'Positions.id')
             ->where('cases.CR_BY', $userId);
 
         if (!empty($status)) {

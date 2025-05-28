@@ -67,7 +67,7 @@ use Illuminate\Support\Facades\Route;
     // List/View Case Table Page
         //List/View Cases
         Route::get('/Case/List', [CaseController::class, 'viewListBA'])->name('ViewCase');
-        Route::get('/api/cases', [CaseController::class, 'getCases']);
+        Route::get('/api/cases', [CaseController::class, 'getCases'])->name('GetCasesDataTable');
  
         // Detail Case
         Route::get('/Case/Detail/{case_no}', [CaseController::class, 'showDetailPage'])

@@ -142,15 +142,26 @@
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
-		@if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Akses Ditolak',
-            text: '{{ session('error') }}',
-            confirmButtonText: 'OK'
-        });
+	
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Akses Ditolak',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
+
+    <script> 
+        $('#exportExcel').on('click', function () { 
+            let status = $('#statusFilter').val() || 'all'; let search = $('#searchReport').val() || ''; 
+            let url = new URL(window.location.origin + "/BmMaintenance/public/export-cases"); 
+            url.searchParams.append('status', status); 
+            url.searchParams.append('search', search); 
+            window.open(url, '_blank');  
+        }); 
     </script>
-@endif
-    <script> $('#exportExcel').on('click', function () { let status = $('#statusFilter').val() || 'all'; let search = $('#searchReport').val() || ''; let url = new URL(window.location.origin + "/BmMaintenance/public/export-cases"); url.searchParams.append('status', status); url.searchParams.append('search', search); window.open(url, '_blank');  }); </script>
+
 @endsection
