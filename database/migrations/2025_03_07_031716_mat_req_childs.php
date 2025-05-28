@@ -31,7 +31,7 @@ return new class extends Migration
 
                 $table->primary(['MR_No', 'MR_Line']);
 
-                $table->foreign('MR_No')->references('MR_No')->on('mat_req')->onDelete('cascade');     
+                $table->foreign('MR_No')->references('MR_No')->on('Mat_Req')->onDelete('cascade');     
         });
 
         
