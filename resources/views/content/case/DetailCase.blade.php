@@ -486,7 +486,7 @@
             }).then((result) => {   
                 if (result.isConfirmed) {
                     const encodedCaseNo = encodeURIComponent(caseNo);
-                    const url =  window.location.origin + "/BmMaintenance/public/Case/Edit?case_no=${encodedCaseNo}";
+                    const url =  window.location.origin + `/BmMaintenance/public/Case/Edit?case_no=${encodedCaseNo}`;
                     // window.location.origin + "/BmMaintenance/public/api/Aproval-cases",
 
                     window.location.href = url;
