@@ -10,7 +10,7 @@ class MatReq extends Model
 {
     use HasFactory;
 
-    protected $table = 'mat_req';
+    protected $table = 'Mat_Req';
     protected $primaryKey = 'MR_No';
     public $incrementing = false;
     protected $keyType = 'string';
