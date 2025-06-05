@@ -1,7 +1,7 @@
 @extends('layouts.Master')
 
 @section('title', 'BM-Maintenance')
-@section('subtitle', 'BM Maintenance - List Approval Case')
+@section('subtitle', 'List Approval Case')
 
 @section('content')
 

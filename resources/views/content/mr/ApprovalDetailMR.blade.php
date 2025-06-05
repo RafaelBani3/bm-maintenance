@@ -333,35 +333,78 @@
                             </div>
                             <!--end::Row Status-->
 
-                            <div class="row mb-10">
-                                <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    Creator's Material Requests
-                                </label>
-                                <!--end::Label-->
-                                <div class="table-responsive">
-                                    <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
-                                        <thead>
-                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                <th style="width: 20%;">Item</th>
-                                                <th style="width: 20%;">Qty</th>
-                                                <th style="width: 20%;">Unit</th>
-                                                <th style="width: 25%;">Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($details as $detail)
-                                                <tr>
-                                                    <td>{{ $detail->CR_ITEM_NAME }}</td>
-                                                    <td>{{ $detail->Item_Oty }}</td>
-                                                    <td>{{ $detail->CR_ITEM_SATUAN }}</td>
-                                                    <td>{{ $detail->Remark }}</td>
+                            <!--end::Table MR-->
+                            @if($materialRequest->MR_APStep == 1 && $materialRequest->MR_Status == 'SUBMIT' && is_null($materialRequest->MR_RMK1))
+                                <div class="row mb-10">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                        Creator's Material Requests
+                                    </label>
+                                    <!--end::Label-->
+                                    <div class="table-responsive">
+                                        <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
+                                            <thead>
+                                                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                    <th style="width: 20%;">Item</th>
+                                                    <th style="width: 20%;">Qty</th>
+                                                    <th style="width: 20%;">Unit</th>
+                                                    <th style="width: 25%;">Description</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>  
+                                            </thead>
+                                            <tbody>
+                                                @foreach($details as $detail)
+                                                    <tr>
+                                                        <td>{{ $detail->CR_ITEM_NAME }}</td>
+                                                        <td>{{ $detail->Item_Oty }}</td>
+                                                        <td>{{ $detail->CR_ITEM_SATUAN }}</td>
+                                                        <td>{{ $detail->Remark }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>  
+                            @else
+                                <div class="row mb-10">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                        Creator's Material Requests
+                                    </label>
+                                    <!--end::Label-->
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped align-middle text-nowrap" id="material-table">
+                                            <thead class="bg-light-primary text-primary fw-bold">
+                                                <tr>
+                                                    <th style="width: 15%;">Item Code</th>
+                                                    <th style="width: 20%;">Item Name</th>
+                                                    <th style="width: 10%;" class="text-center">Qty</th>
+                                                    <th style="width: 10%;" class="text-center">Stock</th>
+                                                    <th style="width: 10%;">Unit</th>
+                                                    <th style="width: 35%;">Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse($details as $detail)
+                                                    <tr>
+                                                        <td><span class="text-dark fw-semibold">{{ $detail->Item_Code }}</span></td>
+                                                        <td>{{ $detail->Item_Name }}</td>
+                                                        <td class="text-center fw-bold text-dark">{{ $detail->Item_Oty }}</td>
+                                                        <td class="text-center text-dark    ">{{ $detail->Item_Stock }}</td>
+                                                        <td><span class="text-dark">{{ $detail->CR_ITEM_SATUAN }}</span></td>
+                                                        <td>{{ $detail->Remark }}</td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="6" class="text-center text-muted">No material items found.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>  
+
+                            @endif
+                            <!--end::Table mr-->
 
                             {{-- Table Material --}}
                             @if($materialRequest->MR_APStep == 1 && $materialRequest->MR_Status == 'SUBMIT' && is_null($materialRequest->MR_RMK1))
@@ -412,10 +455,10 @@
                             {{-- Approval --}}
                             <div class="timeline timeline-border-dashed">
                                 <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 pb-5 text-muted">
-                                        Approval & Remark Manager
-                                    </label>
-                                    <!--end::Label-->
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-5 pb-5 text-muted">
+                                    Approval & Remark Manager
+                                </label>
+                                <!--end::Label-->
                                 @php
                                     $logs = $logs instanceof Collection ? $logs : collect($logs);
 
@@ -425,12 +468,14 @@
                                         3 => ['label' => 'Approval 3', 'status' => 'APPROVED 3', 'remark' => 'MR_RMK3', 'approver' => $materialRequest->Approver3->Fullname ?? 'Unknown User'],
                                         4 => ['label' => 'Approval 4', 'status' => 'APPROVED 4', 'remark' => 'MR_RMK4', 'approver' => $materialRequest->Approver4->Fullname ?? 'Unknown User'],
                                     ];
-                                        $userId = Auth::id();
+                                    
+                                    $userId = Auth::id();
                                 @endphp
 
                                 @foreach($approvalSteps as $step => $info)
                                     @php
                                         $log = $logs->first(fn($log) => $log->LOG_Status === $info['status'] && $log->LOG_Type === 'MR');
+                                        // $log = $logs->first(fn($log) => $log->LOG_Status === $info['status'] && $log->LOG_Type === 'MR' && $log->LOG_User == $materialRequest->{'MR_AP' . $step});
                                     @endphp
                                     
                                     <div class="timeline-item">
@@ -446,11 +491,11 @@
                                             <div class="pe-3 mb-5">
                                                 <div class="fs-5 fw-semibold mb-2">
                                                     @if($materialRequest->MR_APStep == $step)
-                                                        Require Your Approval ({{ $info['label'] }})
+                                                        Require Your Approval as {{ $info['label'] }} - {{ $info['approver'] }}
                                                     @elseif($step < $materialRequest->MR_APStep)
                                                         Approved by {{ $info['approver'] }}
                                                     @else
-                                                        Waiting for Approval ({{ $info['label'] }})
+                                                        Waiting for {{ $info['label'] }} - {{ $info['approver'] }}
                                                     @endif
                                                 </div>
 
@@ -484,7 +529,6 @@
                                                         @csrf
                                                         <input type="hidden" id="approvalNotes" name="approvalNotes">
                                                         <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
-                                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-4">
                                                             <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
@@ -497,6 +541,8 @@
                                     </div>
                                 @endforeach
                             </div>
+
+                
 
                         </div>
                     </div>

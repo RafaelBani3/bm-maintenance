@@ -29,13 +29,15 @@ class Logs extends Model
     public static function generateLogsNo()
     {
         $lastLogs = self::orderByDesc('Logs_No')->first();
-    
-        if (!$lastLogs) {
+
+        if (!$lastLogs || $lastLogs->Logs_No == 0) {
             return 1;
         }
-    
+
         return $lastLogs->Logs_No + 1;
     }
+
+
 
 }
 

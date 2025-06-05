@@ -21,7 +21,15 @@
             border-color: #f1416c !important;
         }
 
+        .flatpickr-day.today {
+            background: #6099ee !important; /* Bootstrap Primary Blue */
+            color: #fff !important;
+            border-radius: 6px;
+        }
+
+
     </style>
+
 
 
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -88,14 +96,13 @@
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Work Order No
+                                                        Case No
                                                     </label>
                                                     <!--end::Label-->
                                                     
                                                     <div class="col-lg-8">
                                                         <div class="col-lg-20 fv-row">
-                                                            <input type="text" id="wo_no" name="wo_no" class="form-control form-control-lg form-control-solid" placeholder="Auto-generated WO No" readonly>
-                                                            {{-- <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case No" /> --}}
+                                                            <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case No" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -139,7 +146,7 @@
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Work Order Date
+                                                        Material Request Date
                                                     </label>
                                                     <!--end::Label-->
                                                     
@@ -155,7 +162,14 @@
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Work Order Designation
+                                                        <span>Material Allocation Purpose </span>
+                                                        <span class="ms-1" data-bs-toggle="tooltip" title="Please specify the intended use of this material to ensure accurate allocation and procurement.">
+                                                            <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </span>
                                                     </label>
                                                     <!--end::Label-->
                                                     
@@ -217,8 +231,9 @@
                                                                     <td><input type="text" name="items[0][code]" class="fv-row form-control"></td>
                                                                     <td><input type="text" name="items[0][name]" class="fv-row form-control" ></td>
                                                                     <td><input type="text" name="items[0][desc]" class="fv-row form-control"></td>
-                                                                    <td class="text-center text-white"><button type="button" class="btn btn-danger remove-row text-center text-white">
-                                                                            <i class="ki-duotone ki-trash fs-2x text-center text-white">
+                                                                    <td class="text-center text-white">
+                                                                        <button type="button" class="btn btn-danger remove-row text-center text-white">
+                                                                            <i class="ki-duotone ki-trash fs-2 text-center text-white" style="color: white">
                                                                                 <span class="path1"></span>
                                                                                 <span class="path2"></span>
                                                                                 <span class="path3"></span>
@@ -239,8 +254,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-
                                             </div>
                                             <!--end::Card body-->
 

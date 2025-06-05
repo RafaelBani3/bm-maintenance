@@ -47,24 +47,4 @@ class Cats extends Model
     {
         return $this->hasMany(Cases::class, 'Cat_ID', 'Cat_ID');
     }
-
-
-    // Atur Cat_No -> Primary Key
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::creating(function ($model) {
-    //         $lastCatNo = static::orderBy('Cat_No', 'desc')->first();
-
-    //         if ($lastCatNo) {
-    //             $lastNumber = preg_replace('/[^0-9]/', '', $lastCatNo->Cat_No); // Ambil angka saja
-    //             $number = intval($lastNumber) + 1;
-    //         } else {
-    //             $number = 1; 
-    //         }
-
-    //         $model->Cat_No = str_pad($number, 3, '0', STR_PAD_LEFT); 
-    //     });
-    // }
 }

@@ -1,9 +1,9 @@
 
-{{-- <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
-<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script> --}}
-
     {{-- Get All Case Data --}}
     <script>
+        const routeDetailCase = "{{ route('case.detail', ':caseNo') }}"; 
+        const editCaseUrlTemplate = "{{ route('EditCase', ['encoded_case_no' => ':encoded_case_no']) }}";
+        
         $(document).ready(function () {
             $('#statusFilter').select2({
                 placeholder: "Pilih Status",
@@ -13,7 +13,8 @@
 
             let table = $("#casesTable").DataTable({
                 ajax: {
-                    url: window.location.origin + "/BmMaintenance/public/api/cases",
+                    // url: window.location.origin + "/BmMaintenance/public/api/cases",
+                    url: "{{ route('GetCasesDataTable') }}", 
                     dataSrc: "",
                     error: function (xhr, error, thrown) {
                         console.log("AJAX Error:", xhr.responseText);
@@ -58,20 +59,43 @@
                     {
                         data: "Case_No",
                         className: "text-start align-middle",
-                        render: function (data) {
+                        render: function (data, type, row) {
                             const encodedCaseNo = btoa(data); 
                             const baseUrl = window.location.origin + "/BmMaintenance/public";
-                            return `
-                                <a href="${baseUrl}/Case/Detail/${encodedCaseNo}" class="btn btn-secondary hover-scale d-flex align-items-center">
-                                    <i class="ki-duotone ki-eye">
+                            
+                            let buttons = '<div class="d-flex gap-2">';
+
+                            // Tombol Edit hanya muncul jika Case_Status = "OPEN"
+                            if (row.Case_Status === "OPEN" || row.Case_Status === "REJECT") {
+                                buttons += `
+                                    <a href="${baseUrl}/Case/Edit/${encodedCaseNo}" 
+                                    class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                                    style="width: 40px; height: 40px;" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
+                                        <i class="ki-duotone ki-pencil fs-3 text-warning">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </a>
+                                `;
+                            }
+
+                            // Tombol View
+                            buttons += `
+                                <a href="${baseUrl}/Case/Detail/${encodedCaseNo}" 
+                                class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                                style="width: 40px; height: 40px;" 
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
+                                    <i class="ki-duotone ki-eye fs-3 text-primary">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
                                     </i>
-                                    View
-                                </a>`;
-                        }   
-                    }
+                                </a>
+                            </div>`;
+                            return buttons;
+                        }
+                      }
                 ],
                 scrollY: "350px",
                 scrollCollapse: false,

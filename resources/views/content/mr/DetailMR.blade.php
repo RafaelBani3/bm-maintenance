@@ -43,13 +43,11 @@
                                     @endif
                                 </div>
                             </div>
-                        
                             <!--end::Title-->                          
                         </div>
 
-                        {{-- Detail Case --}}
+                        <!--begin::Detail Case-->
                         <div class="card-body p-9">
-                            
                             <!--begin::Row Mterial NO-->
                             <div class="row mb-7 pb-4">
                                 <!--begin::Label-->
@@ -132,6 +130,11 @@
                                                 $statusClass = 'bg-light-warning text-warning';
                                                 break;
                                             case 'SUBMIT':
+                                            case 'AP1' :
+                                            case 'AP2' :
+                                            case 'AP3' :
+                                            case 'AP4' :
+                                            case 'AP5' :
                                                 $statusClass = 'bg-light-primary text-primary ';
                                                 break;
                                             case 'DONE':
@@ -189,8 +192,7 @@
                             </div>
                             <!--end::Row MR Allotment-->
 
-
-                            {{-- Table --}}
+                            <!--begin::Table MR -->
                             <div class="row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -220,10 +222,10 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                        {{-- End Detail Case --}}
-                            {{-- Approval remark --}}
-                            <div class="row mb-5 ">
+                            <!--End::Table MR-->
+
+                            <!--begin::Approval MR-->
+                            <div class="row mb-5">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                     <span>Approval Status</span>
@@ -242,7 +244,7 @@
                                         @php
                                             $remark = strip_tags($materialRequest['MR_RMK' . $i] ?? '');
                                             $stepCode = 'AP' . $i;
-                                            $isRejected = $materialRequest->MR_Status === 'REJECT';
+                                            // $isRejected = $materialRequest->MR_Status === 'REJECT';
 
                                             // Ambil log sesuai status dan step
                                             $logStatus = [
@@ -250,25 +252,19 @@
                                                 'reject' => 'REJECTED ' . $i,
                                             ];
 
-                                            $approvedLog = $logs->first(function($log) use ($logStatus, $stepCode) {
+                                            $approvedLog = $approvalLogs->first(function($log) use ($logStatus, $stepCode) {
                                                 return in_array($log->LOG_Status, $logStatus) && $log->LOG_Type === 'MR';
                                             });
 
-                                            if ($remark) {
-                                                $status = $isRejected ? 'Rejected' : 'Approved';
-                                                $badgeClass = $isRejected ? 'badge badge-light-danger' : 'badge badge-light-success';
-                                                $icon = $isRejected ? 'bi-x-circle-fill text-danger' : 'bi-check-circle-fill text-success';
+                                            if ($approvedLog) {
+                                                $status = str_contains($approvedLog->LOG_Status, 'REJECTED') ? 'Rejected' : 'Approved';
+                                                $badgeClass = $status === 'Rejected' ? 'badge badge-light-danger' : 'badge badge-light-success';
+                                                $icon = $status === 'Rejected' ? 'bi-x-circle-fill text-danger' : 'bi-check-circle-fill text-success';
                                             } else {
                                                 $status = 'Pending';
                                                 $badgeClass = 'badge badge-light-warning text-dark';
                                                 $icon = 'bi-hourglass-split';
                                             }
-
-                                            $bgClass = match($status) {
-                                                'Approved' => 'bg-success bg-opacity-10',
-                                                'Rejected' => 'bg-danger bg-opacity-10',
-                                                default => 'bg-secondary bg-opacity-10'
-                                            };
                                         @endphp
 
                                         <!--begin::Timeline item-->
@@ -286,11 +282,14 @@
                                             <div class="timeline-content ps-3 mb-10 mt-n1">
                                                 <!--begin::Timeline heading-->                                                   
                                                 <div class="pe-3 mb-5">
-                                                    <div class="fs-5 fw-semibold mb-2">Approval Step {{ $i }} - {{ $materialRequest->{'approver'.$i}->Fullname ?? 'Unknown User' }}</div>
+                                                    <div class="fs-5 fw-semibold mb-2">
+                                                        Approval Step {{ $i }} - {{ is_object($approvers[$i]) ? $approvers[$i]->Fullname : $approvers[$i] }}
+                                                    </div>
                                                     <div class="d-flex align-items-center mt-1 fs-6">
                                                         <div class="text-muted me-2 fs-7">
                                                             @if($approvedLog)
-                                                                {{ $approvedLog->LOG_Status }} on {{ \Carbon\Carbon::parse($approvedLog->LOG_Date)->format('d/m/Y H:i') }}
+                                                                {{ $logStatus[strtolower(str_contains($approvedLog->LOG_Status, 'REJECTED') ? 'reject' : 'approve')] }}
+                                                                on {{ \Carbon\Carbon::parse($approvedLog->LOG_Date)->format('d/m/Y H:i') }}
                                                             @else
                                                                 Waiting for Approval...
                                                             @endif
@@ -322,8 +321,9 @@
                                     @endfor
                                 </div>
                             </div>
+                            <!--End::Approval MR-->
                         </div>
-                        {{-- End Detail Case --}}   
+                        {{-- End Detail Case --}}
                     </div>
                 </div>
             </div>

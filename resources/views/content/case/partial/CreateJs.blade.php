@@ -1,11 +1,22 @@
-{{-- <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
-<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script> --}}
-
 {{-- Date Time --}}
 <script>
     $("#date").flatpickr({
         enableTime: true,
         dateFormat: "d/m/Y H:i",
+        minDate: "today",
+        defaultDate: new Date(), // Set default to now
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const today = new Date();
+            const date = dayElem.dateObj;
+
+            if (
+                date.getDate() === today.getDate() &&
+                date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear()
+            ) {
+                dayElem.classList.add("today-highlight");
+            }
+        }
     });
 </script>
 
@@ -215,7 +226,9 @@
                 }
             });
         });
-
+        
+        // Declare Route untuk Ke Edit Page
+        const editCaseRoute = @json(route('EditCase', ':encoded_case_no'));
 
         // AJAX Save
         function saveCase(formData) {
@@ -241,11 +254,10 @@
                                 customClass: { confirmButton: "btn btn-success" }
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    let encodedCaseNo = encodeURIComponent(response.case_no);
-                                    
-                                    window.location.href = `${BASE_URL}/Case/Edit?case_no=${encodedCaseNo}`;
-                                    // window.location.href = "/Case/Edit?case_no=" + encodedCaseNo;
-                                }
+                                    const encodedCaseNo = btoa(response.case_no); 
+                                    const finalUrl = editCaseRoute.replace(':encoded_case_no', encodedCaseNo);
+                                    window.location.href = finalUrl; 
+                                }                           
                             });
                         }
                     }, 800);

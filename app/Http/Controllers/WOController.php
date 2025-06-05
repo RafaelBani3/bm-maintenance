@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Str;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class WOController extends Controller
@@ -157,44 +157,38 @@ class WOController extends Controller
     public function SaveWO(Request $request)
     {
         try {
-            // Validasi 
             $request->validate([
-                'reference_number' => 'required|string',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
-                'work_description' => 'required|string|max:255',
-                'assigned_to' => 'nullable|array',
-            ]);
+            'reference_number' => 'required|string',
+            'start_date' => 'required|date_format:d/m/Y H:i',
+            'end_date' => 'required|date_format:d/m/Y H:i|after_or_equal:start_date',
+            'work_description' => 'required|string|max:255',
+            'assigned_to' => 'nullable|array',
+        ]);
 
-            $user = Auth::user(); 
-            $woNumber = (new WorkOrder)->getIncrementWONo();
-            Log::info('The Work Order creation process is initiated by the user ID:' . $user->id);
+        $user = Auth::user(); 
+        $woNumber = (new WorkOrder)->getIncrementWONo();
 
-            $workOrder = new WorkOrder();
-            $workOrder->WO_No = $woNumber;
-            $workOrder->Case_No = $request->reference_number;
-            $workOrder->WO_Start = $request->start_date;
-            $workOrder->WO_End = $request->end_date;
-            $workOrder->WO_Status = 'OPEN';
-            $workOrder->WO_Narative = $request->work_description;
-            $workOrder->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
-            $workOrder->WO_MR = $request->intended_for;
-            $workOrder->WO_IsComplete = 'N';
-            $workOrder->CR_BY = $user->id;
-            $workOrder->CR_DT = now();
-            $workOrder->Update_Date = now();
-            $workOrder->save();
+        $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
+        $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
+
+        Log::info('The Work Order creation process is initiated by the user ID:' . $user->id);
+
+        $workOrder = new WorkOrder();
+        $workOrder->WO_No = $woNumber;
+        $workOrder->Case_No = $request->reference_number;
+        $workOrder->WO_Start = $startDate;
+        $workOrder->WO_End = $endDate;
+        $workOrder->WO_Status = 'OPEN';
+        $workOrder->WO_Narative = $request->work_description;
+        $workOrder->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
+        $workOrder->WO_MR = $request->intended_for;
+        $workOrder->WO_IsComplete = 'N';
+        $workOrder->CR_BY = $user->id;
+        $workOrder->CR_DT = now();
+        $workOrder->Update_Date = now();
+        $workOrder->save();
 
             Session::put('latest_wo_no', $woNumber);
-
-            Logs::create([
-                'LOG_Type' => 'WO',
-                'LOG_RefNo' => $woNumber,
-                'LOG_Status' => 'CREATED',
-                'LOG_User' => $user->id,
-                'LOG_Date' => now(),
-                'LOG_Desc' => 'CREATED NEW WORK ORDER ' . $woNumber,
-            ]);
 
             if ($request->has('assigned_to') && is_array($request->assigned_to)) {
                 foreach ($request->assigned_to as $technicianId) {
@@ -212,6 +206,7 @@ class WOController extends Controller
                         ]);
                 
                         Logs::create([
+                            'Logs_No' => Logs::generateLogsNo(),
                             'LOG_Type' => 'WO',
                             'LOG_RefNo' => $woNumber,
                             'LOG_Status' => 'TECH_ASSIGNED',
@@ -223,6 +218,16 @@ class WOController extends Controller
                 }
             }
 
+            Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),                
+                'LOG_Type' => 'WO',
+                'LOG_RefNo' => $woNumber,
+                'LOG_Status' => 'CREATED',
+                'LOG_User' => $user->id,
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'Created New Work Order',
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Work Order successfully saved!',
@@ -232,12 +237,13 @@ class WOController extends Controller
             Log::error(message: 'Failed to create Work Order. Error: ' . $e->getMessage());
 
             Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'WO',
                 'LOG_RefNo' =>  $woNumber ?? '',    
                 'LOG_Status' => 'FAILED',
                 'LOG_User' => Auth::id(),
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'FAILED TO CREATED WORK ORDER. ERROR: ',
+                'LOG_Desc' => Str::limit('Failed to create work order. ERROR: ' . $e->getMessage(), 255),
             ]);
 
             return response()->json([
@@ -312,6 +318,81 @@ class WOController extends Controller
         return response()->json(['status' => 'success']);
     }
 
+    // SAVE DRAFT WORK Order
+    public function SaveDraftWO(Request $request)
+    {
+        $user = auth::user();
+        $request->validate([
+            'wo_no' => 'required|string',
+            'reference_number' => 'required|string',
+            'start_date' => 'required|string',
+            'end_date' => 'required|string',
+            'work_description' => 'required|string',
+            'assigned_to' => 'nullable|array',
+            'require_material' => 'nullable|string',
+        ]);
+
+        try {
+            $wo = WorkOrder::where('WO_No', $request->wo_no)->firstOrFail();
+
+            $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
+            $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
+
+            $wo->Case_No = $request->reference_number;
+            $wo->WO_Start = $startDate;
+            $wo->WO_End = $endDate;
+            $wo->WO_Narative = $request->work_description;
+            $wo->Update_Date = now();
+
+            if ($request->has('require_material') && $request->require_material === 'yes') {
+                $wo->WO_NeedMat = 'Y';
+                $wo->WO_MR = $request->intended_for ?? $wo->WO_MR;
+                $wo->WO_Status = 'OPEN';
+            } else {
+                $wo->WO_NeedMat = 'N';
+                $wo->WO_MR = null;
+                $wo->WO_Status = 'OPEN';
+            }
+
+            $wo->save();
+
+            // Handle Teknisi
+            if ($request->has('assigned_to')) {
+                $existingTechnicians = DB::table('WO_DoneBy')
+                    ->where('WO_No', $request->wo_no)
+                    ->pluck('technician_id')
+                    ->toArray();
+    
+                foreach ($request->assigned_to as $tech_id) {
+                    if (!in_array($tech_id, $existingTechnicians)) {
+                        DB::table('WO_DoneBy')->insert([
+                            'WO_No' => $request->wo_no,
+                            'technician_id' => $tech_id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+    
+                        Log::info("Technician {$tech_id} added to WO {$request->wo_no} by {$user->Fullname}");
+                    }
+                }
+            }
+
+            DB::table('Logs')->insert([
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'WO',
+                'LOG_RefNo' => $wo->WO_No,
+                'LOG_Status' => 'DRAFT_SAVED',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'Successfully Saved Work Order Draft.',
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Work Order Draft Saved Successfully.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
 
     // Update WO
     public function UpdateWO(Request $request)
@@ -323,20 +404,24 @@ class WOController extends Controller
             $request->validate([
                 'wo_no' => 'required|string',
                 'reference_number' => 'required|string',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
+                'start_date' => 'required|string',
+                'end_date' => 'required|string',
                 'work_description' => 'required|string',
                 'assigned_to' => 'nullable|array',
                 'require_material' => 'nullable|string',
             ]);
     
             $wo = WorkOrder::where('WO_No', $request->wo_no)->firstOrFail();
-    
+            
+            
+            $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
+            $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
+
             Log::info("Work Order update process {$request->wo_no} started by user ID: {$user->id}");
     
             $wo->Case_No = $request->reference_number;
-            $wo->WO_Start = $request->start_date;
-            $wo->WO_End = $request->end_date;
+            $wo->WO_Start = $startDate;
+            $wo->WO_End = $endDate;
             $wo->WO_Narative = $request->work_description;
             $wo->Update_Date = now();
             if ($request->has('require_material') && $request->require_material === 'yes') {
@@ -358,12 +443,13 @@ class WOController extends Controller
                 Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
             
                 Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'BA',
                     'LOG_RefNo' => $request->reference_number,
                     'LOG_Status' => 'INPROGRESS',
                     'LOG_User' => $user->id,
                     'LOG_Date' => now(),
-                    'LOG_Desc' => 'SENT AND CASES INPROGRESS',
+                    'LOG_Desc' => 'Sent and Case Inprogress.',
                 ]);
         
             }
@@ -388,23 +474,25 @@ class WOController extends Controller
             }
     
             Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'WO',
                 'LOG_RefNo' => $request->wo_no,
                 'LOG_Status' => 'SUBMITTED',
                 'LOG_User' => $user->id,
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'SUCCESSFULLY SUBMITTED A WORK ORDER.',
+                'LOG_Desc' => 'Succesfully Submitted a Work Order.',
             ]);
     
             return response()->json([
                 'success' => true,
-                'message' => 'Work Order successfully updated!'
+                'message' => 'Work Order successfully Submitted!'
             ]);
     
         } catch (\Exception $e) {
             Log::error('Failed to update Work Order. Error: ' . $e->getMessage());
     
             Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'WO',
                 'LOG_RefNo' => $request->wo_no,
                 'LOG_Status' => 'FAILED',
@@ -419,9 +507,7 @@ class WOController extends Controller
             ], 500);
         }
     }
-               
 
-    
     // Mengambil data WO dari Database dan tampilkan pada table WO
     public function getWorkOrders(Request $request)
     {

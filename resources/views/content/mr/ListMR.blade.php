@@ -409,6 +409,9 @@
     </script> --}}
 
     <script>
+        // Declare Script untuk Menuju Page Detail MR
+        const mrDetailRoute = @json(route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']));
+
         $(document).ready(function () {
             const baseUrl = "{{ url('/') }}";
 
@@ -510,9 +513,9 @@
                             if (!data) return '-';
                             try {
                                 const encoded = btoa(unescape(encodeURIComponent(data)));
+                                const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded);
                                 return `
-                                    <a href="${baseUrl}/Material-Request/Detail/${encoded}" 
-                                    class="btn btn-sm btn-secondary hover-scale">
+                                    <a href="${detailUrl}" class="btn btn-sm btn-secondary hover-scale">
                                         <i class="ki-duotone ki-eye">
                                             <span class="path1"></span>
                                             <span class="path2"></span>

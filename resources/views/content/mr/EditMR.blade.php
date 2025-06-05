@@ -15,6 +15,13 @@
         .table th {
             vertical-align: middle !important;
         }
+
+        .flatpickr-day.today {
+            background: #0d6efd !important;
+            color: #fff !important;
+            border-radius: 6px;
+        }
+
     </style>
     
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -47,232 +54,250 @@
                                         <!--begin::Form-->
                                         <form action="" method="POST" id="MrForm" enctype="multipart/form-data" class="form">
                                             @csrf
+                                            <input type="hidden" name="mr_no" value="{{ $matReq->MR_No }}">
+
                                             <input type="hidden" name="wo_no" value="{{ $matReq->WO_No }}">
                                             <!--begin::Card body-->
                                             <div class="card-body p-2">
 
-                                            <!--begin::Alert-->
-                                            <div class="alert alert-dismissible bg-light-warning border-dashed border-warning d-flex flex-column flex-sm-row p-5 mb-10" >
-                                                <!--begin::Icon-->
-                                                <i class="ki-duotone ki-notepad-edit fs-2hx text-gray-700 me-4 mb-5 mb-sm-0">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>  
-                                                <!--end::Icon-->
+                                                <!--begin::Alert-->
+                                                <div class="alert alert-dismissible bg-light-warning border-dashed border-warning d-flex flex-column flex-sm-row p-5 mb-10" >
+                                                    <!--begin::Icon-->
+                                                    <i class="ki-duotone ki-notepad-edit fs-2hx text-gray-700 me-4 mb-5 mb-sm-0">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>  
+                                                    <!--end::Icon-->
 
-                                                <!--begin::Wrapper-->
-                                                <div class="d-flex flex-column pe-0 pe-sm-10">
-                                                    <!--begin::Title-->
-                                                    <h5 class="mb-1 text-gray-900">Review Your Material Request Data Before Proceeding</h5>
-                                                    <!--end::Title-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex flex-column pe-0 pe-sm-10">
+                                                        <!--begin::Title-->
+                                                        <h5 class="mb-1 text-gray-900">Review Your Material Request Data Before Proceeding</h5>
+                                                        <!--end::Title-->
 
-                                                    <!--begin::Content-->
-                                                    <span class="text-gray-600">Please double-check the saved Material Request data. Make sure all information is accurate before moving on to the next process.</span>
-                                                    <!--end::Content-->
-                                                </div>
-                                                <!--end::Wrapper-->
-
-                                                <!--begin::Close-->
-                                                <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
-                                                    <i class="ki-duotone ki-cross fs-1 text-success"><span class="path1"></span><span class="path2"></span></i>
-                                                </button>
-                                                <!--end::Close-->
-                                            </div>
-                                            <!--end::Alert-->
-                                        
-                                            <!--begin::Reference No (WO No)-->
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        <span>Reference No.</span>
-                                                        <span class="ms-1" data-bs-toggle="tooltip" title="This is the current Work Order reference number.">
-                                                            <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-                                                                <span class="path1"></span>
-                                                                <span class="path2"></span>
-                                                                <span class="path3"></span>
-                                                            </i>
-                                                        </span>
-                                                    </label>
-                                                    <!--end::Label-->
-
-                                                    <!--begin::Input-->
-                                                    <div class="col-lg-8 fv-row">
-                                                        <select class="form-select form-select-lg form-select-solid" 
-                                                                id="reference_number" name="reference_number" data-control="select2" 
-                                                                data-placeholder="Select Reference">
-                                                            <option value="{{ $matReq->WO_No }}" 
-                                                                {{ $matReq->WO_No == old('reference_number', $matReq->WO_No) ? 'selected' : '' }}>
-                                                                {{ $matReq->WO_No }}
-                                                            </option>
-                                                        </select>
+                                                        <!--begin::Content-->
+                                                        <span class="text-gray-600">Please double-check the saved Material Request data. Make sure all information is accurate before moving on to the next process.</span>
+                                                        <!--end::Content-->
                                                     </div>
-                                                    <!--end::Input-->
+                                                    <!--end::Wrapper-->
+
+                                                    <!--begin::Close-->
+                                                    <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+                                                        <i class="ki-duotone ki-cross fs-1 text-success"><span class="path1"></span><span class="path2"></span></i>
+                                                    </button>
+                                                    <!--end::Close-->
                                                 </div>
-                                                <!--end::Reference No (WO No)-->
-                                                
-                                                <!--begin::Input Case No-->
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Case No
-                                                    </label>
-                                                    <!--end::Label-->
+                                                <!--end::Alert-->
+                                            
+                                                <!--begin::Reference No (WO No)-->
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            <span>Reference No.</span>
+                                                            <span class="ms-1" data-bs-toggle="tooltip" title="This is the current Work Order reference number.">
+                                                                <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                    <span class="path3"></span>
+                                                                </i>
+                                                            </span>
+                                                        </label>
+                                                        <!--end::Label-->
+
+                                                        <!--begin::Input-->
+                                                        <div class="col-lg-8 fv-row">
+                                                            <select class="form-select form-select-lg form-select-solid" 
+                                                                    id="reference_number" name="reference_number" data-control="select2" 
+                                                                    data-placeholder="Select Reference">
+                                                                <option value="{{ $matReq->WO_No }}" 
+                                                                    {{ $matReq->WO_No == old('reference_number', $matReq->WO_No) ? 'selected' : '' }}>
+                                                                    {{ $matReq->WO_No }}
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                        <!--end::Input-->
+                                                    </div>
+                                                    <!--end::Reference No (WO No)-->
                                                     
-                                                    <div class="col-lg-8">
-                                                        <div class="col-lg-20 fv-row">
-                                                            <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case No"   value="{{ $matReq->Case_No }}" />
+                                                    <!--begin::Input Case No-->
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            Case No
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        
+                                                        <div class="col-lg-8">
+                                                            <div class="col-lg-20 fv-row">
+                                                                <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case No"   value="{{ $matReq->Case_No }}" />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!--end::Input Case No-->
+                                                    <!--end::Input Case No-->
 
-                                                <!--begin::Input Created By-->
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Created By
-                                                    </label>
-                                                    <!--end::Label-->
-                                                    
-                                                    <div class="col-lg-8">
-                                                        <div class="col-lg-20 fv-row">
-                                                            <input type="text" id="created_by" name="created_by" 
-                                                                class="form-control form-control-solid" disabled placeholder="Auto-generated Creator" 
-                                                                value="{{ $matReq->createdBy->Fullname ?? '-' }}"/>
+                                                    <!--begin::Input Created By-->
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            Created By
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        
+                                                        <div class="col-lg-8">
+                                                            <div class="col-lg-20 fv-row">
+                                                                <input type="text" id="created_by" name="created_by" 
+                                                                    class="form-control form-control-solid" disabled placeholder="Auto-generated Creator" 
+                                                                    value="{{ $matReq->createdBy->Fullname ?? '-' }}"/>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!--end::Input Created By-->
-                                                
-                                                <!--begin::Input Created By-->
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Department
-                                                    </label>
-                                                    <!--end::Label-->
+                                                    <!--end::Input Created By-->
                                                     
-                                                    <div class="col-lg-8">
-                                                        <div class="col-lg-20 fv-row">
-                                                            <input type="text" id="department" name="department" 
-                                                                class="form-control form-control-solid" disabled placeholder="Creator's Position" value="{{ $matReq->createdBy->position->PS_Name ?? '-' }}" />
+                                                    <!--begin::Input Created By-->
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            Department
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        
+                                                        <div class="col-lg-8">
+                                                            <div class="col-lg-20 fv-row">
+                                                                <input type="text" id="department" name="department" 
+                                                                    class="form-control form-control-solid" disabled placeholder="Creator's Position" value="{{ $matReq->createdBy->position->PS_Name ?? '-' }}" />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!--end::Input Created By-->
+                                                    <!--end::Input Created By-->
 
-                                                <!--begin::Input Date-->
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Work Order Date
-                                                    </label>
-                                                    <!--end::Label-->
-                                                    
-                                                    <div class="col-lg-8">
-                                                        <div class="col-lg-20 fv-row">
-                                                            <input type="date" class="form-control form-control-solid" id="date" name="date" placeholder="Select the work order date"
-                                                            value="{{ \Carbon\Carbon::parse($matReq->MR_Date)->format('d/m/Y H:m') }}" />
+                                                    <!--begin::Input Date-->
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            Material Request Date
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        
+                                                        <div class="col-lg-8">
+                                                            <div class="col-lg-20 fv-row">
+                                                                <input type="date" class="form-control form-control-solid" id="date" name="date" placeholder="Select the work order date"
+                                                                value="{{ $matReq->MR_Date}}" />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!--end::Input Wo Date-->
+                                                    <!--end::Input Wo Date-->
 
-                                                <!--begin:: Designation-->
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Work Order Designation
-                                                    </label>
-                                                    <!--end::Label-->
-                                                    
-                                                    <div class="col-lg-8">
-                                                        <div class="col-lg-20 fv-row">
-                                                            <textarea name="Designation" class="form-control form-control-solid" 
-                                                            rows="4" placeholder="What it is intended for...">{{ $matReq->MR_Allotment }}</textarea>   
+                                                    <!--begin:: Designation-->
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            <span>Material Allocation Purpose </span>
+                                                            <span class="ms-1" data-bs-toggle="tooltip" title="Please specify the intended use of this material to ensure accurate allocation and procurement.">
+                                                                <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                    <span class="path3"></span>
+                                                                </i>
+                                                            </span>
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        
+                                                        <div class="col-lg-8">
+                                                            <div class="col-lg-20 fv-row">
+                                                                <textarea name="Designation" class="form-control form-control-solid" 
+                                                                rows="4" placeholder="What it is intended for...">{{ $matReq->MR_Allotment }}</textarea>   
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!--end::Input Designation-->
+                                                    <!--end::Input Designation-->
 
-                                                
-                                                @php $rowCount = 1; @endphp
+                                                    
+                                                    @php $rowCount = 1; @endphp
 
-                                                <div class="row mb-10">
-                                                    <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
-                                                        Material List
-                                                    </label>
-                                                    <!--end::Label-->
-                                                    <div class="table-responsive">
-                                                        <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
-                                                            <thead>
-                                                                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                    <th>No</th>
-                                                                    <th>Quantity</th>
-                                                                    <th>Unit</th>
-                                                                    <th>Item Code</th>
-                                                                    <th>Item Name</th>
-                                                                    <th>Description</th>
-                                                                    <th>Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="material-body">
-                                                                @forelse ($matReqChilds as $index => $child)
-                                                                    <tr>
-                                                                        <td class="text-center">{{ $index + 1 }}</td>
-                                                                        <td>
-                                                                            <input type="number" name="items[{{ $index }}][qty]" class="fv-row form-control form-control-lg" 
-                                                                                value="{{ $child->Item_Oty }}" >
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="text" name="items[{{ $index }}][unit]" class="fv-row form-control form-control-lg" 
-                                                                                value="{{ $child->CR_ITEM_SATUAN }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="text" name="items[{{ $index }}][code]" class="fv-row form-control form-control-lg" 
-                                                                                value="{{ $child->CR_ITEM_CODE }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="text" name="items[{{ $index }}][name]" class="fv-row form-control form-control-lg" 
-                                                                                value="{{ $child->CR_ITEM_NAME }}" >
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="text" name="items[{{ $index }}][desc]" class="fv-row form-control form-control-lg" 
-                                                                                value="{{ $child->Remark }}">
-                                                                        </td>
-
-                                                                        <td class="text-center text-white">
-                                                                            <button type="button" class="btn btn-danger remove-row text-center text-white delete-material"
-                                                                                data-mrno="{{ $child->MR_No }}" data-mrline="{{ $child->MR_Line }}">
-                                                                                <i class="ki-duotone ki-trash fs-2x text-center text-white">
-                                                                                    <span class="path1"></span>
-                                                                                    <span class="path2"></span>
-                                                                                    <span class="path3"></span> 
-                                                                                    <span class="path4"></span>
-                                                                                    <span class="path5"></span>
-                                                                                </i>
-                                                                            </button>
-                                                                        </td>
-
+                                                    <div class="row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                            Material List
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        <div class="table-responsive">
+                                                            <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
+                                                                <thead>
+                                                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                                        <th>No</th>
+                                                                        <th>Quantity</th>
+                                                                        <th>Unit</th>
+                                                                        <th>Item Code</th>
+                                                                        <th>Item Name</th>
+                                                                        <th>Description</th>
+                                                                        <th>Action</th>
                                                                     </tr>
-                                                                    @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                                </thead>
+                                                                <tbody id="material-body">
+                                                                    @forelse ($matReqChilds as $index => $child)
+                                                                        <tr>
+                                                                            <td class="text-center">{{ $index + 1 }}</td>
+                                                                            <td>
+                                                                                <input type="number" name="items[{{ $index }}][qty]" class="fv-row form-control form-control-lg" 
+                                                                                    value="{{ $child->Item_Oty }}" >
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" name="items[{{ $index }}][unit]" class="fv-row form-control form-control-lg" 
+                                                                                    value="{{ $child->CR_ITEM_SATUAN }}">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" name="items[{{ $index }}][code]" class="fv-row form-control form-control-lg" 
+                                                                                    value="{{ $child->CR_ITEM_CODE }}">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" name="items[{{ $index }}][name]" class="fv-row form-control form-control-lg" 
+                                                                                    value="{{ $child->CR_ITEM_NAME }}" >
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" name="items[{{ $index }}][desc]" class="fv-row form-control form-control-lg" 
+                                                                                    value="{{ $child->Remark }}">
+                                                                            </td>
 
-                                                    <div class="col-lg-8">
-                                                        <div class="col-lg-20 fv-row">
-                                                            <button type="button" id="add-row" class="btn btn-primary mb-5 col-md-2 text-center hover-scale">+ Add Row</button>
+                                                                            <td class="text-center text-white">
+                                                                                <button type="button" class="btn btn-danger remove-row text-center text-white delete-material"
+                                                                                    data-mrno="{{ $child->MR_No }}" data-mrline="{{ $child->MR_Line }}">
+                                                                                    <i class="ki-duotone ki-trash fs-2x text-center text-white">
+                                                                                        <span class="path1"></span>
+                                                                                        <span class="path2"></span>
+                                                                                        <span class="path3"></span> 
+                                                                                        <span class="path4"></span>
+                                                                                        <span class="path5"></span>
+                                                                                    </i>
+                                                                                </button>
+                                                                            </td>
+
+                                                                        </tr>
+                                                                        @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                        <div class="col-lg-8">
+                                                            <div class="col-lg-20 fv-row">
+                                                                <button type="button" id="add-row" class="btn btn-primary mb-5 col-md-2 text-center hover-scale">+ Add Row</button>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
                                             </div>
                                             <!--end::Card body-->
 
                                             <!--begin::Actions-->
-                                            <div class="card-footer d-flex justify-content-end py-6 px-9">
+                                            <div class="card-footer d-flex justify-content-end py-6 px-9 gap-5">
+                                                <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-warning" name="save_case" value="1">
+                                                    <span class="indicator-label text">
+                                                      Save Material Request
+                                                    </span>
+                                                    <span class="indicator-progress">
+                                                        Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                    </span>
+                                                </button>
+                                                
                                                 <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
                                                     <span class="indicator-label">
                                                     Submit Material Request
@@ -285,6 +310,19 @@
                                             <!--end::Actions-->        
                                         </form>
                                         <!--end::Form-->
+
+                                        {{-- Coba anda lihat Form HTML yang saya berikan diatas. pada bagian bawah terdapat 2 button yaitu Button Save MR dan Submit MR.
+                                        
+                                        Berdasarkan Script diatas Saya mau anda melakukan beberapa penyesuaian terhadap Code diatas.
+                                        Alurnya User Harus/Wajib untuk Clik button Save MR terlebih dahulu baru click button Submit/Update MR.
+                                        untuk alurnya:
+                                        1. User Clik Button Save MR. ketika sudah diclick maka akan muncul pop up success atau error.
+                                        2. Jika Pop up succes muncul dan user clik Ok, maka buat Button Save MR ini hilang tapi jika error jgn dihilangkan
+                                        3. Setelah Button Save MR hilang barulah user clik button Submit/Update MR. Jika user langsung clik button submit mr tanpa clik button save mr maka munculkan pop up warning.
+                                        4. Jika user clik button Submit/Update mr setelah clik button save mr,munculkan pop up succes atau error.
+                                        Saya berikan COntorller Save Draft MR saya dibawha ini dan routenya
+                                     --}}
+
                                     </div>
                                     <!--end::Content-->
                                 </div>

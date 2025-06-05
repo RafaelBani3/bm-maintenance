@@ -3,12 +3,11 @@
 <html lang="en">
 	<!--begin::Head-->
 	<head>
-		<title>@yield('title')</title>
+		<title>@yield('title') - @yield('subtitle')</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
-		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
 		<!--begin::Fonts(mandatory for all pages)-->

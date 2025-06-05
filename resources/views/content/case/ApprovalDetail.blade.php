@@ -1,7 +1,7 @@
 @extends('layouts.Master')
 
 @section('title', 'BM-Maintenance')
-@section('subtitle', 'Case - Approval Case')
+@section('subtitle', 'Approval Case')
 
 @section('content')
 
@@ -187,54 +187,6 @@
                                 <!--end::Col-->
                             </div>
                             <!--end::Row CASE ACTION-->
-
-                            {{-- Dropzone --}}
-                            {{-- <div class="row mb-5 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    <span>Existing Image</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" title="This is the currently uploaded image. You can keep or replace it.">
-                                        <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <div id="existing-photos" class="d-flex flex-row flex-wrap gap-4">
-                                    @if($images->isNotEmpty())
-                                        <div class="row">
-                                            @foreach($images as $image)
-                                                @php
-                                                    $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
-                                                @endphp
-                                                <div class="col-md-3 col-sm-4 col-6 mb-3">
-                                                    <!--begin::Overlay-->
-                                                    <a class="d-block overlay" data-fslightbox="lightbox-basic" href="{{ $imgPath }}">
-                                                        <!--begin::Image-->
-                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
-                                                            style="background-image:url('{{ $imgPath }}')">
-                                                        </div>
-                                                        <!--end::Image-->
-                                    
-                                                        <!--begin::Action-->
-                                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center">
-                                                            <i class="bi bi-eye-fill text-white fs-3x"></i>
-                                                        </div>
-                                                        <!--end::Action-->
-                                                    </a>
-                                                    <!--end::Overlay-->
-                                    
-                                                    <p class="text-center small mt-1">{{ $image->IMG_Realname }}</p>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <p class="text-muted">No photos available for this case.</p>
-                                    @endif
-                                </div>
-                            </div> --}}
                             
                              <!--Start::Row Exiciting Image-->
                             <div class="row mb-5 pb-4">
@@ -252,7 +204,7 @@
                                 <!--end::Label-->
                                 <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
                                     @if($images->isNotEmpty())
-                                        <div class="row gap-7">
+                                        <div class="row" style="gap: 20px">
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
@@ -417,7 +369,6 @@
                                                     <form action="{{ route('cases.approveReject', $case->Case_No) }}" method="POST">
                                                         @csrf
                                                         <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
-                                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-4">
                                                             <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
@@ -452,7 +403,6 @@
                                                     <form action="{{ route('cases.approveReject', $case->Case_No) }}" method="POST">
                                                         @csrf
                                                         <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
-                                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-4">
                                                             <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>

@@ -1,19 +1,21 @@
-<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
-<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 
 
     {{-- FlatPicker Date --}}
     <script>
         $("#start_date").flatpickr({
+            enableTime: true,
             altInput: true,
-            altFormat: "d/m/Y",
-            dateFormat: "Y-m-d",
+            altFormat: "d/m/Y H:i", 
+            dateFormat: "d/m/Y H:i",
+            minDate: "today",
         });
 
         $("#end_date").flatpickr({
+            enableTime: true,
             altInput: true,
-            altFormat: "d/m/Y",
-            dateFormat: "Y-m-d",
+            altFormat: "d/m/Y H:i", 
+            dateFormat: "d/m/Y H:i",
+            minDate: "today",
         });
 
         $(document).ready(function() {
@@ -104,7 +106,8 @@
                                     }
                                 }).then(() => {
                                     let encodedWoNo = btoa(response.wo_no); 
-                                    window.location.href = "/BmMaintenance/public/Work-Order/Edit/" + encodedWoNo;
+                                    let url = "{{ route('EditWO', ['wo_no' => '__WONO__']) }}".replace('__WONO__', encodedWoNo);
+                                    window.location.href = url;
                                 });
                             },
                             error: function (xhr, status, error) {
@@ -138,181 +141,92 @@
     </script>
     
     {{-- Case No / Reference No --}}
-    {{-- <script>
+    <script>
         $(document).ready(function () {
-            function showPageLoader() {
-                const loadingEl = document.createElement("div");
-                loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25");
-                loadingEl.innerHTML = `
-                    <span class="spinner-border text-primary" role="status"></span>
-                    <span class="text-muted fs-6 fw-semibold mt-5">Loading...</span>
-                `;
-                document.body.prepend(loadingEl);
 
-                if (typeof KTApp !== "undefined") {
-                    KTApp.showPageLoading();
+                function formatDate(dateStr) {
+                    if (!dateStr) return "";
+
+                    let date = new Date(dateStr);
+                    let options = { day: "numeric", month: "long", year: "numeric" };
+                    return date.toLocaleDateString("id-ID", options);
                 }
 
-                return loadingEl;
-            }
+                function centerPageLoader() {
+                    const loader = $('#page_loader');
+                    loader.css({
+                        display: 'flex',
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'dark',
+                        'z-index': 9999,
+                        'justify-content': 'center',
+                        'align-items': 'center'
+                    });
+                }
 
-            function hidePageLoader(loader) {
-                setTimeout(() => {
-                    if (typeof KTApp !== "undefined") {
-                        KTApp.hidePageLoading();
-                    }
-                    if (loader) loader.remove();
-                }, 1000);
-            }
+                function showPageLoader() {
+                    centerPageLoader();
+                    $('#page_loader').fadeIn(100);
+                }
 
-            function formatDate(dateStr) {
-                if (!dateStr) return "";
+                function hidePageLoader() {
+                    $('#page_loader').fadeOut(200);
+                }
 
-                let date = new Date(dateStr);
-                let options = { day: "numeric", month: "long", year: "numeric" };
-                return date.toLocaleDateString("id-ID", options);
-            }
+                function loadCases() {
+                    let select = $('#reference_number');
+                    select.empty().append('<option>Loading...</option>');
 
-            function loadCases() {
-                let loader = showPageLoader();
+                    $.ajax({
+                        url: "{{ route('get.cases') }}",
+                        type: "GET",
+                        dataType: "json",
+                        success: function (data) {
+                            select.empty().append('<option></option>');
 
-                $.ajax({
-                    url: "{{ route('get.cases') }}",
-                    type: "GET",
-                    dataType: "json",
-                    success: function (data) {
-                        let select = $('#reference_number');
-                        select.empty().append('<option></option>');
+                            data.forEach(function (item) {
+                                select.append(`
+                                    <option value="${item.case_no}"
+                                        data-created="${item.created_by}"
+                                        data-department="${item.department}"
+                                        data-date="${item.date}">
+                                        ${item.case_no}
+                                    </option>
+                                `);
+                            });
+                        },
+                        error: function (xhr) {
+                            select.empty().append('<option>Error loading data</option>');
+                            console.log("Error fetching cases: ", xhr);
+                        }
+                    });
+                }
 
-                        data.forEach(function (item) {
-                            select.append(`
-                                <option value="${item.case_no}"
-                                    data-created="${item.created_by}"
-                                    data-department="${item.department}"
-                                    data-date="${item.date}">
-                                    ${item.case_no}
-                                </option>
-                            `);
-                        });
-                        $('#approval_status_table tbody').html(approvalRows);
+                loadCases();
 
-                        hidePageLoader(loader);
-                    },
-                    error: function (xhr) {
-                        console.log("Error fetching cases: ", xhr);
-                        hidePageLoader(loader);
-                    }
+                $('#reference_number').change(function () {
+                    let selectedOption = $(this).find(':selected');
+
+                    showPageLoader(); 
+
+                    setTimeout(() => {
+                        $('#created_by').val(selectedOption.data('created'));
+                        $('#department').val(selectedOption.data('department'));
+                        $('#date').val(formatDate(selectedOption.data('date')));
+
+                        hidePageLoader(); 
+                    }, 1000);
                 });
-            }
 
-            loadCases();
-
-            $('#reference_number').change(function () {
-                let selectedOption = $(this).find(':selected');
-                let loader = showPageLoader();
-
-                setTimeout(() => {
-                    $('#created_by').val(selectedOption.data('created'));
-                    $('#department').val(selectedOption.data('department'));
-                    $('#date').val(formatDate(selectedOption.data('date')));
-
-                    hidePageLoader(loader);
-                }, 500);
-            });
-
-            $('#reference_number').select2({
-                placeholder: "Select Reference",
-                allowClear: true
-            });
+                $('#reference_number').select2({
+                    placeholder: "Select Reference",
+                    allowClear: true
         });
-    </script> --}}
-
-    <script>
-       $(document).ready(function () {
-
-            function formatDate(dateStr) {
-                if (!dateStr) return "";
-
-                let date = new Date(dateStr);
-                let options = { day: "numeric", month: "long", year: "numeric" };
-                return date.toLocaleDateString("id-ID", options);
-            }
-
-            function centerPageLoader() {
-                const loader = $('#page_loader');
-                loader.css({
-                    display: 'flex',
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'dark',
-                    'z-index': 9999,
-                    'justify-content': 'center',
-                    'align-items': 'center'
-                });
-            }
-
-            function showPageLoader() {
-                centerPageLoader();
-                $('#page_loader').fadeIn(100);
-            }
-
-            function hidePageLoader() {
-                $('#page_loader').fadeOut(200);
-            }
-
-            function loadCases() {
-                let select = $('#reference_number');
-                select.empty().append('<option>Loading...</option>');
-
-                $.ajax({
-                    url: "{{ route('get.cases') }}",
-                    type: "GET",
-                    dataType: "json",
-                    success: function (data) {
-                        select.empty().append('<option></option>');
-
-                        data.forEach(function (item) {
-                            select.append(`
-                                <option value="${item.case_no}"
-                                    data-created="${item.created_by}"
-                                    data-department="${item.department}"
-                                    data-date="${item.date}">
-                                    ${item.case_no}
-                                </option>
-                            `);
-                        });
-                    },
-                    error: function (xhr) {
-                        select.empty().append('<option>Error loading data</option>');
-                        console.log("Error fetching cases: ", xhr);
-                    }
-                });
-            }
-
-            loadCases();
-
-            $('#reference_number').change(function () {
-                let selectedOption = $(this).find(':selected');
-
-                showPageLoader(); // Tampilkan loader
-
-                setTimeout(() => {
-                    $('#created_by').val(selectedOption.data('created'));
-                    $('#department').val(selectedOption.data('department'));
-                    $('#date').val(formatDate(selectedOption.data('date')));
-
-                    hidePageLoader(); // Sembunyikan loader setelah isi field
-                }, 1000);
-            });
-
-            $('#reference_number').select2({
-                placeholder: "Select Reference",
-                allowClear: true
-});
-});
+    });
 
     </script>
     
@@ -321,7 +235,7 @@
         $(document).ready(function () {
             $('#assigned_to').select2({
                 ajax: {
-                    url: BASE_URL + '/api/technicians',
+                    url: "{{ route('GetTechnician') }}", // route name
                     dataType: 'json',
                     delay: 250,
                     processResults: function (data) {
@@ -374,7 +288,7 @@
                         $('#modal_category').text(data.Category);
                         $('#modal_subcategory').text(data.SubCategory);
                         $('#modal_created_by').text(data.Created_By);
-                        $('#modal_department').text(data.Department);
+                        $('#modal_department').text(data.Departement);
                         $('#modal_chronology').val(data.Case_Chronology ?? 'N/A');
                         $('#modal_outcome').val(data.Case_Outcome ?? 'N/A');
                         $('#modal_suggest').val(data.Case_Suggest ?? 'N/A');

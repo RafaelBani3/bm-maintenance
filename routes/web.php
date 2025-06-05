@@ -24,11 +24,18 @@ use Illuminate\Support\Facades\Route;
 
 
     // All can Access
+
+    Route::prefix('Dashboard')->group(function () {
+        Route::get('/', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
+        Route::get('/ajax/case-summary', [DashboardController::class, 'caseSummary'])->name('case.summary');
+        Route::post('/stor', [DashboardController::class, 'store'])->name('case.store');
+    });
+
     // Dashboard
-    Route::get('/Dashboard', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
+    // Route::get('/Dashboard', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
 
     // Ambil Data Case
-    Route::get('/dashboard/case-summary', [DashboardController::class, 'caseSummary'])->name('dashboard.case-summary');
+    // Route::get('/dashboard/case-summary', [DashboardController::class, 'caseSummary'])->name('dashboard.case-summary');
     
     Route::get('/dashboard/wo-summary', [DashboardController::class, 'GetWOSummary'])->name('dashboard.wo-summary');
 
@@ -45,24 +52,42 @@ use Illuminate\Support\Facades\Route;
     Route::get('/dashboard/case-wo-summary', [DashboardController::class, 'getCaseWOSummary'])->name('dashboard.case-wo-summary');
 
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' , 'permission:view cr']], function () {
     // PAGE CREATE CASE
         // Create Cases
-        Route::get('/Case-Report/Create', [CaseController::class, 'CreateCase'])->name('CreateCase');
+        Route::get('/Case/Create', [CaseController::class, 'CreateCase'])->name('CreateCase');
         // SubCategories
         Route::get('/get-subcategories/{cat_no}', [CaseController::class, 'getSubCategories']);
         // Validation
         Route::post('/validate-case', [CaseController::class, 'validateCase'])->name('case.validate');
         // Create and Save Cases
         Route::post('/Case/Create/Save', [CaseController::class, 'SaveCase'])->name('SaveCase');
-        // Edit Case Setelah Save Case
-        Route::get('/Case/Edit', [CaseController::class, 'EditCase'])->name('EditCase');
+    // End Create Case
+        
+    // Page Edit Case
+        // Page Edit Case
+        Route::get('/Case/Edit/{encoded_case_no}', [CaseController::class, 'EditCase'])->name('EditCase');
 
-        Route::post('/cases/delete-image', [CaseController::class, 'deleteImage'])->name('cases.deleteImage');
+        // Delete Image
+        Route::post('/Case/delete-image', [CaseController::class, 'deleteImage'])->name('cases.deleteImage');
+
+        // Save Draft
+        Route::post('/Case/save-draft', [CaseController::class, 'SaveDraftCase'])->name('case.saveDraft');
 
         // Update Hasil Update Case
         Route::post('/Case/Update', [CaseController::class, 'UpdateCase'])->name('cases.update');
-    // End Create Case
+    // end Edit Page
 
     // List/View Case Table Page
         //List/View Cases
@@ -104,22 +129,32 @@ use Illuminate\Support\Facades\Route;
     Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view wo']], function () { 
         // View Create WO Page
         Route::get('/Work-Order/Create', [WOController::class, 'CreateWO'])->name('CreateWO');
+        
         // Get Reference No (Case No)
         Route::get('/get-cases', [WOController::class, 'getCases'])->name('get.cases');
+        
         // View List WO Page
         Route::get('/Work-Order/List', [WOController::class, 'ListWO'])->name('ListWO');
+        
         // View Details Case di Page Create WO
+        // Route::get('/case-details/{caseNo}', [WOController::class, 'getCaseDetails'])
+        // ->where('caseNo', '.*'); 
         Route::get('/case-details/{caseNo}', [WOController::class, 'getCaseDetails'])
-        ->where('caseNo', '.*'); 
+        ->where('caseNo', '.*')
+        ->name('case.details');
 
         // Ambil Data Technician di page Create WO
-        Route::get('/api/technicians', [WOController::class, 'getTechnicians']);
+        Route::get('/api/technicians', [WOController::class, 'getTechnicians'])->name('GetTechnician');
+
 
         // Save Work Order
         Route::post('/Work-Order/Save', [WOController::class, 'SaveWO'])->name('SaveWO');
         
         // Page Edit WO
         Route::get('/Work-Order/Edit/{wo_no}', [WOController::class, 'EditWO'])->name('EditWO');
+
+        // Save Draft WO
+        Route::post('/Work-Order/Save-Draft', [WOController::class, 'SaveDraftWO'])->name('WorkOrder.SaveDraft');
 
         // Route Update WO 
         Route::post('/Work-Order/Update', [WOController::class, 'UpdateWO'])->name('WorkOrder.Update');
@@ -147,13 +182,16 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('/Material-Request/Create', [MRController::class, 'CreateMR'])->name('CreateMR');
 
-        Route::get('/Material-Request/Get-WO-By-User', [MRController::class, 'getWOByUser']);
+        Route::get('/ajax/Get-WO-By-User', [MRController::class, 'getWOByUser'])->name('getwodataformr');
         
-        Route::get('/Material-Request/Get-WO-Details', [MRController::class, 'getWODetails']);
+        Route::get('/ajax/Get-WO-Details', [MRController::class, 'getWODetails'])->name('getwodetailsformr');
 
         Route::post('/Material-Request/save', [MRController::class, 'SaveMR'])->name('SaveMR');
 
-        Route::get('/Material-Request/Edit/{mr_no}', [MRController::class, 'edit'])->name('EdiMRphp ');
+        Route::get('/Material-Request/Edit/{mr_no}', [MRController::class, 'EditMR'])->name('EditMR');
+
+        // Save Draft
+        Route::post('/Material-Request/Save-Draft', [MRController::class, 'SaveDraftMR'])->name('MR.SaveDraft');
 
         Route::post('/Material-Request/Update', [MRController::class, 'UpdateMR'])->name('update.mr');
 
@@ -241,8 +279,6 @@ use Illuminate\Support\Facades\Route;
         Route::post('/workorder/approval/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
 
     }); 
-
-
 
 
 

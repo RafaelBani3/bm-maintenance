@@ -5,6 +5,15 @@
 @section('subtitle', 'Case - Edit Case')
 
 @section('content')
+
+    <style>
+            .flatpickr-day.today {
+        background: #0d6efd !important; /* Bootstrap Primary Blue */
+        color: #fff !important;
+        border-radius: 6px;
+    }
+
+    </style>
     
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
@@ -90,7 +99,7 @@
                                                     <label for="date" class="col-lg-4 col-form-label required fw-semibold fs-6">Date</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
-                                                        <input class="form-control form-control-lg form-control-solid" placeholder="Pick date & time" name="date" id="date" value="{{ $case->Case_Date }}" />
+                                                        <input class="form-control form-control-lg form-control-solid" placeholder="Pick date & time" name="date" id="date" value="{{ $case->CR_DT }}" />
                                                     </div>
                                                 </div>
                                                 <!--end::Input Date-->
@@ -268,7 +277,16 @@
                                             <!--end::Card body-->
 
                                             <!--begin::Actions-->
-                                            <div class="card-footer d-flex justify-content-end py-6 px-9">
+                                            <div class="card-footer d-flex justify-content-end py-6 px-9 gap-5">
+                                                <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-warning" name="save_case" value="1">
+                                                    <span class="indicator-label text">
+                                                      Save Case
+                                                    </span>
+                                                    <span class="indicator-progress">
+                                                        Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                    </span>
+                                                </button>
+                                                
                                                 <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
                                                     <span class="indicator-label">
                                                     Submit Case

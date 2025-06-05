@@ -52,6 +52,8 @@ class Cases extends Model
         'Case_Loc_Room',
         'Case_Loc_Object',
         'Update_Date',
+        'created_at',
+        'updated_at',
     ];
 
     public function getIncrementCaseNo()
@@ -64,13 +66,6 @@ class Cases extends Model
             7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
         ];
         $romanMonth = $monthRoman[$currentMonth];
-
-        // $lastNumber = $this
-        //     ->whereYear('created_at', $currentYear)
-        //     ->whereMonth('created_at', $currentMonth)
-        //     ->select(DB::raw("NVL(MAX(TO_NUMBER(LTRIM(SUBSTR(Case_No, 1, 3), '0'))), 0) AS max_n"))
-        //     ->first()
-        //     ->max_n;
 
             
         $lastNumber = $this
@@ -133,40 +128,5 @@ class Cases extends Model
     {
         return $this->belongsTo(User::class, 'CR_BY');
     }
-
-
-
-   
-   
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::creating(function ($model) {
-    //         $currentMonth = date('n'); 
-    //         $currentYear = date('Y'); 
-    //         $monthRoman = [
-    //             1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
-    //             7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
-    //         ];
-    //         $romanMonth = $monthRoman[$currentMonth];
-
-    //         $lastCase = static::whereYear('created_at', $currentYear)
-    //             ->whereMonth('created_at', $currentMonth)
-    //             ->orderBy('Case_No', 'desc')
-    //             ->first();
-
-    //         if ($lastCase) {
-    //             preg_match('/^(\d{3})/', $lastCase->Case_No, $matches);
-    //             $lastNumber = isset($matches[1]) ? intval($matches[1]) : 0;
-    //             $newNumber = $lastNumber + 1;
-    //         } else {
-    //             $newNumber = 1;
-    //         }
-
-    //         $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
-    //         $model->Case_No = "$formattedNumber/BMGT/ENG-BAK/$romanMonth/$currentYear";
-    //     });
-    // }
 
 }

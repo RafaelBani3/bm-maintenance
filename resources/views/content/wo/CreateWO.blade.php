@@ -5,6 +5,14 @@
 
 @section('content')
 
+    <style>
+         .flatpickr-day.today {
+            background: #0d6efd !important; 
+            color: #fff !important;
+            border-radius: 6px;
+        }
+
+    </style>
 
     <div id="app_content" class="app-content flex-column-fluid">
         <div id="app_content_container" class="app-container container-xxl">
@@ -112,7 +120,7 @@
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    <span class="required">End Date</span>
+                                    <span class="required">Estimate Date</span>
                                     <span class="ms-1" data-bs-toggle="tooltip" title="Select the expected completion date for this Work Order.">
                                         <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
                                             <span class="path1"></span>
@@ -143,11 +151,21 @@
                                 </label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
-                                    <select id="assigned_to" class="form-control form-control-lg form-control-solid" name="assigned_to[]" data-control="select2" data-close-on-select="false" data-placeholder="Select technician(s)" data-allow-clear="true" multiple="multiple">
-                                </select>
+                                    <select id="assigned_to"
+                                            name="assigned_to[]"
+                                            class="form-select form-select-lg form-select-solid"
+                                            data-control="select2"
+                                            data-placeholder="Select technician(s)"
+                                            data-allow-clear="true"
+                                            data-close-on-select="false"
+                                            multiple="multiple">
+                                    </select>
                                 </div>
                             </div>
-                            <!--end::Input assingned to-->
+                            <!--end::Input assigned to-->
+
+                            
+                            
 
                             <!--begin::Input Work Description-->
                             <div class="fv-row row mb-10">
@@ -211,7 +229,7 @@
                         <div class="card-footer d-flex justify-content-end py-6 px-9">
                             <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
                                 <span class="indicator-label">
-                                    Save Material Request
+                                    Save Work Order
                                 </span>
                                 <span class="indicator-progress">
                                     Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -243,53 +261,83 @@
     <div class="modal fade" id="caseDetailsModal" tabindex="-1" aria-labelledby="caseDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="caseDetailsModalLabel">Case Details - <span id="modal_case_no"></span></h3>
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="caseDetailsModalLabel">
+                    Case Details – <span id="modal_case_no"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
-                    <div class="row">
-                        <!-- Left Column: Case Information -->
+                    <!-- Bagian Informasi Utama (Category, Subcategory, Created By, Department) -->
+                    <div class="row mb-3">
                         <div class="col-md-6">
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Category</strong></label>
-                                <p class="fs-5 text-dark" id="modal_category"></p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>SubCategory</strong></label>
-                                <p class="fs-5 text-dark" id="modal_subcategory"></p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Created By</strong></label>
-                                <p class="fs-5 text-dark" id="modal_created_by"></p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label text-muted"><strong>Department</strong></label>
-                                <p class="fs-5 text-dark" id="modal_department"></p>
-                            </div>
+                            <dl class="row mb-2">
+                            <dt class="col-sm-4 text-muted">Category</dt>
+                            <dd class="col-sm-8 fw-semibold" id="modal_category"></dd>
+                            </dl>
+                            <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">SubCategory</dt>
+                            <dd class="col-sm-8 fw-semibold" id="modal_subcategory"></dd>
+                            </dl>
                         </div>
 
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Case Chronology</strong></label>
-                            <textarea class="form-control" id="modal_chronology" rows="4" readonly></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Case Outcome</strong></label>
-                            <textarea class="form-control" id="modal_outcome" rows="4" readonly></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Case Suggest</strong></label>
-                            <textarea class="form-control" id="modal_suggest" rows="4" readonly></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Case Action</strong></label>
-                            <textarea class="form-control" id="modal_action" rows="4" readonly></textarea>
+                        <div class="col-md-6">
+                            <dl class="row mb-2">
+                            <dt class="col-sm-4 text-muted">Created By</dt>
+                            <dd class="col-sm-8 fw-semibold" id="modal_created_by"></dd>
+                            </dl>
+                            <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">Department</dt>
+                            <dd class="col-sm-8 fw-semibold" id="modal_department"></dd>
+                            </dl>
                         </div>
                     </div>
 
+                    <hr class="my-3">
+
+                    <!-- Bagian Detail Textareas (Chronology, Outcome, Suggest, Action) -->
+                    <div class="row gx-3 gy-3">
+                    <div class="col-lg-6">
+                        <label for="modal_chronology" class="form-label text-muted">Case Chronology</label>
+                        <textarea
+                        class="form-control form-control-sm"
+                        id="modal_chronology"
+                        rows="2"
+                        readonly
+                        ></textarea>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="modal_outcome" class="form-label text-muted">Case Outcome</label>
+                        <textarea
+                        class="form-control form-control-sm"
+                        id="modal_outcome"
+                        rows="2"
+                        readonly
+                        ></textarea>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="modal_suggest" class="form-label text-muted">Case Suggest</label>
+                        <textarea
+                        class="form-control form-control-sm"
+                        id="modal_suggest"
+                        rows="2"
+                        readonly
+                        ></textarea>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="modal_action" class="form-label text-muted">Case Action</label>
+                        <textarea
+                        class="form-control form-control-sm"
+                        id="modal_action"
+                        rows="2"
+                        readonly
+                        ></textarea>
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>

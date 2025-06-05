@@ -104,15 +104,15 @@
                                 <table id="WoTable" class="table table-row-bordered gy-5 gs-7" style="width:100%;">
                                     <thead>
                                         <tr class="fw-semibold fs-6 text-gray-800">
-                                            <th class="min-w-150px text-center">WO No</th>
-                                            <th class="min-w-150px text-center">Case No</th>
-                                            <th class="min-w-150px text-center">Requested By</th>
-                                            <th class="min-w-150px text-center">Created Date</th>
-                                            <th class="min-w-150px text-center">WO Start</th>
-                                            <th class="min-w-150px text-center">WO End</th>
-                                            <th class="min-w-150px text-center">Status</th>
-                                            <th class="min-w-250px text-center">Narrative</th>
-                                            <th class="min-w-150px text-center">Need Material</th>
+                                            <th class="min-w-150px text-start">WO No</th>
+                                            <th class="min-w-150px text-start">Case No</th>
+                                            <th class="min-w-150px text-start">Requested By</th>
+                                            <th class="min-w-150px text-start">Created Date</th>
+                                            <th class="min-w-150px text-start">WO Start</th>
+                                            <th class="min-w-150px text-start">WO End</th>
+                                            <th class="min-w-150px text-start">Status</th>
+                                            <th class="min-w-250px text-start">Narrative</th>
+                                            <th class="min-w-150px text-start">Need Material</th>
                                             <th class="min-w-120px text-center">Completed Date</th>
                                             <th class="min-w-200px text-center">Completed By</th>
                                             <th class="min-w-100px text-center">Action</th>

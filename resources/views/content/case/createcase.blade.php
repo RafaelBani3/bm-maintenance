@@ -5,6 +5,21 @@
 
 @section('content')
 
+    <style>
+        .flatpickr-day.today-highlight {
+            background-color: #007bff !important;
+            color: white !important;
+            border-radius: 50%;
+        }
+
+        .flatpickr-day.today {
+            background: #0d6efd !important; /* Bootstrap Primary Blue */
+            color: #fff !important;
+            border-radius: 6px;
+        }
+
+    </style>
+
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
         <div class="d-flex flex-column flex-column-fluid py-3 py-lg-6">
@@ -62,7 +77,7 @@
                                                     </div>
                                                 </div>
                                                 <!--end::Input Date-->
-
+                                    
                                                 <!--begin::Input Created By-->
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
@@ -185,12 +200,9 @@
 
                                             <!--begin::Actions-->
                                             <div class="card-footer d-flex justify-content-end py-6 px-9">
-                                                {{-- <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
-                                                <button type="submit" class="btn btn-primary" id="kt_account_profile_details_submit">Save Changes</button>
-                                                 --}}
                                                 <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
                                                     <span class="indicator-label">
-                                                      Save Case
+                                                      Create Case
                                                     </span>
                                                     <span class="indicator-progress">
                                                         Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -204,8 +216,6 @@
                                     <!--end::Content-->
                                 </div>
                                 <!--end::Basic info-->
-                                
-                                </div>
                             </div>
                             <!--end::Tab Content-->
                         </div>

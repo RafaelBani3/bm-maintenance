@@ -38,6 +38,18 @@
                         $('#notification-list').empty();
                         $('#notification-count').text(response.notifications.length + ' reports');
 
+                        // === Update Notif Badge ===
+                        const badge = $('#notif-badge');
+                        const count = response.notifications.length;
+
+                        if (count > 0) {
+                            badge.text(count);
+                            badge.removeClass('d-none');
+                        } else {
+                            badge.text('0');
+                            badge.addClass('d-none');
+                        }
+                        
                         if (response.notifications.length === 0) {
                             const noNotifMessage = `
                                 <div class="alert alert-info text-center" role="alert">
@@ -129,5 +141,4 @@
             });
         });
     </script>
-
 

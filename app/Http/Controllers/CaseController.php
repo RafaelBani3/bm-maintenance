@@ -70,39 +70,40 @@ class CaseController extends Controller
     // Save Case
     public function SaveCase(Request $request)
     {
-        Log::info('Processing SaveCase', ['user_id' => Auth::id(), 'request_data' => $request->all()]);
+        $userId = Auth::id();
+        Log::info('SaveCase triggered', ['user_id' => $userId]);
 
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'cases' => 'required|string|max:255',
             'date' => 'required|string',
             'category' => 'required|string|max:30',
             'sub_category' => 'required|string|max:30',
             'chronology' => 'required|string|max:255',
             'impact' => 'required|string|max:255',
-            'suggestion' => 'required|string|max:255',  
+            'suggestion' => 'required|string|max:255',
             'action' => 'required|string|max:255',
             'photos' => 'required|array|max:5',
             'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]); 
+        ]);
+
+        $caseModel = new Cases();
+        $caseNo = $caseModel->getIncrementCaseNo();
+        $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $validated['date'])->format('Y-m-d H:i:s');
 
         try {
-            $formattedDate = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $validatedData['date'])->format('Y-m-d H:i:s');
-            $case = new Cases();
-            $caseNo = $case->getIncrementCaseNo();
-            Log::info('Generated Case Number', ['case_no' => $caseNo]);
-
-            $case = Cases::create([
+            // Save main case
+            $caseModel = Cases::create([
                 'Case_No' => $caseNo,
-                'Case_Name' => $validatedData['cases'],
+                'Case_Name' => $validated['cases'],
                 'Case_Date' => $formattedDate,
-                'CR_BY' => Auth::id(),
+                'CR_BY' => $userId,
                 'CR_DT' => now(),
-                'Cat_No' => $validatedData['category'],
-                'Scat_No' => $validatedData['sub_category'],
-                'Case_Chronology' => $validatedData['chronology'],
-                'Case_Outcome' => $validatedData['impact'],
-                'Case_Suggest' => $validatedData['suggestion'],
-                'Case_Action' => $validatedData['action'],
+                'Cat_No' => $validated['category'],
+                'Scat_No' => $validated['sub_category'],
+                'Case_Chronology' => $validated['chronology'],
+                'Case_Outcome' => $validated['impact'],
+                'Case_Suggest' => $validated['suggestion'],
+                'Case_Action' => $validated['action'],
                 'Case_Status' => 'OPEN',
                 'Case_IsReject' => 'N',
                 'Case_ApStep' => 0,
@@ -113,112 +114,108 @@ class CaseController extends Controller
                 'Update_Date' => now(),
             ]);
 
-            Log::info('Case saved successfully', ['case_no' => $case->Case_No]);
+            // Upload photos
+            $uploadedCount = 0;
+            $sanitizedNo = str_replace(['/', '\\'], '-', $caseNo);
+            $directory = "case_photos/$sanitizedNo";
+            Storage::disk('public')->makeDirectory($directory, 0755, true);
 
+            foreach ($request->file('photos') as $photo) {
+                $fileName = 'case_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                $photo->storeAs($directory, $fileName, 'public');
+
+                Imgs::create([
+                    'IMG_No' => Imgs::generateImgNo(),
+                    'IMG_Type' => 'BA',
+                    'IMG_RefNo' => $caseNo,
+                    'IMG_Filename' => $fileName,
+                    'IMG_Realname' => $photo->getClientOriginalName(),
+                ]);
+
+                $uploadedCount++;
+            }
+            
+            $userName = Auth::user()->Fullname;
+
+            // Log photo upload
             Logs::create([
-                'LOG_Type' => 'BA',  
-                'LOG_RefNo' => $case->Case_No,
-                'LOG_Status' => 'CREATED',
-                'LOG_User' => Auth::id(),
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $caseNo,
+                'LOG_Status' => 'PHOTOS_UPLOADED',
+                'LOG_User' => $userId,
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'CREATED NEW CASE : ' . $case->Case_No,
+                'LOG_Desc' => "$userName UPLOADED $uploadedCount IMAGES",
             ]);
 
-            $uploadedPaths = [];
-            if ($request->hasFile('photos')) {
-                $caseNo = str_replace(['/','\\'],'-', $case->Case_No);
-                $directory = "case_photos/$caseNo";
-                if (!Storage::disk('public')->exists($directory)) {
-                    Storage::disk('public')->makeDirectory($directory, 0755, true);
-                }
+            // Log creation
+            Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $caseNo,
+                'LOG_Status' => 'CREATED',
+                'LOG_User' => $userId,
+                'LOG_Date' => now(),
+                'LOG_Desc' => "$userName CREATED NEW CASE",
+            ]);
 
-                foreach ($request->file('photos') as $photo) {
-                    $newFileName = "case_" . time() . "_" . uniqid() . "." . $photo->getClientOriginalExtension();
-                    $path = $photo->storeAs($directory, $newFileName, 'public');
-                    $uploadedPaths[] = $path;
-
-                    Imgs::create([
-                        'IMG_No' => Imgs::generateImgNo(),
-                        'IMG_Type' => 'BA',
-                        'IMG_RefNo' => $case->Case_No,
-                        'IMG_Filename' => $newFileName,
-                        'IMG_Realname' => $photo->getClientOriginalName(),
-                    ]);
-                }
-
-                Log::info('Photos uploaded', [
-                    'case_no' => $case->Case_No,
-                    'files' => $uploadedPaths
-                ]);
-
-                Logs::create([
-                    'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $case->Case_No,
-                    'LOG_Status' => 'PHOTOS_UPLOADED',
-                    'LOG_User' => Auth::id(),
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => count($uploadedPaths) . ' photos uploaded for Case No: ' . $case->Case_No,
-                ]);
-            }
-
-            Log::info('Case creation completed successfully', ['case_no' => $case->Case_No]);
             return response()->json([
                 'success' => true,
-                'message' => 'Case created successfully.',
-                'case_no' => $case->Case_No
+                'message' => 'Your Case has been successfully created.',
+                'case_no' => $caseNo,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error saving case', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            Log::error('Failed to save case', ['msg' => $e->getMessage()]);
 
             Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'BA',
-                'LOG_RefNo' => $case->Case_No,
+                'LOG_RefNo' => $caseNo ?? 'UNKNOWN',
                 'LOG_Status' => 'FAILED',
-                'LOG_User' => Auth::id(),
+                'LOG_User' => $userId,
                 'LOG_Date' => now(),
-                'LOG_Desc' => 'Failed to create case. Error: ' . $e->getMessage(),
+                'LOG_Desc' => Str::limit('FAILED TO CREATE CASE. ERROR: ' . $e->getMessage(), 255),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create case.',
-                'error' => $e->getMessage()
+                'message' => 'FAILED TO CREATE CASE.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     // Page Edit Case
-    public function EditCase(Request $request)
+    public function EditCase($encoded_case_no)
     {
-        $caseNo = $request->query('case_no');
+        $caseNo = base64_decode($encoded_case_no);
+
+        $userId = Auth::id();
 
         $case = Cases::where('Case_No', $caseNo)->firstOrFail();
 
         if ($case->Case_Status === 'REJECT') {
-            $case->Case_Status = 'OPEN';
-            $case->save();
+            $case->update(['Case_Status' => 'OPEN']);
 
             Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'BA',
-                'LOG_RefNo' => $case->Case_No,
+                'LOG_RefNo' => $caseNo,
                 'LOG_Status' => 'REVISION',
-                'LOG_User' => Auth::id(),
+                'LOG_User' => $userId,
                 'LOG_Date' => now(),
                 'LOG_Desc' => 'A revision was made to the case data due to the rejection of the previous submission.',
             ]);
-
         }
 
         $categories = Cats::all();
         $subCategories = Subcats::where('Cat_No', $case->Cat_No)->get();
-        $caseImages = Imgs::where('IMG_RefNo', $case->Case_No)->get();
+        $caseImages = Imgs::where('IMG_RefNo', $caseNo)->get();
 
         return view('content.case.EditCase', compact('case', 'categories', 'subCategories', 'caseImages'));
     }
-
+    
+    // Delete Image
     public function deleteImage(Request $request)
     {
         $image = Imgs::where('IMG_No', $request->img_id)->first();
@@ -243,6 +240,7 @@ class CaseController extends Controller
         $image->delete();
 
         DB::table('Logs')->insert([
+            'Logs_No' => Logs::generateLogsNo(),
             'LOG_Type' => 'BA',
             'LOG_RefNo' => $image->IMG_RefNo,
             'LOG_Status' => 'IMAGE_DELETED',
@@ -252,6 +250,100 @@ class CaseController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus.']);
+    }
+
+    // Save Draft Case
+    public function SaveDraftCase(Request $request)
+    {
+        $request->validate([
+            'case_no' => 'required|string|exists:cases,Case_No',
+            'cases' => 'required|string|max:255',
+            'date' => 'required|string',
+            'category' => 'required|string|exists:Cats,Cat_No',
+            'sub_category' => 'required|string|exists:Subcats,Scat_No',
+            'chronology' => 'required|string|max:255',
+            'impact' => 'required|string|max:255',
+            'suggestion' => 'required|string|max:255',
+            'action' => 'required|string|max:255',
+        ]);
+
+        try {
+            $case = Cases::where('Case_No', $request->case_no)->first();
+
+            if (!$case) {
+                return response()->json(['success' => false, 'message' => 'Case not found.']);
+            }
+
+            $case->Case_Name = $request->cases;
+            $case->Case_Date = Carbon::parse($request->date)->format('Y-m-d');
+            $case->Cat_No = $request->category;
+            $case->Scat_No = $request->sub_category;
+            $case->Case_Chronology = $request->chronology;
+            $case->Case_Outcome = $request->impact;
+            $case->Case_Suggest = $request->suggestion;
+            $case->Case_Action = $request->action;
+            $case->Case_Status = 'OPEN';
+            $case->Update_Date = now();
+            $case->save();
+
+            // ✅ Upload dan simpan gambar jika ada
+            if ($request->hasFile('new_images')) {
+                foreach ($request->file('new_images') as $image) {
+                    Log::info('Uploading image: '.$image->getClientOriginalName());
+
+                    $caseNo = str_replace(['/','\\'], '-', $case->Case_No);
+                    $directory = "case_photos/$caseNo";
+
+                    if (!Storage::disk('public')->exists($directory)) {
+                        Storage::disk('public')->makeDirectory($directory, 0755, true);
+                    }
+
+                    $newFilename = "case_" . time() . "_" . uniqid() . "." . $image->getClientOriginalExtension();
+                    $path = $image->storeAs($directory, $newFilename, 'public');
+
+                    // Simpan ke tabel imgs
+                    Imgs::create([
+                        'IMG_No' => Imgs::generateImgNo(),
+                        'IMG_RefNo' => $case->Case_No,
+                        'IMG_Filename' => $newFilename,
+                        'IMG_Realname' => $image->getClientOriginalName(),
+                    ]);
+
+                    // Simpan log upload gambar
+                    DB::table('Logs')->insert([
+                        'Logs_No' => Logs::generateLogsNo(),
+                        'LOG_Type' => 'BA',
+                        'LOG_RefNo' => $case->Case_No,
+                        'LOG_Status' => 'IMAGE_ADDED',
+                        'LOG_User' => Auth::id(),
+                        'LOG_Date' => now(),
+                        'LOG_Desc' => "New image has been uploaded.",
+                    ]);
+                }
+            }
+
+            // ✅ Simpan log draft
+            DB::table('Logs')->insert([
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $case->Case_No,
+                'LOG_Status' => 'DRAFT_SAVED',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'Case has been successfully saved as a draft.',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Your case has been successfully saved as a draft.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
     }
 
     // Update Case
@@ -339,16 +431,6 @@ class CaseController extends Controller
 
             Log::info('UpdateCase: Case berhasil diperbarui', ['case_no' => $request->case_no]);
 
-            // Logs
-            DB::table('Logs')->insert([
-                'LOG_Type' => 'BA',
-                'LOG_RefNo' => $case->Case_No,
-                'LOG_Status' => 'SUBMITTED',
-                'LOG_User' => Auth::id(),
-                'LOG_Date' => now(),
-                'LOG_Desc' => 'SUCCESSFULLY SUBMITTED A CASE', 
-            ]);
-
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $image) {
                     $caseNo = str_replace(['/','\\'], '-', $case->Case_No);
@@ -369,18 +451,20 @@ class CaseController extends Controller
                     ]);
 
                     DB::table('Logs')->insert([
+                        'Logs_No' => Logs::generateLogsNo(),
                         'LOG_Type' => 'BA',
                         'LOG_RefNo' => $case->Case_No,
                         'LOG_Status' => 'IMAGE_ADDED',
                         'LOG_User' => Auth::id(),
                         'LOG_Date' => now(),
-                        'LOG_Desc' => "New image {$case->Case_No} Uploaded",
+                        'LOG_Desc' => "New image has been uploaded.",
                     ]);
                 }
             }
 
             if ($case->Case_AP1) {
                 Notification::create([
+                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => $case->Case_No,
                     'Reference_No' => $case->Case_No,
                     'Notif_Text' => 'A case has been submitted and requires your approval.',
@@ -398,6 +482,7 @@ class CaseController extends Controller
                 ]);
 
                 DB::table('Logs')->insert([
+                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'BA',
                     'LOG_RefNo' => $case->Case_No,
                     'LOG_Status' => 'NOTIFICATION_SENT',
@@ -406,15 +491,28 @@ class CaseController extends Controller
                     'LOG_Desc' => "Notification sent to user {$case->Case_AP1}",
                 ]);
             }
+            
+            $userName = Auth::user()->Fullname;
+            
+            // Logs
+            DB::table('Logs')->insert([
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'BA',
+                'LOG_RefNo' => $case->Case_No,
+                'LOG_Status' => 'SUBMITTED',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => $userName .' SUBMITTED A CASE', 
+            ]);
 
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Case updated successfully!',
+                    'message' => 'Your case has been successfully submitted.',
                     'case_no' => $case->Case_No
                 ]);
             } else {
-                return redirect()->route('CreateCase')->with('success', 'Case updated successfully!');
+                return redirect()->route('CreateCase')->with('success', 'Your case has been successfully submitted!');
             }
 
         } catch (\Exception $e) {
@@ -424,6 +522,7 @@ class CaseController extends Controller
             ]);
 
             DB::table('Logs')->insert([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'BA',
                 'LOG_RefNo' => $request->case_no,
                 'LOG_Status' => 'ERROR',
@@ -495,7 +594,6 @@ class CaseController extends Controller
     {
         $case_no = base64_decode($case_no);
 
-
         if (!$case_no) {
             return redirect()->back()->with('error', 'Case not found.');
         }
@@ -517,8 +615,16 @@ class CaseController extends Controller
                 'cases.Case_Suggest',
                 'cases.Case_Action',
                 'cases.Case_ApMaxStep', 
-                'cases.Case_RMK1', 'cases.Case_RMK2', 'cases.Case_RMK3', 
-                'cases.Case_RMK4', 'cases.Case_RMK5' 
+                'cases.Case_RMK1', 
+                'cases.Case_RMK2', 
+                'cases.Case_RMK3', 
+                'cases.Case_RMK4', 
+                'cases.Case_RMK5',
+                'cases.Case_AP1',
+                'cases.Case_AP2',
+                'cases.Case_AP3',
+                'cases.Case_AP4',
+                'cases.Case_AP5'
             )
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
             ->leftJoin('Subcats', 'cases.Scat_No', '=', 'Subcats.Scat_No')
@@ -529,6 +635,19 @@ class CaseController extends Controller
 
         if (!$case) {
             return redirect()->back()->with('error', 'Case not found.');
+        }   
+        
+        $approvers = [];
+
+        for ($i = 1; $i <= $case->Case_ApMaxStep; $i++) {
+            $approverId = $case->{'Case_AP' . $i} ?? null;
+
+            if ($approverId) {
+                $user = User::find($approverId);
+                $approvers[$i] = $user ? $user->Fullname : 'Unknown User';
+            } else {
+                $approvers[$i] = 'Unknown User';
+            }
         }
 
         $images = Imgs::where('IMG_RefNo', $case_no)->get();
@@ -555,12 +674,10 @@ class CaseController extends Controller
                     Str::startsWith($log->LOG_Status, 'REJECTED')
                 );
         });
-    
-        return view('content.case.DetailCase', compact('case', 'images', 'logs', 'approvalLogs'));
 
+        return view('content.case.DetailCase', compact('case', 'images', 'logs', 'approvalLogs','approvers'));
     }
 
-    
     // Mengarahkan Ke Page Approval List (Table)
     public function ApprovalListBA(){
         
@@ -638,7 +755,6 @@ class CaseController extends Controller
         return response()->json($cases->get());
     }
 
-
     // Mengambil dan Menampilkan data case untuk page Detail Approval Cases
     public function ApprovalDetailCase($case_no)
     {
@@ -696,7 +812,6 @@ class CaseController extends Controller
         return view('content.case.ApprovalDetail', compact('case', 'images','logs'));
     }
     
-
     // Function Approve
     public function approveReject(Request $request, $case_no)
     {
@@ -714,6 +829,7 @@ class CaseController extends Controller
                 $case->Case_ApStep = 2;
 
                 Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
                     'LOG_Status' => 'APPROVED 1',
@@ -723,6 +839,7 @@ class CaseController extends Controller
                 ]);
 
                 Notification::create([
+                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Approved',
                     'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' approved by ' . $user->Fullname,
@@ -738,6 +855,7 @@ class CaseController extends Controller
                 $case->Case_ApStep = 2; 
 
                 Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
                     'LOG_Status' => 'APPROVED 2',
@@ -747,6 +865,7 @@ class CaseController extends Controller
                 ]);
 
                 Notification::create([
+                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Approved',
                     'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' approved by ' . $user->Fullname,
@@ -773,6 +892,7 @@ class CaseController extends Controller
                 $case->Case_RMK1 = $notes;
 
                 Notification::create([
+                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Rejected',
                     'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' rejected by ' . $user->Fullname,
@@ -784,6 +904,7 @@ class CaseController extends Controller
                 ]);
 
                 Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
                     'LOG_Status' => 'REJECTED 1',
@@ -801,6 +922,7 @@ class CaseController extends Controller
                 $case->Case_RMK2 = $notes;
 
                 Notification::create([
+                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Rejected',
                     'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' rejected by ' . $user->Fullname,
@@ -812,6 +934,7 @@ class CaseController extends Controller
                 ]);
 
                 Notification::create([
+                    'Notif_No' => Notification::generateNotificationNo(),
                     'Notif_Title' => 'Case Rejected',
                     'Reference_No' => $case->Case_No,
                     'Notif_Text'  => 'Case ' . $case->Case_No . ' rejected by ' . $user->Fullname,
@@ -823,6 +946,7 @@ class CaseController extends Controller
                 ]);
 
                 Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type'   => 'BA',
                     'LOG_RefNo'  => $case_no,
                     'LOG_Status' => 'REJECTED 2',
@@ -836,7 +960,7 @@ class CaseController extends Controller
 
             $case->save();
         
-            return response()->json(['message' => 'Case Rejected']);
+            return response()->json(['message' => 'Case Rejected Successfully']);
         }
         
     }

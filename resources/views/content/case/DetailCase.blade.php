@@ -244,7 +244,7 @@
                             </div>
                             <!--end::Row CASE ACTION-->
                             
-                            <!--Start::Row Exiciting Image-->
+                            <!--Start::Row Existing Image-->
                             <div class="row mb-5 pb-4">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -258,22 +258,24 @@
                                     </span>
                                 </label>
                                 <!--end::Label-->
-                                <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
+
+                                <!--begin::Image Container-->
+                                <div class="notice bg-light-primary card-rounded border-3 border-primary border-dashed p-4 p-lg-5 w-100">
                                     @if($images->isNotEmpty())
-                                        <div class="row gap-7">
+                                        <div class="row">
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                                                 @endphp
                                                 <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
                                                     <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
-                                                        <!-- Gambar ukuran kecil -->
-                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded mx-auto"
-                                                            style="width: 100px; height: 100px; background-image: url('{{ $imgPath }}');">
+                                                        <!-- Gambar thumbnail -->
+                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded"
+                                                            style="width: 100%; height: 100px; background-image: url('{{ $imgPath }}');">
                                                         </div>
                                                         <!-- Efek overlay -->
                                                         <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center"
-                                                            style="width: 100px; height: 100px;">
+                                                            style="width: 100%; height: 100px;">
                                                             <i class="bi bi-eye-fill text-white fs-2"></i>
                                                         </div>
                                                     </a>
@@ -284,10 +286,9 @@
                                         <p class="text-muted m-0">No photos available for this case.</p>
                                     @endif
                                 </div>
-
-
+                                <!--end::Image Container-->
                             </div>
-                            <!--end::Row Exciting Image-->
+                            <!--end::Row Existing Image-->
 
                             <!--Start::Row Approval & Remark Status-->
                             <div class="row mb-5">
@@ -328,6 +329,7 @@
                                                 $badgeClass = 'badge badge-light-warning text-dark';
                                                 $icon = 'bi-hourglass-split';
                                             }
+                                            
                                         @endphp
 
                                         <!--begin::Timeline item-->
@@ -350,7 +352,7 @@
                                                 <!--heading-->
                                                 <div class="pe-3 mb-5">
                                                     <div class="fs-5 fw-semibold mb-2">
-                                                        Approval Step {{ $i }} - {{ $case->{'Approver'.$i} ?? 'Unknown User' }}
+                                                        Approval Step {{ $i }} - {{ is_object($approvers[$i]) ? $approvers[$i]->Fullname : $approvers[$i] }}
                                                     </div>
                                                     <div class="d-flex align-items-center mt-1 fs-6">
                                                         <div class="text-muted me-2 fs-7">
@@ -390,8 +392,7 @@
                                     @endfor
                                 </div>
                             </div>
-                            <!--End::Row Approval & Remark Status-->                            
-
+                            <!--End::Row Approval & Remark Status-->                                
                         </div>
                         {{-- End Detail Case --}}
                     </div>
@@ -441,7 +442,7 @@
                                     <div class="timeline-line"></div>
                                     <div class="timeline-icon">
                                         <div class="symbol symbol-circle symbol-40px {{ $colorClass }}">
-                                            <i class="ki-duotone ki-document fs-2">
+                                            <i class="ki-duotone ki-document fs-2 {{ $colorClass }}">
                                                 <span class="path1"></span><span class="path2"></span>
                                             </i>
                                         </div>
@@ -452,8 +453,8 @@
                                             <span class="badge {{ $colorClass }} fw-semibold">{{ $log->LOG_Status }}</span>
                                             <div class="text-muted fs-7">{{ \Carbon\Carbon::parse($log->LOG_Date)->format('d M Y, H:m') }}</div>
                                         </div>
-                                        <div class="fw-semibold text-primary mb-1">{{ $log->user_name }}</div>
-                                        <div class="text-gray-700">{{ $log->LOG_Desc }}</div>
+                                        <div class="fw-semibold text-primary mb-1">{{ strtoupper($log->user_name) }}</div>
+                                        <div class="text-gray-700">{{ strtoupper($log->LOG_Desc) }}</div>
                                     </div>
                                 </div>
                             @endif
@@ -467,12 +468,12 @@
             </div>
         </div>
     </div>
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-    </script>
 
     {{-- Button Revisi --}}
     <script>
+        // Declare Route untuk Ke Edit Page
+        const editCaseRoute = @json(route('EditCase', ':encoded_case_no'));
+
         function confirmRevision(caseNo) {
             Swal.fire({
                 title: 'Confirm Revision',
@@ -485,11 +486,13 @@
                 cancelButtonText: 'Cancle'
             }).then((result) => {   
                 if (result.isConfirmed) {
-                    const encodedCaseNo = encodeURIComponent(caseNo);
-                    const url =  window.location.origin + `/BmMaintenance/public/Case/Edit?case_no=${encodedCaseNo}`;
-                    // window.location.origin + "/BmMaintenance/public/api/Aproval-cases",
+                    // const encodedCaseNo = encodeURIComponent(caseNo);
+                    // const url =  window.location.origin + `/BmMaintenance/public/Case/Edit/${encodedCaseNo}`;
 
-                    window.location.href = url;
+                    // window.location.href = url;
+                    const encodedCaseNo = btoa(caseNo); 
+                    const finalUrl = editCaseRoute.replace(':encoded_case_no', encodedCaseNo);
+                    window.location.href = finalUrl; 
                 }
             });
         }

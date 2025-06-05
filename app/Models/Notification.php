@@ -44,11 +44,12 @@ class Notification extends Model
     public static function generateNotificationNo()
     {
         $lastNotifNo = self::orderByDesc('Notif_No')->first();
-    
-        if (!$lastNotifNo) {
+
+        if (!$lastNotifNo || $lastNotifNo->Notif_No == 0) {
             return 1;
         }
-    
+
         return $lastNotifNo->Notif_No + 1;
     }
+
 }

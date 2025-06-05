@@ -4,6 +4,9 @@
     
     {{-- GET DATA FOR TABLE --}}
     <script>
+    // Declare Route untuk Ke page Edit dan Detail WO
+    const editWORoute = "{{ route('EditWO', ['wo_no' => 'PLACEHOLDER']) }}";
+    const detailWORoute = "{{ route('WorkOrderDetail', ['wo_no' => 'PLACEHOLDER']) }}";
     $(document).ready(function () {
         const baseUrl = "{{ url('/') }}"; 
 
@@ -15,22 +18,22 @@
             columns: [
                 {
                     data: "WO_No",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
                 },
                 {
                     data: "Case_No",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
                 },
                 {
                     data: "created_by_fullname",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => `<span class="text-gray">${data ?? 'N/A'}</span>`
                 },
                 {
                     data: "CR_DT",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => {
                         if (!data) return "-";
                         const dateObj = new Date(data);
@@ -43,7 +46,7 @@
                 },
                 {
                     data: "WO_Start",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => {
                         if (!data) return "-";
                         const dateObj = new Date(data);
@@ -55,7 +58,7 @@
                 },
                 {
                     data: "WO_End",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => {
                         if (!data) return "-";
                         const dateObj = new Date(data);
@@ -67,13 +70,15 @@
                 },
                 {
                     data: "WO_Status",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: function (data) {
                         let badgeClass = "badge-light-secondary";
                         switch (data) {
                             case "Pending": badgeClass = "badge-light-secondary text-success"; break;
                             case "OPEN":
                             case "Open_Completion":
+                                badgeClass = "badge-light-warning text-warning"; 
+                                break;
                             case "INPROGRESS": 
                                 badgeClass = "badge-light-info text-info"; 
                                 break;
@@ -93,17 +98,17 @@
                 },
                 {
                     data: "WO_Narative",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => data ?? "-"
                 },
                 {
                     data: "WO_NeedMat",
-                    className: "text-center align-middle",
+                    className: "text-start",
                     render: data => data ?? "-"
                 },
                 {
                     data: "WO_CompDate",
-                    className: "text-center align-middle",
+                    className: "text-center",
                     render: data => {
                         if (!data) return "-";
                         const dateObj = new Date(data);
@@ -115,25 +120,55 @@
                 },
                 {
                     data: "completed_by_fullname",
-                    className: "text-center align-middle",
+                    className: "text-center",
                     render: data => data ?? "N/A"
                 },
+                
+               
                 {
                     data: "WO_No",
-                    className: "text-center align-middle",
-                    render: function (data) {
+                    className: "text-start",
+                    render: function (data, type, row) {
                         if (!data) return '-';
+
                         try {
-                            const safeEncoded = btoa(data);
-                            return `
-                                <a href="${baseUrl}/Work-Order/Detail/${safeEncoded}" class="btn btn-secondary hover-scale">
-                                    <i class="ki-duotone ki-eye">
+                            const encodedWONo = btoa(data);
+                            let buttons = '<div class="d-flex gap-2 justify-content-center">';
+
+                            // Ganti placeholder dengan encoded WO_No
+                            const editUrl = editWORoute.replace('PLACEHOLDER', encodedWONo);
+                            const detailUrl = detailWORoute.replace('PLACEHOLDER', encodedWONo);
+
+                            // Tombol Edit (jika status OPEN atau REJECT)
+                            if (row.WO_Status === "OPEN" || row.WO_Status === "REJECT") {
+                                buttons += `
+                                    <a href="${editUrl}" 
+                                    class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                                    style="width: 40px; height: 40px;" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Work Order">
+                                        <i class="ki-duotone ki-pencil fs-3 text-warning">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </a>
+                                `;
+                            }
+
+                            // Tombol View (selalu muncul)
+                            buttons += `
+                                <a href="${detailUrl}" 
+                                class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                                style="width: 40px; height: 40px;" 
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="View Work Order">
+                                    <i class="ki-duotone ki-eye fs-3 text-primary">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
                                     </i>
-                                    View
-                                </a>`;
+                                </a>
+                            </div>`;
+
+                            return buttons;
                         } catch (err) {
                             console.error("Encoding error:", err);
                             return '-';

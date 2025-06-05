@@ -1,11 +1,10 @@
 @extends('layouts.Master')
 
 @section('title', 'BM Maintenance')
-@section('subtitle', 'BM Maintenance')
+@section('subtitle', 'Dashboard')
 
 @section('content')
 
-    <!-- Tambahkan di <head> jika belum ada -->
     <style>
     
         .card.card-flush {
@@ -60,368 +59,101 @@
                 text-align: center;
             }
         }
+
+        .hover-scale:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+            cursor: pointer;
+        }
+        
     </style>
              
-<!--begin::Content-->
-    {{-- Dashboard Creator --}}
+    <!--begin::Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
         
-        {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-            <!--begin::Content container-->
-            <div id="kt_app_content_container" class="app-container container-xxl">
-                <!--begin::Row-->
-                <div class="row gx-5 gx-xl-10 mb-xl-10">
-                    <!--begin::Col-->
-                    <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 mb-10 d-flex gap-10 flex-wrap">
-
-                        <!--begin::Card Total Case-->
-                        <div class="card card-flush h-md-100 mb-5 flex-grow-1">
-                            <!--begin::Header-->
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <div class="d-flex align-items-baseline">
-                                        <span class="fs-4hx fw-bold text-gray-900 me-3 lh-1" id="total-case">0</span>
-                                        <span class="badge badge-light-primary fs-3 align-self-start">
-                                            <i class="ki-duotone ki-chart fs-8 text-primary ms-n1"></i>
-                                            Cases
-                                        </span>
-                                    </div>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-3">Total Case Submitted by You</span>
-                                </div>
-                            </div>
-                            <!--end::Header-->
-
-                            <!--begin::Body-->
-                            <div class="card-body mb-10 d-flex align-items-center">
-                                <div class="d-flex flex-center me-5">
-                                    <div class="chart-case" id="kt_docs_google_chart_column" style="width: 130px; height: 130px;" data-kt-size="150" data-kt-line="150"></div>
-                                </div>
-                                <div class="d-flex flex-column content-justify-center w-100">
-                                    <!-- Category List -->
-                                    <div class="flex-grow-1 w-100" id="category-list">
-                                        <!-- Akan diisi oleh JS -->
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end::Body-->
-                        </div>
-                        <!--end::Card Total Case-->
-
-                        <!--begin::Card Total Work Order-->
-                        <div class="card card-flush h-md-100 mb-5 flex-grow-1" >
-                            <!--begin::Header-->
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <div class="d-flex align-items-baseline">
-                                        <span id="wo-total" class="fs-4hx fw-bold text-gray-900 me-2 lh-1">0</span>
-                                        <span class="badge badge-light-info fs-3 align-self-start">
-                                            <i class="ki-duotone ki-chart fs-5 text-primary ms-n1"></i>
-                                            Work Orders
-                                        </span>
-                                    </div>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-3">Work Orders This Month</span>
-                                </div>
-                            </div>
-                            <!--end::Header-->
-
-                            <!--begin::Card body-->
-                            <div class="card-body d-flex align-items-center">
-                                <div class="d-flex align-items-center flex-column w-100">
-                                    <!--begin::Details-->
-                                    <div class="d-flex flex-column justify-content-center w-100 mb-4">
-                                        <div class="d-flex justify-content-between align-items-center mb-5">
-                                            <div class="d-flex align-items-center">
-                                                <span class="bullet bullet-vertical bg-info me-2 h-10px w-10px"></span>
-                                                <span class="text-gray-600">In Progress</span>
-                                            </div>
-                                            <span id="inprogress-count" class="fw-bold text-gray-800">0</span>
-                                        </div>
-
-                                        <div class="d-flex justify-content-between align-items-center mb-5">
-                                            <div class="d-flex align-items-center">
-                                                <span class="bullet bullet-vertical bg-success me-2 h-10px w-10px"></span>
-                                                <span class="text-gray-600">Done</span>
-                                            </div>
-                                            <span id="completed-count" class="fw-bold text-gray-800">0</span>
-                                        </div>
-                                         <div class="d-flex justify-content-between align-items-center mb-5">
-                                            <div class="d-flex align-items-center">
-                                                <span class="bullet bullet-vertical bg-danger me-2 h-10px w-10px"></span>
-                                                <span class="text-gray-600">Reject</span>
-                                            </div>
-                                            <span id="submit-count" class="fw-bold text-gray-800">0</span>
-                                        </div>
-                                    </div>
-                                    <!--end::Details-->
-
-                                    <div class="d-flex justify-content-between w-100 mb-2">
-                                        <span class="fw-bolder fs-7 text-gray-900" id="wo-to-goal">0 of 0 Work Orders Have Been Completed</span>
-                                        <span class="fw-bold fs-6 text-gray-500" id="wo-percent">0%</span>
-                                    </div>
-
-                                    <div class="h-10px mx-3 w-100 bg-secondary rounded">
-                                        <div id="progress-done" class="bg-success h-10px rounded" style="width: 0%;" role="progressbar"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end::Card body-->
-                        </div>
-                        <!--end::Card Total Work Order-->
-
-                        <!--begin::Card Total Material Request-->
-                        <div class="card card-flush h-md-100 mb-5 flex-grow-1">
-                            <!--begin::Header-->
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <div class="d-flex align-items-baseline">
-                                        <span id="mr-total" class="fs-4hx fw-bold text-gray-900 me-2 lh-1 ls-n2">0</span>
-                                        <span class="badge badge-light-success fs-3 align-self-start">
-                                            <i class="ki-duotone ki-chart fs-5 text-primary ms-n1"></i>
-                                            Material Request
-                                        </span>
-                                    </div>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-3">Material Requests This Month</span>
-                                </div>
-                            </div>
-                            <!--end::Header-->
-
-                            <!--begin::Card body-->
-                            <div class="card-body d-flex align-items-center">
-                                <div class="d-flex align-items-center flex-column w-100">
-                                    <!--begin::Details-->
-                                    <div class="d-flex flex-column justify-content-center w-100 mb-4">
-                                        <div class="d-flex justify-content-between align-items-center mb-5">
-                                            <div class="d-flex align-items-center">
-                                                <span class="bullet bullet-vertical bg-danger me-2 h-10px w-10px"></span>
-                                                <span class="text-gray-600">Reject</span>
-                                            </div>
-                                            <span id="mr-submit-count" class="fw-bold text-gray-800">0</span>
-                                        </div>
-
-                                        <div class="d-flex justify-content-between align-items-center mb-5">
-                                            <div class="d-flex align-items-center">
-                                                <span class="bullet bullet-vertical bg-info me-2 h-10px w-10px"></span>
-                                                <span class="text-gray-600">In Progress</span>
-                                            </div>
-                                            <span id="mr-inprogress-count" class="fw-bold text-gray-800">0</span>
-                                        </div>
-
-                                        <div class="d-flex justify-content-between align-items-center mb-5">
-                                            <div class="d-flex align-items-center">
-                                                <span class="bullet bullet-vertical bg-success me-2 h-10px w-10px"></span>
-                                                <span class="text-gray-600">Done</span>
-                                            </div>
-                                            <span id="mr-completed-count" class="fw-bold text-gray-800">0</span>
-                                        </div>
-                                    </div>
-                                    <!--end::Details-->
-
-                                    <div class="d-flex justify-content-between w-100 mb-2">
-                                        <span class="fw-bolder fs-7 text-gray-900" id="mr-to-goal">0 of 0 Material Requests Have Been Completed</span>
-                                        <span class="fw-bold fs-6 text-gray-500" id="mr-percent">0%</span>
-                                    </div>
-                                    <div class="h-10px mx-3 w-100 bg-secondary rounded d-flex">
-                                        <div id="mr-progress-submit" class="bg-warning h-10px rounded-start rounded-end" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                        <div id="mr-progress-inprogress" class="bg-info h-20px rounded-start" style="width: 0%;" role="progressbar"></div>
-                                        <div id="mr-progress-done" class="bg-success h-10px rounded-end" style="width: 0%;" role="progressbar"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end::Card body-->
-                        </div>
-                        <!--end::Card Total Material Request-->
-
-                    </div>
-                    <!--end::Col-->
-                    
-                    <!--Tabel-->
-                    <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 mb-10 d-flex gap-10 flex-wrap">
-                        <div class="card card-flush h-md-100 flex-grow-1">
-                            <div class="card-header card-header-stretch">
-                                <div class="card-title d-flex align-items-center">
-                                    <h1 class="fw-bold m-0 text-gray-800">Case List</h1>
-                                </div>
-                            </div>
-                    
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <div id="kt_billing_months" class="card-body p-0 tab-pane fade show active" role="tabpanel" aria-labelledby="kt_billing_months">
-                                        <div class="table-responsive">
-                                            <table id="kt_datatable_responsive" class="table table-row-bordered rounded gy-5 gs-7">
-                                                <thead>
-                                                    <tr class="fw-semibold fs-6 text-gray-800">
-                                                        <th class="min-w-150px" data-priority="1">Case</th>
-                                                        <th class="min-w-150px">Work Order</th>
-                                                        <th class="min-w-150px">Material Request</th>
-                                                        <th class="min-w-150px">Created By</th>
-                                                        <th class="min-w-150px">Case Date</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($cases as $case)
-                                                        <tr>
-                                                            <td>
-                                                                {{ $case->Case_No }}
-                                                                <span class="badge badge-light-primary">{{ $case->Case_Status }}</span>
-                                                            </td>
-                                                            <td>
-                                                                @if($case->workOrder)
-                                                                    {{ $case->workOrder->WO_No }}
-                                                                    <span class="badge badge-light-{{ $case->workOrder->WO_Status == 'DONE' ? 'success' : 'warning' }}">
-                                                                        {{ $case->workOrder->WO_Status }}
-                                                                    </span>
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                                @if($case->workOrder && $case->workOrder->WO_NeedMat == 'Y' && $case->workOrder->materialRequest)
-                                                                    {{ $case->workOrder->materialRequest->MR_No }}
-                                                                    <span class="badge badge-light-info">{{ $case->workOrder->materialRequest->MR_Status }}</span>
-                                                                @endif
-                                                            </td>
-                                                            <td>{{ $case->creator->Fullname ?? '-' }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($case->CR_DT)->format('d/m/Y') }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-                <!--end::Row-->
-            </div>
-        </div> --}}
-
         <!-- Main Content -->       
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
 
-                <!-- Cards Section - Baris 1 -->
-                <div class="row gx-5 gx-xl-10 mb-xl-10">             
-                    <!-- Total Case -->
-                    <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                <!-- Row 1: Summary Cards -->
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                    <!-- Total Cases -->
+                    <div class="col-md-4">
+                        <div class="card card-flush h-md-100">
                             <div class="card-body">
-                                <!-- Header -->
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-gray-600 fw-bold fs-1">Total Case</span>
-                                    <span class="badge badge-light-primary fs-7">This Month</span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="text-gray-800 fw-bold mb-0">Total Cases</h4>
+                                    <span class="badge badge-light-primary">This Month</span>
                                 </div>
-
-                                <!-- Total Value and Change -->
                                 <div class="d-flex align-items-center">
-                                    <span class="fs-4hx fw-bold text-dark me-2" id="total-case">0</span>
-                                    {{-- <span id="case-change"></span> --}}
+                                    <span class="fs-2hx fw-bold text-dark me-2" id="total-case">0</span>
                                 </div>
-
-                                <!-- Comparison Note -->
-                                {{-- <div class="text-muted fs-7 mt-3" id="case-to-goal">Compared to last month</div> --}}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Total Work Order -->
-                    <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                    <!-- Total Work Orders -->
+                    <div class="col-md-4">
+                        <div class="card card-flush h-md-100">
                             <div class="card-body">
-                                <!-- Header -->
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-gray-600 fw-bold fs-1">Total Work Order</span>
-                                    <span class="badge badge-light-info fs-7">This Month</span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="text-gray-800 fw-bold mb-0">Total Work Orders</h4>
+                                    <span class="badge badge-light-info">This Month</span>
                                 </div>
-
-                                <!-- Total Value and Change -->
-                                {{-- <div class="d-flex align-items-center">
-                                    <span class="fs-4hx fw-bold text-dark me-2" id="wo-total">0</span>
-                                    <span id="wo-change" class="fs-4 fw-bold d-flex align-items-center">
-                                        <!-- Filled dynamically -->
-                                    </span>
-                                </div> --}}
-                                <!-- Total Value -->
                                 <div class="d-flex align-items-center">
-                                    <span class="fs-4hx fw-bold text-dark me-2" id="wo-total">0</span>
+                                    <span class="fs-2hx fw-bold text-dark me-2" id="wo-total">0</span>
                                 </div>
-
-                                <!-- Comparison Note -->
-                                {{-- <div class="text-muted fs-7 mt-3">Compared to last month</div> --}}
                             </div>
                         </div>
                     </div>
-                    <!--end::Card Total Work Order-->
 
-                    <!-- Total Material Request -->
-                    <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                    <!-- Total Material Requests -->
+                    <div class="col-md-4">
+                        <div class="card card-flush h-md-100">
                             <div class="card-body">
-                                <!-- Header -->
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-gray-600 fw-bold fs-1">Total Material Request</span>
-                                    <span class="badge badge-light-danger fs-7">This Month</span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="text-gray-800 fw-bold mb-0">Total Material Requests</h4>
+                                    <span class="badge badge-light-danger">This Month</span>
                                 </div>
-
-                                <!-- Total Value and Change -->
-                                {{-- <div class="d-flex align-items-center">
-                                    <span class="fs-4hx fw-bold text-dark me-2" id="mr-total">0</span>
-                                    <span id="mr-change"></span>
-                                </div> --}} 
-                                <!-- Total Value Only -->
                                 <div class="d-flex align-items-center">
-                                    <span class="fs-4hx fw-bold text-dark me-2" id="mr-total">0</span>
+                                    <span class="fs-2hx fw-bold text-dark me-2" id="mr-total">0</span>
                                 </div>
-
-                                <!-- Comparison Note -->
-                                {{-- <div class="text-muted fs-7 mt-3">Compared to last month</div> --}}
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Cards Section - Baris 2 -->
-                <div class="row gx-5 gx-xl-10 mb-xl-10">             
-                    <!-- Grafik Total Case Berdasarkan Category -->
-                    <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+
+                <!-- Row 2: Charts -->
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                    
+                    <!-- Case by Category Chart -->
+                    <div class="col-md-4">
+                        <div class="card card-flush h-md-100">
                             <div class="card-body">
-                                <!-- Header -->
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div>
-                                        <div class="text-muted fw-semibold fs-3 mb-5">Total Case By Category (This Month)</div>
-                                    </div>
+                                    <h5 class="text-muted fw-semibold mb-0">Cases by Category (Monthly)</h5>
                                     <div id="case-change"></div>
                                 </div>
-
-                                <!-- Chart -->
                                 <div id="kt_docs_google_chart_column" style="height: 200px;"></div>
-
-                                <!-- Legend -->
-                                <div class="mt-5" id="category-list"></div>
+                                <div class="mt-4" id="category-list"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-8 col-lg-8 col-xl-8">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                    <!-- Case vs Work Order Chart -->
+                    <div class="col-md-8">
+                        <div class="card card-flush h-md-100">
                             <div class="card-body">
-                                <!-- Header -->
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div>
-                                        <div class="text-muted fw-semibold fs-3 mb-5">Perbandingan Case dan Work Order per Bulan</div>
-                                    </div>
+                                    <h5 class="text-muted fw-semibold mb-0">Monthly Case vs Work Order</h5>
                                 </div>
-
-                                <!-- Chart -->
                                 <div id="kt_apexcharts_1" style="height: 350px;"></div>
                             </div>
                         </div>
-
                     </div>
+
                 </div>
+
             </div>
         </div>
         <!--end::Content-->
@@ -430,138 +162,60 @@
 
     {{-- Dashboard APPROVAL --}}
     @if(auth()->user()->hasAnyPermission(['view cr_ap','view mr_ap']))
-        {{-- <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div id="kt_app_content_container" class="app-container container-xxl">
-                <!--begin::Row-->
-                <div class="row gx-5 gx-xl-10 mb-xl-10">
-                    <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 mb-10 d-flex gap-10 flex-wrap">
-                        
-                        <!--begin::Card: Total Case to Approve-->
-                        <div class="card card-flush h-md-100 mb-5 flex-grow-1">
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <div class="d-flex align-items-baseline">
-                                        <span id="pending-case-count" class="fs-4hx fw-bold text-gray-900 me-2 lh-1">0</span>
-                                        <span class="badge badge-light-primary fs-3 align-self-start">
-                                            <i class="ki-duotone ki-folder fs-8 text-primary ms-n1"></i>
-                                            Awaiting Approval
-                                        </span>
-                                    </div>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-4">Pending Case Approval</span>
-                                </div>
-                            </div>
-                            <div class="card-body mb-10 d-flex align-items-center justify-content-center">
-                                <a href="{{ url('Case/Approval-list') }}" class="btn btn-primary">Lihat Detail</a>
-                            </div>
-                            <div class="card-footer">
-                                <div class="d-flex flex-column w-100">
-                                    <div class="d-flex justify-content-between fs-6 fw-semibold text-muted mb-2">
-                                        <span id="case-progress-text">Loading progress...</span>
-                                    </div>
-                                    <div class="progress h-6px w-100">
-                                        <div id="case-progress-bar" class="progress-bar bg-primary" style="width: 0%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--begin::Card: Total Work Order Completion to Approve-->
-                        <div class="card card-flush h-md-100 mb-5 flex-grow-1">
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <div class="d-flex align-items-baseline">
-                                        <span id="pending-woc-count" class="fs-4hx fw-bold text-gray-900 me-2 lh-1">...</span>
-                                        <span class="badge badge-light-info fs-3 align-self-start">
-                                            <i class="ki-duotone ki-clipboard fs-8 text-info ms-n1"></i>
-                                            Work Order Completion
-                                        </span>
-                                    </div>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-4">Pending WOC Approval</span>
-                                </div>
-                            </div>
-                            <div class="card-body mb-10 d-flex align-items-center justify-content-center">
-                                <a href="" class="btn btn-info">Lihat Detail</a>
-                            </div>
-                        </div>
-
-                        <!--begin::Card: Total MR to Approve-->
-                        @if(auth()->user()->hasAnyPermission(['view mr_ap']))
-                            <!--begin::Card: Total Material Request to Approve-->
-                            <div class="card card-flush h-md-100 mb-5 flex-grow-1">
-                                <div class="card-header pt-5">
-                                    <div class="card-title d-flex flex-column">
-                                        <div class="d-flex align-items-baseline">
-                                            <span id="pending-mr-count" class="fs-4hx fw-bold text-gray-900 me-2 lh-1">...</span>
-                                            <span class="badge badge-light-warning fs-3 align-self-start">
-                                                <i class="ki-duotone ki-clipboard fs-8 text-warning ms-n1"></i>
-                                                Material Request
-                                            </span>
-                                        </div>
-                                        <span class="text-gray-500 pt-1 fw-semibold fs-4">Pending MR Approval</span>
-                                    </div>
-                                </div>
-                                <div class="card-body mb-10 d-flex align-items-center justify-content-center">
-                                    <a href="" class="btn btn-warning">Lihat Detail</a>
-                                </div>
-                            </div>
-                        @endif   
-                    </div>
-                </div>
-            </div>
-        </div> --}}
 
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
                 
                 <!--begin::Row: Approval Summary-->
                 <div class="row gx-5 gx-xl-10 mb-10">
-                    <!--begin::Card: Total Case to Approve-->
+
+                    <!--begin::Card: Total Cases Created-->
                     <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                        <a href="{{ route('ApprovalCase') }}" class="card card-flush h-md-100 flex-grow-1 text-decoration-none hover-scale" style="transition: all 0.3s;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="text-gray-600 fw-bold fs-4">Total Case</span>
-                                    <span class="badge badge-light-primary fs-8">This Month</span>
+                                    <span class="text-gray-600 fw-bold fs-4">Approval Cases</span>
+                                    <span class="badge badge-light-primary fs-8">Pending Approval</span>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-primary me-2" id="total-case-to-approve">0</span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
-                    <!--begin::Card: Total MR to Approve-->
+                    <!--begin::Card: Material Requests Awaiting Approval-->
                     <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                        <a href="{{ route('ApprovalListMR') }}" class="card card-flush h-md-100 flex-grow-1 text-decoration-none hover-scale" style="transition: all 0.3s;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="text-gray-600 fw-bold fs-4">MR (Need Approval)</span>
+                                    <span class="text-gray-600 fw-bold fs-4">Approval Material Requests</span>
                                     <span class="badge badge-light-info fs-8">Pending Approval</span>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-info me-2" id="pending-mr-count">0</span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
-                    <!--begin::Card: Total WO to Approve-->
+                    <!--begin::Card: Completed WOs Awaiting Approval-->
                     <div class="col-md-4 col-lg-4 col-xl-4">
-                        <div class="card card-flush h-md-100 flex-grow-1">
+                        <a href="{{ route('ApprovalListWOC') }}" class="card card-flush h-md-100 flex-grow-1 text-decoration-none hover-scale" style="transition: all 0.3s;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="text-gray-600 fw-bold fs-4">WO Completed (Need Approval)</span>
+                                    <span class="text-gray-600 fw-bold fs-4">Approval WO's Completed</span>
                                     <span class="badge badge-light-success fs-8">Pending Approval</span>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-success me-2" id="pending-woc-count">0</span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
-                  
+
                 </div>
-                
+
                 <!--begin::Row: Latest Approval Activities-->
                 <div class="row gx-5 gx-xl-10">
                     <div class="col-12">
@@ -610,30 +264,21 @@
 
     @endif
 
-    {{-- Script Creator--}}
+    <!--Script: Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
-        {{-- Script Case--}}
-        {{-- Script Case tampil total data + Perbandingan + Grafik --}}
+        
+    <!--Script Case Chart & Total Case-->
         <script type="text/javascript">
-            google.load('visualization', '1', { packages: ['corechart'] });
-
-            google.setOnLoadCallback(function () {
-                fetch("{{ route('dashboard.case-summary') }}")
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch("{{ route('case.summary') }}")
                     .then(response => response.json())
                     .then(data => {
-                        const total = data.totalCases || 0;
-                        const lastMonth = data.totalCasesLastMonth || 0;
-                        const diff = total - lastMonth;
-                        const percentChange = lastMonth > 0 ? (diff / lastMonth) * 100 : 100;
+                        // Tampilkan total case bulan ini
+                        const total = data.totalCases ?? 0;
+                        const totalCaseEl = document.getElementById("total-case");
+                        if (totalCaseEl) totalCaseEl.textContent = total;
 
-                        document.getElementById("total-case").textContent = total;
-
-                        const icon = percentChange >= 0
-                            ? '<i class="ki-outline ki-arrow-up fs-3 text-success me-1"></i>'
-                            : '<i class="ki-outline ki-arrow-down fs-3 text-danger me-1"></i>';
-                        const textClass = percentChange >= 0 ? 'text-success' : 'text-danger';
-                        const formattedChange = `${icon}${Math.abs(percentChange).toFixed(1)}%`;
-
+                        // Data Kategori dan Setup Warna
                         const colorList = [
                             { color: '#fe3995', class: 'bg-danger' },
                             { color: '#f6aa33', class: 'bg-warning' },
@@ -651,6 +296,8 @@
 
                         data.categories.forEach((cat, index) => {
                             const total = parseInt(cat.total);
+                            if (total > 0) isAllZero = false;
+
                             const colorInfo = total > 0
                                 ? colorList[index % colorList.length]
                                 : { color: '#E4E6EF', class: 'bg-secondary' };
@@ -672,38 +319,44 @@
                             chartColors.push('#E4E6EF');
                         }
 
-                        const dataTable = google.visualization.arrayToDataTable(chartData);
-                        const options = {
-                            backgroundColor: '#ffffff',
-                            pieHole: 0.7,
-                            pieSliceText: 'none',
-                            legend: 'none',
-                            chartArea: { width: '100%', height: '100%' },
-                            colors: chartColors,
-                            tooltip: {
-                                showColorCode: true,
-                                textStyle: {
-                                    fontSize: 14,
-                                    bold: true,
-                                    color: 'black'
-                                }
-                            }
-                        };
-                        
+                        // Load & Gambar Chart
+                        google.charts.load('current', { 'packages': ['corechart'] });
+                        google.charts.setOnLoadCallback(drawChart);
 
-                        const chart = new google.visualization.PieChart(
-                            document.getElementById('kt_docs_google_chart_column')
-                        );
-                        chart.draw(dataTable, options);
+                        function drawChart() {
+                            const dataTable = google.visualization.arrayToDataTable(chartData);
+                            const options = {
+                                backgroundColor: '#ffffff',
+                                pieHole: 0.7,
+                                pieSliceText: 'none',
+                                legend: 'none',
+                                chartArea: { width: '100%', height: '100%' },
+                                colors: chartColors,
+                                tooltip: {
+                                    showColorCode: true,
+                                    textStyle: {
+                                        fontSize: 14,
+                                        bold: true,
+                                        color: 'black'
+                                    }
+                                }
+                            };
+
+                            const chart = new google.visualization.PieChart(
+                                document.getElementById('kt_docs_google_chart_column')
+                            );
+                            chart.draw(dataTable, options);
+                        }
+
                     })
                     .catch(err => {
-                        console.error("Gagal memuat data grafik case:", err);
+                        console.error("Gagal memuat data dashboard:", err);
                     });
             });
         </script>
 
-        
-        {{-- Script WO --}}
+
+    <!--begin::Row: Latest Approval Activities-->
         {{-- Script WO yang Change(Persenan) dan Grafik ada  --}}
             {{-- <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function () {
@@ -823,7 +476,7 @@
                 });
             </script> --}}
 
-        {{-- Script Tampila total data WO sj--}}
+        {{-- Script Tampila total data MR sj--}}
         <script>
             $(document).ready(function () {
                 $.ajax({

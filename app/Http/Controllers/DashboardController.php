@@ -23,8 +23,7 @@ class DashboardController extends Controller
         return view('content.dashboard.Dashboard', compact('cases'));
     }
 
-    // Controller Case
-    // Controller untuk tampil total data + Persen Perbandingan + Grafik    
+    // Controller Case : Total Case & Chart Total Case By Category
     public function caseSummary()
     {
         $userId = Auth::id();
@@ -39,10 +38,6 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
-        $totalCasesLastMonth = Cases::where('CR_BY', $userId)
-            ->whereBetween('created_at', [$startLastMonth, $endLastMonth])
-            ->count();
-
         $caseByCategory = DB::table('cats')
             ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
                 $join->on('cats.Cat_No', '=', 'cases.Cat_No')
@@ -55,7 +50,6 @@ class DashboardController extends Controller
 
         return response()->json([
             'totalCases' => $totalCases,
-            'totalCasesLastMonth' => $totalCasesLastMonth,
             'categories' => $caseByCategory,
         ]);
     }

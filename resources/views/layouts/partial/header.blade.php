@@ -1,3 +1,12 @@
+<style>
+    #notif-badge {
+        font-size: 0.7rem;
+        padding: 0.35em 0.6em;
+        line-height: 1;
+    }
+</style>
+
+
 <div id="kt_app_header" class="app-header" data-kt-sticky="true" data-kt-sticky-activate="{default: true, lg: true}" data-kt-sticky-name="app-header-minimize" data-kt-sticky-offset="{default: '200px', lg: '0'}" data-kt-sticky-animation="false">
     <!--begin::Header container-->
     <div class="app-container container-fluid d-flex align-items-stretch justify-content-between" id="kt_app_header_container">
@@ -35,7 +44,7 @@
                      <!--begin:Menu item-->
                     <div data-kt-menu-placement="bottom-start" class="menu-item me-0 me-lg-2">
                         <span class="menu-link">
-                            <span class="menu-title">Web Application | {{ env('APP_NAME ') }}</span>
+                            <span class="menu-title">Web Application | @yield('subtitle')</span>
                         </span>
                     </div>
                 </div>
@@ -48,20 +57,31 @@
                 <!--begin::Notifications-->
                 <div class="app-navbar-item ms-1 ms-md-4">
                     <!--begin::Menu- wrapper-->
-                    <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px" 
-                        data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" 
+                    <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative mr-5" 
+                        data-kt-menu-trigger="{default: 'click', lg: 'hover'}" 
+                        data-kt-menu-attach="parent" 
+                        data-kt-menu-placement="bottom-end" 
                         id="kt_menu_item_wow">
-                       
-                        <i class="ki-duotone ki-notification-status fs-2">
+
+                        <i class="ki-duotone ki-notification-status fs-1">
                             <span class="path1"></span>
                             <span class="path2"></span>
                             <span class="path3"></span>
                             <span class="path4"></span>
+                            
+                            <!-- NOTIF BADGE -->
+                            <span id="notif-badge" 
+                                class="position-absolute top-0 start-100 fs-7 translate-middle badge rounded-pill bg-danger d-none">
+                                0
+                            </span>
                         </i>
+
+                       
                     </div>
 
                     @include('layouts.partial.notification')
                 </div>
+
 
                     @include('layouts.partial.user-menu')
                 

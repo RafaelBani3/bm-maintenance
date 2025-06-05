@@ -1,8 +1,23 @@
+    {{-- Date --}}
+    <script>
+        $("#date").flatpickr({
+            enableTime: true,
+            altInput: true,
+            time_24hr: true,
+            altFormat: "d/m/Y H:i",
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+        });
+    </script>
+
     {{-- Script Validatation & Save MR --}}
     <script>
         const form = document.getElementById('MrForm');
         const pageLoader = document.getElementById('page_loader');
         const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+        // Declare Route untuk ke Edit MR
+        const editMRRouteTemplate = "{{ route('EditMR', ['mr_no' => '__MR_NO__']) }}";
+
     
         function validateMaterialTable() {
             const rows = document.querySelectorAll('#material-body tr');
@@ -147,8 +162,11 @@
                                             confirmButtonText: 'OK',
                                             customClass: { confirmButton: "btn btn-success" }
                                         }).then(() => {
-                                            const encodedMRNo = btoa(response.mr_no); 
-                                            window.location.href = `${BASE_URL}/Material-Request/Edit/${encodedMRNo}`;
+                                            // const encodedMRNo = btoa(response.mr_no);                                             
+                                            // window.location.href = `${BASE_URL}/Material-Request/Edit/${encodedMRNo}`;
+                                            const encodedMRNo = btoa(response.mr_no);
+                                            const editMRUrl = editMRRouteTemplate.replace('__MR_NO__', encodedMRNo);
+                                            window.location.href = editMRUrl;
                                         });
                                     }
                                 }, 800); 
@@ -183,17 +201,7 @@
             });
         });
     </script>
-    
-    {{-- Date --}}
-    <script>
-        $("#date").flatpickr({
-            enableTime: true,
-            altInput: true,
-            altFormat: "d/m/Y H:i",
-            dateFormat: "Y-m-d H:i",
-        });
-    </script>
-    
+
     {{-- Script Untuk Ambil data WO --}}
     <script>
         $(document).ready(function () {
@@ -225,32 +233,33 @@
             }
 
             $.ajax({
-                url: `${baseUrl}/Material-Request/Get-WO-By-User`,
+                url: "{{ route('getwodataformr') }}",
                 type: 'GET',
                 data: { user_id: userId },
                 success: function (data) {
                     $('#reference_number').empty().append('<option></option>');
                     $.each(data, function (key, value) {
                         $('#reference_number').append(
-                            `<option value="${value.Case_No}">${value.Case_No}</option>`
+                            `<option value="${value.WO_No}">${value.WO_No}</option>`
                         );
                     });
+
                 },
                 error: function () {
                     alert('Gagal mengambil data Case!');
                 }
             });
-        
+    
             $('#reference_number').on('change', function () {
-                let caseNo = $(this).val();
-                if (caseNo) {
+                let woNo = $(this).val();
+                if (woNo) {
                     showPageLoader();
                     $.ajax({
-                        url: `${baseUrl}/Material-Request/Get-WO-Details`,
+                        url: "{{ route('getwodetailsformr') }}",
                         type: 'GET',
-                        data: { case_no: caseNo },
+                        data: { wo_no: woNo }, 
                         success: function (data) {
-                            $('#wo_no').val(data.WO_No ?? '');
+                            $('#case_no').val(data.Case_No ?? '');
                             $('#created_by').val(data.created_by ?? '');
                             $('#department').val(data.department ?? '');
                         },
@@ -263,6 +272,7 @@
                     });
                 }
             });
+
         });
     </script>
         
@@ -315,7 +325,7 @@
                 <td><input type="text" name="items[${rowCount}][desc]" class="form-control"></td>
                 <td class="text-center text-white">
                     <button type="button" class="btn btn-danger remove-row text-center text-white">
-                        <i class="ki-duotone ki-trash fs-2x text-center text-white">
+                        <i class="ki-duotone ki-trash fs-2 text-center text-white">
                             <span class="path1"></span>
                             <span class="path2"></span>
                             <span class="path3"></span>

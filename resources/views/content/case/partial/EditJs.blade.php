@@ -4,9 +4,11 @@
 {{-- Date Time --}}
 <script>
     $("#date").flatpickr({
+        enableTime: true, 
+        time_24hr: true,  
         altInput: true,
-        altFormat: "d/m/Y",
-        dateFormat: "Y-m-d",
+        altFormat: "d/m/Y H:i", 
+        dateFormat: "Y-m-d H:i", 
     });
 </script>
 
@@ -129,81 +131,53 @@
     });
 </script>
 
-{{-- Validation & Update Case --}}
+{{-- Save Draft --}}
 {{-- <script>
-    $(document).ready(function () {
-        Dropzone.autoDiscover = false;
-        let uploadedFiles = [];
+$(document).ready(function () {
+    $('#kt_docs_formvalidation_text_save').on('click', function (e) {
+        e.preventDefault();
 
-        var myDropzone = new Dropzone("#case-dropzone", {
-            url: "https://keenthemes.com/scripts/void.php",
-            autoProcessQueue: false,
-            addRemoveLinks: true,
-            maxFiles: 5,
-            maxFilesize: 2,
-            acceptedFiles: 'image/jpeg,image/png,image/jpg',
-            dictDefaultMessage: 'Drop files here or click to upload.',
-            dictMaxFilesExceeded: 'Maximum 5 files allowed.',
-            dictFileTooBig: 'File size must not exceed 2MB.',
-            dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
+        let form = $('#caseForm')[0]; 
+        let formData = new FormData(form);
 
-            init: function () {
-                this.on("addedfile", function (file) {
-                    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
-                        this.removeFile(file);
-                        Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, and PNG files are allowed' });
-                        return;
-                    }
+        // Tampilkan spinner
+        $(this).prop('disabled', true);
+        $(this).find('.indicator-label').hide();
+        $(this).find('.indicator-progress').show();
 
-                    if (file.size > 2 * 1024 * 1024) {
-                        this.removeFile(file);
-                        Swal.fire({ icon: 'warning', title: 'File size too large', text: 'Max file size is 2MB.' });
-                        return;
-                    }
-
-                    if (uploadedFiles.length >= 5) {
-                        this.removeFile(file);
-                        Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
-                        return;
-                    }
-
-                    uploadedFiles.push(file);
-                });
-
-                this.on("removedfile", function (file) {
-                    uploadedFiles = uploadedFiles.filter(f => f !== file);
-                });
-            }
-        });
-
-        const form = document.getElementById('caseForm');
-        const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
-        const pageLoader = document.getElementById("page_loader");
-
-        var validator = FormValidation.formValidation(form, {
-            fields: {
-                'cases': { validators: { notEmpty: { message: 'Case Name is required' } } },
-                'date': { validators: { notEmpty: { message: 'Date is required' } } },
-                'category': { validators: { notEmpty: { message: 'Category is required' } } },
-                'sub_category': { validators: { notEmpty: { message: 'Sub Category is required' } } },
-                'chronology': { validators: { notEmpty: { message: 'Chronology is required' } } },
-                'impact': { validators: { notEmpty: { message: 'Outcome is required' } } },
-                'suggestion': { validators: { notEmpty: { message: 'Suggestion is required' } } },
-                'action': { validators: { notEmpty: { message: 'Action is required' } } }
+        $.ajax({
+            url: "{{ route('case.saveDraft') }}", 
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire('Success!', res.message, 'success');
+                } else {
+                    Swal.fire('Failed!', res.message, 'error');
+                }
             },
-            plugins: {
-                trigger: new FormValidation.plugins.Trigger(),
-                bootstrap: new FormValidation.plugins.Bootstrap5({
-                    rowSelector: '.fv-row',
-                    eleInvalidClass: '',
-                    eleValidClass: ''
-                })
+            error: function (xhr) {
+                let errMsg = 'An error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errMsg = xhr.responseJSON.message;
+                }
+                Swal.fire('Error', errMsg, 'error');
+            },
+            complete: function () {
+                $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+                $('#kt_docs_formvalidation_text_save .indicator-label').show();
+                $('#kt_docs_formvalidation_text_save .indicator-progress').hide();
             }
         });
 
+    });
+});
 </script> --}}
 
-<script>
+{{-- Validation & Update Case --}}
+{{-- <script>
     $(document).ready(function () {
         Dropzone.autoDiscover = false;
         let uploadedFiles = [];
@@ -304,10 +278,12 @@
                                 if (response.success) {
                                     Swal.fire({
                                         title: 'Success!',
-                                        text: response.message,
+                                        text: 'Your case has been submitted successfully.',
                                         icon: 'success',
                                         confirmButtonText: 'OK',
-                                        customClass: { confirmButton: "btn btn-success" }
+                                        customClass: { 
+                                            confirmButton: "btn btn-success" 
+                                        }
                                     }).then((result) => {
                                         if (result.isConfirmed) {
                                             window.location.href = `${BASE_URL}/Case-Report/Create`;
@@ -355,4 +331,214 @@
             $('#error-' + $(this).attr('id')).text('');
         });
     });
-</script>
+</script> --}}
+
+{{-- Save Draft & Submit Case --}}
+    <script>
+    $(document).ready(function () {
+        Dropzone.autoDiscover = false;
+        let uploadedFiles = [];
+        let isDraftSaved = false;
+
+        var myDropzone = new Dropzone("#case-dropzone", {
+            url: "https://keenthemes.com/scripts/void.php",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            maxFiles: 5,
+            maxFilesize: 2,
+            acceptedFiles: 'image/jpeg,image/png,image/jpg',
+            dictDefaultMessage: 'Drop files here or click to upload.',
+            dictMaxFilesExceeded: 'Maximum 5 files allowed.',
+            dictFileTooBig: 'File size must not exceed 2MB.',
+            dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
+
+            init: function () {
+                this.on("addedfile", function (file) {
+                    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, and PNG files are allowed' });
+                        return;
+                    }
+
+                    if (file.size > 2 * 1024 * 1024) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'File size too large', text: 'Max file size is 2MB.' });
+                        return;
+                    }
+
+                    if (uploadedFiles.length >= 5) {
+                        this.removeFile(file);
+                        Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
+                        return;
+                    }
+
+                    uploadedFiles.push(file);
+                });
+
+                this.on("removedfile", function (file) {
+                    uploadedFiles = uploadedFiles.filter(f => f !== file);
+                });
+            }
+        });
+
+        const form = document.getElementById('caseForm');
+        const btnSaveDraft = $('#kt_docs_formvalidation_text_save');
+        const btnSubmitCase = $('#kt_docs_formvalidation_text_submit');
+        const pageLoader = document.getElementById("page_loader");
+
+        var validator = FormValidation.formValidation(form, {
+            fields: {
+                'cases': { validators: { notEmpty: { message: 'Case Name is required' } } },
+                'date': { validators: { notEmpty: { message: 'Date is required' } } },
+                'category': { validators: { notEmpty: { message: 'Category is required' } } },
+                'sub_category': { validators: { notEmpty: { message: 'Sub Category is required' } } },
+                'chronology': { validators: { notEmpty: { message: 'Chronology is required' } } },
+                'impact': { validators: { notEmpty: { message: 'Outcome is required' } } },
+                'suggestion': { validators: { notEmpty: { message: 'Suggestion is required' } } },
+                'action': { validators: { notEmpty: { message: 'Action is required' } } }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        });
+
+        btnSaveDraft.on('click', function (e) {
+            e.preventDefault();
+
+            let formData = new FormData(form);
+            uploadedFiles.forEach(file => formData.append('new_images[]', file));
+
+
+            btnSaveDraft.prop('disabled', true);
+            btnSaveDraft.find('.indicator-label').hide();
+            btnSaveDraft.find('.indicator-progress').show();
+
+            $.ajax({
+                url: "{{ route('case.saveDraft') }}",
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire('Success!', 'Save draft successfully.', 'success').then(() => {
+                            isDraftSaved = true;
+                            btnSaveDraft.hide();
+                            btnSubmitCase.show();
+                        });
+                    } else {
+                        Swal.fire('Failed!', res.message || 'Failed to save draft.', 'error');
+                    }
+                },
+                error: function (xhr) {
+                    let errMsg = 'An error occurred.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errMsg = xhr.responseJSON.message;
+                    }
+                    Swal.fire('Error', errMsg, 'error');
+                },
+                complete: function () {
+                    btnSaveDraft.prop('disabled', false);
+                    btnSaveDraft.find('.indicator-label').show();
+                    btnSaveDraft.find('.indicator-progress').hide();
+                }
+            });
+        });
+
+        // Submit Case button click
+        btnSubmitCase.on('click', function (e) {
+            e.preventDefault();
+
+            if (!isDraftSaved) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please save draft before submitting the case.',
+                    confirmButtonText: 'OK',
+                    customClass: { 
+                        confirmButton: "btn btn-warning" 
+                    }
+                });
+                return;
+            }
+
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    const formData = new FormData(form);
+                    uploadedFiles.forEach(file => formData.append('new_images[]', file));
+
+                    btnSubmitCase.attr('data-kt-indicator', 'on');
+                    btnSubmitCase.prop('disabled', true);
+                    pageLoader.style.display = "flex";
+
+                    setTimeout(function () {
+                        $.ajax({
+                            url: "{{ route('cases.update') }}",
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                pageLoader.style.display = "none";
+                                btnSubmitCase.removeAttr('data-kt-indicator');
+                                btnSubmitCase.prop('disabled', false);
+
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: 'Your case has been successfully submitted.',
+                                        icon: 'success',
+                                        confirmButtonText: 'OK',
+                                        customClass: { confirmButton: "btn btn-success" }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = "{{ route('CreateCase') }}";
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Failed',
+                                        text: response.message || 'Failed to update case.'
+                                    });
+                                }
+                            },
+                            error: function () {
+                                pageLoader.style.display = "none";
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'An error occurred. Please try again.'
+                                });
+                            }
+                        });
+                    }, 800);
+                } else {
+                    Swal.fire({
+                        text: "Please fill in all required fields correctly.",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                        customClass: { confirmButton: "btn btn-warning" }
+                    });
+                }
+            });
+        });
+
+        $('#existing-photos').on('click', 'img', function () {
+            const imgSrc = $(this).attr('src');
+            $('#modal-image').attr('src', imgSrc);
+            $('#imageModal').modal('show');
+        });
+
+        $('.form-control, .form-select').on('input change', function () {
+            $(this).removeClass('is-invalid');
+            $('#error-' + $(this).attr('id')).text('');
+        });
+
+    });
+    </script>

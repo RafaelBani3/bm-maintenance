@@ -4,7 +4,13 @@
 @section('subtitle', 'Create Work Order Complition')
 
 @section('content')
-
+    <style>
+        .flatpickr-day.today {
+            background: #0d6efd !important; 
+            color: #fff !important;
+            border-radius: 6px;
+        }
+    </style>
     <div id="app_content" class="app-content flex-column-fluid">
         <div id="app_content_container" class="app-container container-xxl">
             <div class="card shadow-sm rounded-3 border-0">
