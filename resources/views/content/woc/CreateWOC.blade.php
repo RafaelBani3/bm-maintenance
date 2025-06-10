@@ -4,13 +4,15 @@
 @section('subtitle', 'Create Work Order Complition')
 
 @section('content')
+    
     <style>
         .flatpickr-day.today {
-            background: #0d6efd !important; 
+            background: #979797 !important; 
             color: #fff !important;
             border-radius: 6px;
         }
     </style>
+
     <div id="app_content" class="app-content flex-column-fluid">
         <div id="app_content_container" class="app-container container-xxl">
             <div class="card shadow-sm rounded-3 border-0">
@@ -27,6 +29,8 @@
                 <div id="work_order_complition_form" class="card-body p-5">
                     <form id="WOCFrom" enctype="multipart/form-data" method="POST">
                         @csrf
+                        {{-- <input type="text" name="wo_no" value="{{ $workOrder->WO_No }}"> --}}
+
                         <!--begin::Card body-->
                         <div class="card-body p-2">
                             <!--begin::Input Cases-->
@@ -60,7 +64,7 @@
                             <!--begin::Input Case No-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Case No</label>
+                                <label class="col-lg-4 col-form-label fw-semibold fs-6 text-muted">Case No</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <input type="text" id="case_no" name="case_no" class="form-control form-control-lg form-control-solid" placeholder="Work Order Date" disabled />
@@ -71,7 +75,7 @@
                             <!--begin::Input Case Name-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Case Name</label>
+                                <label class="col-lg-4 col-form-label fw-semibold fs-6 text-muted">Case Name</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <input type="text" id="case_name" name="case_name" class="form-control form-control-lg form-control-solid" placeholder="Work Order Date" disabled />
@@ -84,7 +88,7 @@
                             <!--begin::Input date-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Work Order Date</label>
+                                <label class="col-lg-4 col-form-label fw-semibold fs-6 text-muted">Work Order Date</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <input type="text" id="work_order_date" name="work_order_date" class="form-control form-control-lg form-control-solid" placeholder="Work Order Date" disabled />
@@ -95,7 +99,7 @@
                             <!--begin::Input Created By-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label--> 
-                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Created By</label>
+                                <label class="col-lg-4 col-form-label fw-semibold fs-6 text-muted">Created By</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <input type="text" id="created_by" name="created_by" class="form-control form-control-lg form-control-solid" placeholder="Creator's Name" disabled />
@@ -106,7 +110,7 @@
                             <!--begin::Input Position-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Position</label>
+                                <label class="col-lg-4 col-form-label fw-semibold fs-6 text-muted">Position</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <input type="text" id="position" name="position" class="form-control form-control-lg form-control-solid" placeholder="Creator's Position" disabled />
@@ -138,7 +142,7 @@
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    <span class="required">End Date</span>
+                                    <span class="required">Complete Date</span>
                                     <span class="ms-1" data-bs-toggle="tooltip" title="Select the expected completion date for this Work Order.">
                                         <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
                                             <span class="path1"></span>
@@ -179,7 +183,7 @@
                             <!--begin::Input Work Description-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Work Description</label>
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Work Order Description</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <textarea class="form-control form-control-solid" rows="4" name="work_description" id="work_description" placeholder="Describe the work..."></textarea>
@@ -216,7 +220,7 @@
                         <div class="text-end mt-4">
                             <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary shadow-sm px-5">
                                 <span class="indicator-label">
-                                  Save Work Order Complition
+                                  Create Work Order Complition
                                 </span>
                                 <span class="indicator-progress">
                                     Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -264,6 +268,7 @@
     {{-- Script Get WO_No dan WO Detail --}}
     <script>
         $(document).ready(function () {
+            // Declare Time
             const startPicker = flatpickr("#start_date", {
                 enableTime: true,
                 dateFormat: "d/m/Y H:i",
@@ -275,9 +280,16 @@
                 dateFormat: "d/m/Y H:i",
                 time_24hr: true
             });
-    
+            // End Time
+
+            // Declare Route untuk ambil data WO_No yang sesuai untuk Create WOC
+            const routeGetWoDataforWOC = "{{ route('GetWoDataforWOC') }}";
+            // Deklare Route untuk Get WO Detail
+            const routeGetWoDetail = "{{ route('GetWoDetail', ['encoded' => 'ENCODED_PLACEHOLDER']) }}";
+
             $.ajax({
-                url: '/BmMaintenance/public/get-work-orders',
+                // url: '/BmMaintenance/public/get-work-orders',
+                url: routeGetWoDataforWOC,
                 type: 'GET',
                 success: function (data) {
                     let select = $('#reference_number');
@@ -285,15 +297,21 @@
                         const encoded = btoa(unescape(encodeURIComponent(item.WO_No)));
                         select.append(`<option value="${encoded}">${item.WO_No}</option>`);
                     });
+                },
+                error: function (xhr) {
+                    console.error("Failed to get Work Orders:", xhr);
                 }
             });
     
             $('#reference_number').on('change', function () {
                 const encoded = $(this).val();
                 if (!encoded) return;
+
+                // Ambil Routenya dan masukan WO_No 
+                const ajaxUrl = routeGetWoDetail.replace('ENCODED_PLACEHOLDER', encoded);
     
                 $.ajax({
-                    url: `/BmMaintenance/public/get-work-order-details/${encoded}`,
+                    url: ajaxUrl,
                     type: 'GET',
                     success: function (data) {
                         $('#case_no').val(data.Case_No);
@@ -320,6 +338,61 @@
         });
     </script>
 
+    {{-- Script Hapus Teknisi --}}
+    {{-- <script>
+    $(document).ready(function () {
+        const wo_no = "{{ $workOrder->WO_No }}";
+
+        $('select[name="assigned_to[]"]').on('select2:unselect', function (e) {
+            const technician_id = e.params.data.id;
+            const technician_name = e.params.data.text;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to remove "${technician_name}" from this Work Order?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan loader
+                    $(".page-loader").fadeIn();
+
+                    // Delay 1 detik sebelum kirim AJAX
+                    setTimeout(function () {
+                        $.ajax({
+                            url: "{{ route('work-order.remove-technician') }}",
+                            method: "POST",
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                wo_no: wo_no,
+                                technician_id: technician_id
+                            },
+                            success: function(response) {
+                                Swal.fire('Removed!', 'Technician has been removed.', 'success');
+                            },
+                            error: function(xhr) {
+                                console.error('Error removing technician:', xhr.responseText);
+                                Swal.fire('Error', 'Failed to remove technician from database.', 'error');
+                            },
+                            complete: function () {
+                                $(".page-loader").fadeOut();
+                            }
+                        });
+                    }, 800);
+                } else {
+                    const $select = $('select[name="assigned_to[]"]');
+                    const option = new Option(technician_name, technician_id, true, true);
+                    $select.append(option).trigger('change');
+                }
+            });
+        });
+    });
+    </script> --}}
+
     {{-- Script validate dan save WOC --}}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -343,7 +416,7 @@
                     },
                     'end_date': {
                         validators: {
-                            notEmpty: { message: 'End Date is required' }
+                            notEmpty: { message: 'Complete Date is required' }
                         }
                     },
                     'assigned_to[]': {

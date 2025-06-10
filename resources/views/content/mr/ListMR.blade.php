@@ -508,24 +508,42 @@
                     },
                     {
                         data: "MR_No",
-                        className: "text-center align-middle",
-                        render: function (data) {
-                            if (!data) return '-';
-                            try {
-                                const encoded = btoa(unescape(encodeURIComponent(data)));
-                                const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded);
-                                return `
-                                    <a href="${detailUrl}" class="btn btn-sm btn-secondary hover-scale">
-                                        <i class="ki-duotone ki-eye">
+                        className: "",
+                        render: function (data,type, row) {
+                            const encoded = btoa(data); // Encode MR_No
+                            const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded); // Ganti PLACEHOLDER
+
+                            let buttons = '<div class="d-flex gap-2">';
+
+                            // Tombol Edit hanya muncul jika Case_Status = "OPEN"
+                            if (row.MR_Status === "OPEN" || row.MR_Status === "REJECT") {
+                                buttons += `
+                                    <a href="${baseUrl}/Material-Request/Edit/${encoded}" 
+                                    class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                                    style="width: 40px; height: 40px;" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
+                                        <i class="ki-duotone ki-pencil fs-3 text-warning">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> View
-                                    </a>`;
-                            } catch (err) {
-                                console.error("Encoding error:", err);
-                                return '-';
+                                        </i>
+                                    </a>
+                                `;
                             }
+
+                            // Tombol View
+                            buttons += `
+                                <a href="${baseUrl}/Material-Request/Detail/${encoded}" 
+                                class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                                style="width: 40px; height: 40px;" 
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
+                                    <i class="ki-duotone ki-eye fs-3 text-primary">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </a>
+                            </div>`;
+                            return buttons;
                         }
                     }
                 ],

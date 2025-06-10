@@ -286,7 +286,7 @@ class CaseController extends Controller
             $case->Update_Date = now();
             $case->save();
 
-            // ✅ Upload dan simpan gambar jika ada
+            // Upload dan simpan gambar jika ada
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $image) {
                     Log::info('Uploading image: '.$image->getClientOriginalName());
@@ -322,7 +322,7 @@ class CaseController extends Controller
                 }
             }
 
-            // ✅ Simpan log draft
+            // Simpan log draft
             DB::table('Logs')->insert([
                 'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type' => 'BA',
@@ -431,36 +431,36 @@ class CaseController extends Controller
 
             Log::info('UpdateCase: Case berhasil diperbarui', ['case_no' => $request->case_no]);
 
-            if ($request->hasFile('new_images')) {
-                foreach ($request->file('new_images') as $image) {
-                    $caseNo = str_replace(['/','\\'], '-', $case->Case_No);
-                    $directory = "case_photos/$caseNo";
+            // if ($request->hasFile('new_images')) {
+            //     foreach ($request->file('new_images') as $image) {
+            //         $caseNo = str_replace(['/','\\'], '-', $case->Case_No);
+            //         $directory = "case_photos/$caseNo";
 
-                    if (!Storage::disk('public')->exists($directory)) {
-                        Storage::disk('public')->makeDirectory($directory, 0755, true);
-                    }
+            //         if (!Storage::disk('public')->exists($directory)) {
+            //             Storage::disk('public')->makeDirectory($directory, 0755, true);
+            //         }
 
-                    $newFilename = "case_" . time() . "_" . uniqid() . "." . $image->getClientOriginalExtension();
-                    $path = $image->storeAs($directory, $newFilename, 'public');
+            //         $newFilename = "case_" . time() . "_" . uniqid() . "." . $image->getClientOriginalExtension();
+            //         $path = $image->storeAs($directory, $newFilename, 'public');
 
-                    $img = Imgs::create([
-                        'IMG_No' => Imgs::generateImgNo(),
-                        'IMG_RefNo' => $case->Case_No,
-                        'IMG_Filename' => $newFilename,
-                        'IMG_Realname' => $image->getClientOriginalName(),
-                    ]);
+            //         $img = Imgs::create([
+            //             'IMG_No' => Imgs::generateImgNo(),
+            //             'IMG_RefNo' => $case->Case_No,
+            //             'IMG_Filename' => $newFilename,
+            //             'IMG_Realname' => $image->getClientOriginalName(),
+            //         ]);
 
-                    DB::table('Logs')->insert([
-                        'Logs_No' => Logs::generateLogsNo(),
-                        'LOG_Type' => 'BA',
-                        'LOG_RefNo' => $case->Case_No,
-                        'LOG_Status' => 'IMAGE_ADDED',
-                        'LOG_User' => Auth::id(),
-                        'LOG_Date' => now(),
-                        'LOG_Desc' => "New image has been uploaded.",
-                    ]);
-                }
-            }
+            //         DB::table('Logs')->insert([
+            //             'Logs_No' => Logs::generateLogsNo(),
+            //             'LOG_Type' => 'BA',
+            //             'LOG_RefNo' => $case->Case_No,
+            //             'LOG_Status' => 'IMAGE_ADDED',
+            //             'LOG_User' => Auth::id(),
+            //             'LOG_Date' => now(),
+            //             'LOG_Desc' => "New image has been uploaded.",
+            //         ]);
+            //     }
+            // }
 
             if ($case->Case_AP1) {
                 Notification::create([
@@ -475,7 +475,6 @@ class CaseController extends Controller
                     'Notif_Type' => 'BA',
                 ]);
                 
-
                 Log::info('UpdateCase: Notifikasi berhasil dikirim', [
                     'case_no' => $case->Case_No,
                     'notif_to' => $case->Case_AP1,
@@ -552,24 +551,34 @@ class CaseController extends Controller
     // Ambil Data Case Tampilkan di Table
     public function getCases(Request $request)
     {
-        $userId = Auth::id(); 
-        $status = $request->query('status'); 
-        $sortColumn = $request->query('sortColumn', 'Case_No'); 
+        $userId = Auth::id();
+        $user = Auth::user();
+        $status = $request->query('status');
+        $sortColumn = $request->query('sortColumn', 'Case_No');
         $sortDirection = $request->query('sortDirection', 'ASC');
 
         $validColumns = ['Case_No', 'Case_Date'];
         if (!in_array($sortColumn, $validColumns)) {
-            $sortColumn = 'Case_No'; 
+            $sortColumn = 'Case_No';
         }
 
-        $query = Cases::select(
+        // Ambil semua permission user
+        $canViewCr = $user->hasPermissionTo('view cr');
+        $canViewCrAp = $user->hasPermissionTo('view cr_ap');
+
+        Log::info("User: " . $user->Fullname);
+        Log::info("Can view cr: " . json_encode($canViewCr));
+        Log::info("Can view cr_ap: " . json_encode($canViewCrAp));
+
+        // Base query
+        $baseQuery = Cases::select(
                 'cases.Case_No',
                 'cases.Case_Name',
                 'cases.Case_Date',
                 'cases.Cat_No',
                 'Cats.Cat_Name as Category',
                 'cases.CR_BY',
-                'users.Fullname as CreatedBy', 
+                'users.Fullname as CreatedBy',
                 'users.Fullname as User',
                 'cases.Case_Status',
                 'users.PS_ID',
@@ -577,14 +586,32 @@ class CaseController extends Controller
             )
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
             ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')
-            ->leftJoin('Positions', 'users.PS_ID', '=', 'Positions.id')
-            ->where('cases.CR_BY', $userId);
+            ->leftJoin('Positions', 'users.PS_ID', '=', 'Positions.id');
 
-        if (!empty($status)) {
-            $query->where('cases.Case_Status', $status);
+        // Filter data berdasarkan permission
+        if ($canViewCr && !$canViewCrAp) {
+            $baseQuery->where('cases.CR_BY', $userId);
+        } elseif (!$canViewCr && $canViewCrAp) {
+            $baseQuery->where(function($query) use ($userId) {
+                $query->where('cases.Case_AP1', $userId)
+                    ->orWhere('cases.Case_AP2', $userId);
+            });
+        } elseif ($canViewCr && $canViewCrAp) {
+            $baseQuery->where(function($query) use ($userId) {
+                $query->where('cases.CR_BY', $userId)
+                    ->orWhere('cases.Case_AP1', $userId)
+                    ->orWhere('cases.Case_AP2', $userId);
+            });
+        } else {
+            return response()->json([]);
         }
 
-        $cases = $query->orderBy($sortColumn, $sortDirection)->get();
+        // Filter status jika ada
+        if (!empty($status)) {
+            $baseQuery->where('cases.Case_Status', $status);
+        }
+
+        $cases = $baseQuery->orderBy($sortColumn, $sortDirection)->get();
 
         return response()->json($cases);
     }
@@ -678,6 +705,7 @@ class CaseController extends Controller
         return view('content.case.DetailCase', compact('case', 'images', 'logs', 'approvalLogs','approvers'));
     }
 
+// PAGE APPROVAL LIST CASE
     // Mengarahkan Ke Page Approval List (Table)
     public function ApprovalListBA(){
         

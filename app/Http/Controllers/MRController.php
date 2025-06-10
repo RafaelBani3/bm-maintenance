@@ -57,9 +57,11 @@ class MRController extends Controller
         $data = DB::table('Work_Orders as wo')
             ->join('users as u', 'wo.CR_BY', '=', 'u.id')
             ->leftJoin('Positions as p', 'u.PS_ID', '=', 'p.id')
+            ->leftJoin('cases as c', 'wo.Case_No', '=', 'c.Case_No')
             ->select(
                 'wo.WO_No',
                 'wo.Case_No',
+                 'c.Case_Name',
                 'u.Fullname as created_by',
                 'p.PS_Name as department'
             )
@@ -392,18 +394,52 @@ class MRController extends Controller
     }
 
 // Ambil data MR untuk ditampilkan dalam table
+    // public function GetDataMr(Request $request)
+    // {
+    //     $userId = Auth::id(); 
+    //     $status = $request->query('status'); 
+    //     $sortColumn = $request->query('sortColumn', 'MR_No'); 
+    //     $sortDirection = $request->query('sortDirection', 'ASC');
+    
+    //     $validColumns = ['MR_No', 'MR_Date'];
+    //     if (!in_array($sortColumn, $validColumns)) {
+    //         $sortColumn = 'MR_No'; 
+    //     }
+    
+    //     $query = MatReq::select(
+    //             'Mat_Req.MR_No',
+    //             'Mat_Req.WO_No',
+    //             'Mat_Req.Case_No',
+    //             'Mat_Req.MR_Date',
+    //             'Mat_Req.MR_Status',
+    //             'Mat_Req.MR_IsUrgent',
+    //             'Mat_Req.CR_BY',
+    //             'users.Fullname as CreatedBy'
+    //         )
+    //         ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
+    //         ->where('Mat_Req.CR_BY', $userId);
+    
+    //     if (!empty($status)) {
+    //         $query->where('Mat_Req.MR_Status', $status);
+    //     }
+    
+    //     $matReqs = $query->orderBy($sortColumn, $sortDirection)->get();
+    
+    //     return response()->json($matReqs);
+    // }
+
     public function GetDataMr(Request $request)
     {
         $userId = Auth::id(); 
         $status = $request->query('status'); 
         $sortColumn = $request->query('sortColumn', 'MR_No'); 
         $sortDirection = $request->query('sortDirection', 'ASC');
-    
+
         $validColumns = ['MR_No', 'MR_Date'];
         if (!in_array($sortColumn, $validColumns)) {
             $sortColumn = 'MR_No'; 
         }
-    
+
         $query = MatReq::select(
                 'Mat_Req.MR_No',
                 'Mat_Req.WO_No',
@@ -415,16 +451,23 @@ class MRController extends Controller
                 'users.Fullname as CreatedBy'
             )
             ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
-            ->where('Mat_Req.CR_BY', $userId);
-    
+            ->where(function ($q) use ($userId) {
+                $q->where('Mat_Req.CR_BY', $userId)
+                ->orWhere('Mat_Req.MR_AP1', $userId)
+                ->orWhere('Mat_Req.MR_AP2', $userId)
+                ->orWhere('Mat_Req.MR_AP3', $userId)
+                ->orWhere('Mat_Req.MR_AP4', $userId);
+            });
+
         if (!empty($status)) {
             $query->where('Mat_Req.MR_Status', $status);
         }
-    
+
         $matReqs = $query->orderBy($sortColumn, $sortDirection)->get();
-    
+
         return response()->json($matReqs);
     }
+
     
 // PAGE Details MR 
     public function detail($encodedMRNo)

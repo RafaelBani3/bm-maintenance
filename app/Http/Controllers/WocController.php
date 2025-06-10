@@ -25,7 +25,7 @@ class WocController extends Controller
     public function createWOC(Request $request)
     {
         $technicians = DB::table('technician')->get();
-
+        
         $woNo = $request->input('wo_no');
         $selectedTechnicians = DB::table('wo_doneby')
             ->where('WO_No', $woNo)
@@ -40,26 +40,7 @@ class WocController extends Controller
         return view('content.woc.ListWOC');
     }
 
-    // Get WO No untuk reference No
-    // public function getWorkOrders()
-    // {
-    //     $userId = Auth::id();
-
-    //     $workOrders = WorkOrder::where('WO_Status', 'INPROGRESS')
-    //         ->where('WO_IsComplete', 'N')
-    //         ->whereNull('WO_CompDate')
-    //         ->whereNull('WO_IsReject')
-    //         ->where('CR_BY', $userId)
-    //         ->whereIn('WO_No', function ($query) {
-    //             $query->select('WO_No')
-    //                 ->from('mat_req')
-    //                 ->whereIn('MR_Status', ['DONE', 'CLOSE']);
-    //         })
-    //         ->get(['WO_No']);
-
-    //     return response()->json($workOrders);
-    // }
-
+    // Ambil data Wo_No berdasarkan ketentuan tertentu (PAGE CREATE WOC)
     public function getWorkOrders()
     {
         $userId = Auth::id();
@@ -82,7 +63,7 @@ class WocController extends Controller
         return response()->json($workOrders);
     }
 
-    // Ambil Detail Wo berdasarkan WO yang dipilih
+    // Ambil Detail Wo berdasarkan WO yang dipilih dan menampilkannya pada field form craete WOC
     public function getWorkOrderDetails($encoded)
     {
         $woNo = urldecode(base64_decode($encoded));
@@ -118,104 +99,6 @@ class WocController extends Controller
             'All_Technicians' => $allTechnicians,
             'Assigned_To' => $assignedTechs, 
         ]);
-    }
-
-    // Save WOC
-    public function saveCompletion(Request $request)
-    {
-        DB::beginTransaction();
-    
-        try {
-            $decodedWO = urldecode(base64_decode($request->reference_number));
-            
-            $user = Auth::user(); 
-            $wo = WorkOrder::where('WO_No', $decodedWO)->firstOrFail();
-    
-            $wocNo = (new WorkOrder)->getIncrementWOCNo();
-            $wo->WOC_No = $wocNo;
-            $wo->WO_IsComplete = 'Y';
-            $wo->WO_CompDate = Carbon::now();
-            $wo->WO_CompBy = Auth::id(); 
-            $wo->save();
-    
-            DB::commit();
-
-            Logs::create([
-                'LOG_Type' => 'WO',
-                'LOG_RefNo' => $wocNo,
-                'LOG_Status' => 'CREATED',
-                'LOG_User' => $user->id,
-                'LOG_Date' => now(),
-                'LOG_Desc' => 'CREATED WORK ORDER COMPLETION : ' . $wocNo,
-            ]);
-
-            $uploadedPaths = [];
-            if ($request->hasFile('photos')) {
-                $WoNo = str_replace(['/','\\'],'-', $wo->WO_No);
-                $directory = "woc_photos/$WoNo";
-                if (!Storage::disk('public')->exists($directory)) {
-                    Storage::disk('public')->makeDirectory($directory, 0755, true);
-                }
-
-                foreach ($request->file('photos') as $photo) {
-                    $newFileName = "WOC_" . time() . "_" . uniqid() . "." . $photo->getClientOriginalExtension();
-                    $path = $photo->storeAs($directory, $newFileName, 'public');
-                    $uploadedPaths[] = $path;
-
-                    Imgs::create([
-                        'IMG_No' => Imgs::generateImgNo(),
-                        'IMG_Type' => 'WO',
-                        'IMG_RefNo' => $wo->WO_No,
-                        'IMG_Filename' => $newFileName,
-                        'IMG_Realname' => $photo->getClientOriginalName(),
-                    ]);
-                }
-
-                Log::info('Photos uploaded', [
-                    'case_no' => $wo->WO_No,
-                    'files' => $uploadedPaths
-                ]);
-
-                Log::error('Failed to complete Work Order.');
-
-                Logs::create([
-                    'Logs_No' => Logs::generateLogsNo(),
-                    'LOG_Type' => 'WO',
-                    'LOG_RefNo' => $wo->WO_No,
-                    'LOG_Status' => 'PHOTOS_UPLOADED',
-                    'LOG_User' => Auth::id(),
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => count($uploadedPaths) . ' photos uploaded for WOC No: ' . $wo->Wo_No,
-                ]);
-            }
-    
-            Log::info('Work Order completed successfully.', [
-                'WO_No'   => $wo->WO_No,
-                'WOC_No'  => $wocNo,
-                'User'    => Auth::user()->username ?? 'Unknown',
-                'Time'    => now(),
-            ]);
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Work Order Completion saved successfully.',
-                'wo_no' => $wo->WO_No 
-            ]);
-        } catch (\Exception $e) {   
-            DB::rollBack();
-    
-            Log::error('Failed to complete Work Order.', [
-                'Reference_No' => $request->reference_number ?? 'N/A',
-                'Error'        => $e->getMessage(),
-                'User'         => Auth::user()->username ?? 'Unknown',
-                'Time'         => now(),
-            ]);
-    
-            return response()->json([
-                'success' => false,
-                'message' => 'Error completing Work Order.',
-            ], 500);
-        }
     }
 
     public function deleteImage(Request $request)
@@ -254,15 +137,116 @@ class WocController extends Controller
         return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus.']);
     }
 
+    // Save WOC
+    public function saveCompletion(Request $request)
+    {
+        DB::beginTransaction();
+    
+        try {
+            $decodedWO = urldecode(base64_decode($request->reference_number));
+            
+            $user = Auth::user(); 
+            $wo = WorkOrder::where('WO_No', $decodedWO)->firstOrFail();
+    
+            $wocNo = (new WorkOrder)->getIncrementWOCNo();
+            
+            $wo->WOC_No = $wocNo;
+            $wo->WO_IsComplete = 'Y';
+            // $wo->WO_CompDate = Carbon::now();
+            $wo->WO_Compdate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
+            $wo->WO_Narative = $request->work_description;
+            $wo->WO_CompBy = Auth::id(); 
+            $wo->save();
+    
+            DB::commit();
+
+            Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'WO',
+                'LOG_RefNo' => $wocNo,
+                'LOG_Status' => 'CREATED',
+                'LOG_User' => $user->id,
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'CREATED WORK ORDER COMPLETION',
+            ]);
+
+            $uploadedPaths = [];
+            if ($request->hasFile('photos')) {
+                $WocNo = str_replace(['/','\\'],'-', $wocNo);
+                $directory = "woc_photos/$WocNo";
+                if (!Storage::disk('public')->exists($directory)) {
+                    Storage::disk('public')->makeDirectory($directory, 0755, true);
+                }
+
+                foreach ($request->file('photos') as $photo) {
+                    $newFileName = "WOC_" . time() . "_" . uniqid() . "." . $photo->getClientOriginalExtension();
+                    $path = $photo->storeAs($directory, $newFileName, 'public');
+                    $uploadedPaths[] = $path;
+
+                    Imgs::create([
+                        'IMG_No' => Imgs::generateImgNo(),
+                        'IMG_Type' => 'WO',
+                        'IMG_RefNo' => $wocNo,
+                        'IMG_Filename' => $newFileName,
+                        'IMG_Realname' => $photo->getClientOriginalName(),
+                    ]);
+                }
+
+                Log::info('Photos uploaded', [
+                    'case_no' => $wocNo,
+                    'files' => $uploadedPaths
+                ]);
+
+                Log::error('Failed to complete Work Order.');
+
+                Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
+                    'LOG_Type' => 'WO',
+                    'LOG_RefNo' => $wocNo,
+                    'LOG_Status' => 'PHOTOS_UPLOADED',
+                    'LOG_User' => Auth::id(),
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => count($uploadedPaths) . 'photos uploaded for WOC',
+                ]);
+            }
+    
+            Log::info('Work Order completed successfully.', [
+                'WO_No'   => $wo->WO_No,
+                'WOC_No'  => $wocNo,
+                'User'    => Auth::user()->username ?? 'Unknown',
+                'Time'    => now(),
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Work Order Completion saved successfully.',
+                'wo_no' => $wo->WO_No 
+            ]);
+        } catch (\Exception $e) {   
+            DB::rollBack();
+    
+            Log::error('Failed to complete Work Order.', [
+                'Reference_No' => $request->reference_number ?? 'N/A',
+                'Error'        => $e->getMessage(),
+                'User'         => Auth::user()->username ?? 'Unknown',
+                'Time'         => now(),
+            ]);
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Error completing Work Order.',
+            ], 500);
+        }
+    }
 
     // Page Edit WOC
     public function EditWOC($wo_no)
     {
         try {
             $decoded_wo_no = base64_decode($wo_no, true); 
-
+        
             if (!$decoded_wo_no) {
-                return redirect('/Work-Order/Create')->with('error', 'Invalid Work Order Number.');
+                return redirect()->route('CreateWOC')->with('error', 'Invalid Work Order Number.');
             }
 
             $user = Auth::user();
@@ -274,12 +258,24 @@ class WocController extends Controller
             ])->where('WO_No', $decoded_wo_no)->first();
 
             if (!$workOrder) {
-                return redirect('/Work-Order/Create')->with('error', "Work Order with number $decoded_wo_no not found.");
+                return redirect()->route('CreateWOC')->with('error', 'Invalid Work Order Number.');
             }
+
+            $wocNo = $workOrder->WOC_No;
 
             if ($workOrder->WO_Status === 'REJECT') {
                 $workOrder->WO_Status = 'OPEN_COMPLETION';
                 $workOrder->save();
+
+                Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
+                    'LOG_Type' => 'WO',
+                    'LOG_RefNo' => $wocNo,
+                    'LOG_Status' => 'REVISION',
+                    'LOG_User' => $user->id,
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => 'A revision was made to the Work Order Complition data due to the rejection of the previous submission.',
+                ]);
             }
 
             $allTechnicians = technician::all();
@@ -289,7 +285,7 @@ class WocController extends Controller
                 ->pluck('technician_id')
                 ->toArray();
 
-            $wocImages = Imgs::where('IMG_RefNo', $decoded_wo_no)->get();
+            $wocImages = Imgs::where('IMG_RefNo', $wocNo)->get();
 
             return view('content.woc.EditWOC', compact(
                 'workOrder',
@@ -300,8 +296,8 @@ class WocController extends Controller
             ));
 
         } catch (\Exception $e) {
-            Log::error("EditWOC Error: " . $e->getMessage());
-            return redirect('/WorkOrder-Complition/Create')->with('error', 'An unexpected error occurred while editing Work Order.');
+            Log::error("Edit WOC Error: " . $e->getMessage());
+            return redirect()->route('CreateWOC')->with('error', 'An unexpected error occurred while editing Work Order.');
         }
     }
 
@@ -329,6 +325,108 @@ class WocController extends Controller
         ]);
 
         return response()->json(['status' => 'success']);
+    }
+
+    // Controller SAVE DRAFT WOC
+    public function SaveDraftWOC(Request $request)
+    {
+        $user = auth::user();
+        $request->validate([
+            'reference_number' => 'required|string',
+            'start_date' => 'required|string',
+            'end_date' => 'required|string',
+            'work_description' => 'required|string',
+        ]);
+
+        try {
+        $wo = WorkOrder::where('WOC_No', $request->woc_no)->firstOrFail();
+
+            $startDate = Carbon::createFromFormat('Y-m-d H:i', $request->start_date)->format('Y-m-d H:i:s');
+            $endDate = Carbon::createFromFormat('Y-m-d H:i', $request->end_date)->format('Y-m-d H:i:s');
+
+            $wo->WO_Start = $startDate;
+            $wo->WO_CompDate = $endDate;
+            $wo->WO_Narative = $request->work_description;
+            $wo->Update_Date = now();
+            $wo->save();
+
+            // Upload dan simpan gambar jika ada
+            if ($request->hasFile('new_images')) {
+                $WocNo = str_replace(['/','\\'],'-', $request->woc_no);
+                $directory = "woc_photos/$WocNo";
+                if (!Storage::disk('public')->exists($directory)) {
+                    Storage::disk('public')->makeDirectory($directory, 0755, true);
+                }
+
+                foreach ($request->file('new_images') as $photo) {
+                    $newFileName = "WOC_" . time() . "_" . uniqid() . "." . $photo->getClientOriginalExtension();
+                    $path = $photo->storeAs($directory, $newFileName, 'public');
+                    $uploadedPaths[] = $path;
+
+                    Imgs::create([
+                        'IMG_No' => Imgs::generateImgNo(),
+                        'IMG_Type' => 'WO',
+                        'IMG_RefNo' => $wo->WOC_No,
+                        'IMG_Filename' => $newFileName,
+                        'IMG_Realname' => $photo->getClientOriginalName(),
+                    ]);
+                }
+
+                Log::info('Photos uploaded', [
+                    'WOC_No' => $wo->WOC_No,
+                    'files' => $uploadedPaths
+                ]);
+
+                Log::error('Failed to complete Work Order.');
+
+                Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
+                    'LOG_Type' => 'WO',
+                    'LOG_RefNo' => $wo->WOC_No,
+                    'LOG_Status' => 'PHOTOS_UPLOADED',
+                    'LOG_User' => Auth::id(),
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => count($uploadedPaths) . ' photos uploaded for WOC No: ' . $wo->WOC_No,
+                ]);
+            }
+            
+    
+            // Handle Teknisi
+            if ($request->has('assigned_to')) {
+                $existingTechnicians = DB::table('WO_DoneBy')
+                    ->where('WO_No', $request->wo_no)
+                    ->pluck('technician_id')
+                    ->toArray();
+    
+                foreach ($request->assigned_to as $tech_id) {
+                    if (!in_array($tech_id, $existingTechnicians)) {
+                        DB::table('WO_DoneBy')->insert([
+                            'WO_No' => $request->wo_no,
+                            'technician_id' => $tech_id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+    
+                        Log::info("Technician {$tech_id} added to WOC {$request->woc_no} by {$user->Fullname}");
+                    }
+                }
+            }
+
+            DB::table('Logs')->insert([
+                'Logs_No' => Logs::generateLogsNo(),
+                'LOG_Type' => 'WO',
+                'LOG_RefNo' => $wo->WOC_No,
+                'LOG_Status' => 'DRAFT_SAVED',
+                'LOG_User' => Auth::id(),
+                'LOG_Date' => now(),
+                'LOG_Desc' => 'Successfully Saved Work Order Complition Draft.',
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Work Order Complition Draft Saved Successfully.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
     }
 
     // Update WOC
@@ -373,14 +471,13 @@ class WocController extends Controller
                 $wo->WO_APMaxStep = $matrixRow['Mat_Max'];
             }
 
-            $wocNo = (new WorkOrder)->getIncrementWOCNo();
-            $wo->WOC_No = $wocNo;
+            // $wocNo = (new WorkOrder)->getIncrementWOCNo();
+            // $wo->WOC_No = $wocNo;
             $wo->WO_Start = $request->start_date;
-            $wo->WO_End = $request->end_date;
+            $wo->WO_Compdate = Carbon::createFromFormat('Y-m-d H:i', $request->end_date)->format('Y-m-d H:i:s');
             $wo->WO_Narative = $request->work_description;
             $wo->WO_Status = 'SUBMIT_COMPLETION'; 
 
-            // Reset status reject & komentar ketik ada case yang direvisi
             if ($wo->WO_IsReject === 'Y') {
                 $wo->WO_IsReject = 'N';
                 $wo->WO_RejGroup = null;
@@ -390,13 +487,13 @@ class WocController extends Controller
                 $wo->WO_RMK2 = null;
 
                 Log::info('UpdateCase: Reset status REJECT karena user melakukan revisi', [
-                    'wo_no' => $wo->WO_No
+                    'wo_no' => $wo->WOC_No
                 ]);
 
                 DB::table('Logs')->insert([
                     'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $wo->WO_No,
+                    'LOG_RefNo' => $wo->WOC_No,
                     'LOG_Status' => 'REJECT_RESET',
                     'LOG_User' => Auth::id(),
                     'LOG_Date' => now(),
@@ -428,7 +525,7 @@ class WocController extends Controller
             
             Logs::create([
                 'LOG_Type' => 'WO',
-                'LOG_RefNo' => $wocNo,
+                'LOG_RefNo' => $wo->WOC_No,
                 'LOG_Status' => 'SUBMITTED',
                 'LOG_User' => $user->id,
                 'LOG_Date' => now(),
@@ -456,7 +553,7 @@ class WocController extends Controller
     
             Logs::create([
                 'LOG_Type' => 'WO',
-                'LOG_RefNo' => $wocNo,
+                'LOG_RefNo' => $wo->WOC_No,
                 'LOG_Status' => 'FAILED',
                 'LOG_User' => $user->id,
                 'LOG_Date' => now(),
@@ -471,22 +568,42 @@ class WocController extends Controller
     }
 
 // Page List WOC
-    // Ambil data WO dengan status ALL Untuk ditampilkan ditable
+    // Ambil Data WOC untuk ditampilkan pada table list WOC
     public function getSubmittedData()
     {
-        $data = WorkOrder::with([
-            'case',        
-            'createdBy.position',   
-           
-        ])
-        ->where('WO_IsComplete', 'Y')
-        ->get();
+        $userId = Auth::id(); // Ambil ID user yang sedang login
+        $user = Auth::user(); // Ambil user login
+        $hasViewCr = $user->hasPermissionTo('view cr');
+        $hasViewCrAp = $user->hasPermissionTo('view cr_ap');
+        Log::info("User: " . $user->Fullname);
+        Log::info("Can view cr: " . json_encode($hasViewCr));
+        Log::info("Can view cr_ap: " . json_encode($hasViewCrAp));
+
+        // Query dasar: hanya WO yang sudah complete
+        $query = WorkOrder::with([
+            'case',
+            'createdBy.position',
+        ])->where('WO_IsComplete', 'Y');
+
+        // Filter berdasarkan permission
+        $query->where(function ($q) use ($userId, $hasViewCr, $hasViewCrAp) {
+            if ($hasViewCr) {
+                $q->orWhere('CR_BY', $userId);
+            }
+
+            if ($hasViewCrAp) {
+                $q->orWhere('WO_AP1', $userId)
+                ->orWhere('WO_AP2', $userId);
+            }
+        });
+
+        $data = $query->get();
 
         return response()->json(['data' => $data]);
     }
 
     // Page Detail WOC
-      public function showDetailWO($encodedWONo)
+    public function showDetailWOC($encodedWONo)
     {
         $wo_no = base64_decode($encodedWONo); 
 
@@ -515,24 +632,58 @@ class WocController extends Controller
         ->where('Work_Orders.WO_No', $wo_no)
         ->first();
 
-
         if (!$workOrder) {
             return redirect()->back()->with('error', 'Work Order not found.');
         }
 
+        $approvers = [];
+
+        for ($i = 1; $i <= $workOrder->WO_APMaxStep; $i++) {
+            $approverId = $workOrder->{'WO_AP' . $i} ?? null;
+
+            if ($approverId) {
+                $user = User::find($approverId);
+                $approvers[$i] = $user ? $user->Fullname : 'Unknown User';
+            } else {
+                $approvers[$i] = 'Unknown User';
+            }
+        }
+
+        $wocNo = $workOrder->WOC_No;
+        
         $logs = DB::table('Logs')
             ->join('users', 'Logs.LOG_User', '=', 'users.id')
             ->select('Logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'WO') 
-            ->where('LOG_RefNo', $wo_no)
-            ->orderBy('LOG_Date', 'desc')
+            ->where('LOG_RefNo', $wocNo)
+            ->orderBy('LOG_Date', 'asc')
             ->get();
 
-        $wocImages = Imgs::where('IMG_RefNo', $wo_no)->get();
+        $lastResetLog = $logs->last(function ($log) {
+            return in_array($log->LOG_Status, ['SUBMITTED', 'REVISION']);
+        });
 
-        return view('content.woc.DetailWOC', compact('workOrder','logs','wocImages'));
+        $resetTime = $lastResetLog ? $lastResetLog->LOG_Date : null;
+
+        $approvalLogs = $logs->filter(function ($log) use ($resetTime) {
+            return $resetTime &&
+                $log->LOG_Date > $resetTime &&
+                (
+                    Str::startsWith($log->LOG_Status, 'APPROVED') ||
+                    Str::startsWith($log->LOG_Status, 'REJECTED')
+                );
+        });
+
+        $wocImages = Imgs::where('IMG_RefNo', $wocNo)->get();
+
+
+        return view('content.woc.DetailWOC', compact('workOrder','logs','wocImages','approvalLogs','approvers'));
     }
+// End List WOC
     
+
+
+
 // Page Approval WOC
     // Page List WOC Approval
     public function ApprovalListWOC(Request $request){
@@ -632,7 +783,9 @@ class WocController extends Controller
             ->orderBy('LOG_Date', 'desc')
             ->get();
     
-        $wocImages = Imgs::where('IMG_RefNo', $WO_No)->get();
+        $wocNo = $workOrder->WOC_No;
+
+        $wocImages = Imgs::where('IMG_RefNo', $wocNo)->get();
 
         return view('content.woc.DetailApprovalWOC', compact('workOrder', 'technicians', 'matReqs', 'matReqChildren','logs','wocImages'));
     }
@@ -662,18 +815,20 @@ class WocController extends Controller
                     $wo->WO_APStep = 2;
 
                     Logs::create([
+                        'Logs_No'    => Logs::generateLogsNo(),
                         'LOG_Type'   => 'WO',
-                        'LOG_RefNo'  => $decoded_wo_no,
+                        'LOG_RefNo'  => $wo->WOC_No,
                         'LOG_Status' => 'APPROVED 1',
                         'LOG_User'   => $user->id,
                         'LOG_Date'   => Carbon::now(),
-                        'LOG_Desc'   => $user->Fullname . ' APPROVED WO',
+                        'LOG_Desc'   => $user->Fullname . ' APPROVED WOC',
                     ]);
 
                     Notification::create([
-                        'Notif_Title'   => 'Work Order Approved',
+                        'Notif_No'      => Notification::generateNotificationNo(),
+                        'Notif_Title'   => 'Work Order Complition Approved',
                         'Reference_No'  => $wo->WO_No,
-                        'Notif_Text'    => 'WO ' . $wo->WO_No . ' approved by ' . $user->Fullname,
+                        'Notif_Text'    => 'WOC ' . $wo->WOC_No . ' approved by ' . $user->Fullname,
                         'Notif_IsRead'  => 'N',
                         'Notif_From'    => $user->id,
                         'Notif_To'      => $wo->WO_AP2,
@@ -683,23 +838,70 @@ class WocController extends Controller
                 } elseif ($wo->WO_APStep == 2) {
                     $wo->WO_Status = 'DONE';
                     $wo->WO_RMK2 = $notes;
+
+                    // Update Case Status
                     Cases::where('Case_No', $wo->Case_No)->update([
                         'Case_Status' => 'DONE'
                     ]);
 
+                    // logs update CASE STATUS
                     Logs::create([
+                        'Logs_No' => Logs::generateLogsNo(),
+                        'LOG_Type'   => 'BA',
+                        'LOG_RefNo'  => $wo->Case_No,
+                        'LOG_Status' => 'DONE',
+                        'LOG_User'   => $user->id,
+                        'LOG_Date'   => Carbon::now(),
+                        'LOG_Desc'   => 'Case completed successfully',
+                    ]);
+
+                    Logs::create([
+                        'Logs_No'    => Logs::generateLogsNo(),
                         'LOG_Type'   => 'WO',
-                        'LOG_RefNo'  => $decoded_wo_no,
+                        'LOG_RefNo'  => $wo->WOC_No,
                         'LOG_Status' => 'APPROVED 2',
                         'LOG_User'   => $user->id,
                         'LOG_Date'   => Carbon::now(),
-                        'LOG_Desc'   => $user->Fullname . ' APPROVED WO',
+                        'LOG_Desc'   => $user->Fullname . ' APPROVED WOC',
+                    ]);
+
+                    // LOGS UPDATE WOC STATUS
+                    Logs::create([
+                        'Logs_No'    => Logs::generateLogsNo(),
+                        'LOG_Type'   => 'WO',
+                        'LOG_RefNo'  => $wo->WOC_No,
+                        'LOG_Status' => 'DONE',
+                        'LOG_User'   => $user->id,
+                        'LOG_Date'   => Carbon::now(),
+                        'LOG_Desc'   => 'Work Order Complition completed successfully',
+                    ]);
+
+                    // LOGS UPDATE WO STATUS
+                    Logs::create([
+                        'Logs_No'    => Logs::generateLogsNo(),
+                        'LOG_Type'   => 'WO',
+                        'LOG_RefNo'  => $wo->WO_No,
+                        'LOG_Status' => 'DONE',
+                        'LOG_User'   => $user->id,
+                        'LOG_Date'   => Carbon::now(),
+                        'LOG_Desc'   => 'Work Order completed successfully',
+                    ]);
+
+                    Logs::create([
+                        'Logs_No'    => Logs::generateLogsNo(),
+                        'LOG_Type'   => 'WO',
+                        'LOG_RefNo'  => $wo->WOC_No,
+                        'LOG_Status' => 'DONE',
+                        'LOG_User'   => $user->id,
+                        'LOG_Date'   => Carbon::now(),
+                        'LOG_Desc'   => 'Work Order completed successfully',
                     ]);
 
                     Notification::create([
+                        'Notif_No'      => Notification::generateNotificationNo(),
                         'Notif_Title'   => 'Work Order Approved',
                         'Reference_No'  => $wo->WO_No,
-                        'Notif_Text'    => 'WO ' . $wo->WO_No . ' approved by ' . $user->Fullname,
+                        'Notif_Text'    => 'WOC ' . $wo->WOC_No . ' approved by ' . $user->Fullname,
                         'Notif_IsRead'  => 'N',
                         'Notif_From'    => $user->id,
                         'Notif_To'      => $wo->CR_BY,
@@ -707,14 +909,11 @@ class WocController extends Controller
                         'Notif_Type'    => 'WO',
                     ]);
                 }
-
+                
                 $wo->save();
-                return response()->json(['message' => 'Work Order Approved Successfully']);
+                return response()->json(['message' => 'Work Order Complition Approved Successfully']);
             }
             
-
-
-
             // === HANDLE REJECT ===
             if ($wo->WO_APStep == 1) {
                 $wo->WO_Status = 'REJECT';
@@ -725,18 +924,20 @@ class WocController extends Controller
                 $wo->WO_RMK1 = $notes;
 
                 Logs::create([
+                    'Logs_No'    => Logs::generateLogsNo(),
                     'LOG_Type'   => 'WO',
-                    'LOG_RefNo'  => $decoded_wo_no,
+                    'LOG_RefNo'  => $wo->WOC_No,
                     'LOG_Status' => 'REJECTED 1',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
-                    'LOG_Desc'   => $user->Fullname . ' REJECTED WO: ' . $notes,
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED WOC: ' . $notes,
                 ]);
 
                 Notification::create([
+                    'Notif_No'      => Notification::generateNotificationNo(),
                     'Notif_Title'   => 'Work Order Rejected',
                     'Reference_No'  => $wo->WO_No,
-                    'Notif_Text'    => 'WO ' . $wo->WO_No . ' rejected by ' . $user->Fullname,
+                    'Notif_Text'    => 'WOC ' . $wo->WOC_No . ' rejected by ' . $user->Fullname,
                     'Notif_IsRead'  => 'N',
                     'Notif_From'    => $user->id,
                     'Notif_To'      => $wo->CR_BY,
@@ -752,18 +953,20 @@ class WocController extends Controller
                 $wo->WO_RMK2 = $notes;
 
                 Logs::create([
+                    'Logs_No'    => Logs::generateLogsNo(),
                     'LOG_Type'   => 'WO',
-                    'LOG_RefNo'  => $decoded_wo_no,
+                    'LOG_RefNo'  => $wo->WOC_No,
                     'LOG_Status' => 'REJECTED 2',
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
-                    'LOG_Desc'   => $user->Fullname . ' REJECTED WO: ' . $notes,
+                    'LOG_Desc'   => $user->Fullname . ' REJECTED WOC: ' . $notes,
                 ]);
 
                 Notification::create([
+                    'Notif_No'      => Notification::generateNotificationNo(),
                     'Notif_Title'   => 'Work Order Rejected',
                     'Reference_No'  => $wo->WO_No,
-                    'Notif_Text'    => 'WO ' . $wo->WO_No . ' rejected by ' . $user->Fullname,
+                    'Notif_Text'    => 'WOC ' . $wo->WOC_No . ' rejected by ' . $user->Fullname,
                     'Notif_IsRead'  => 'N',
                     'Notif_From'    => $user->id,
                     'Notif_To'      => $wo->CR_BY,
@@ -773,9 +976,9 @@ class WocController extends Controller
             }
 
             $wo->save();
-            return response()->json(['message' => 'Work Order Rejected']);
+            return response()->json(['message' => 'Work Order Complition Rejected']);
         } catch (\Exception $e) {
-            Log::error('WO Approval/Reject Error: ' . $e->getMessage(), [
+            Log::error('WOC Approval/Reject Error: ' . $e->getMessage(), [
                 'stack' => $e->getTraceAsString()
             ]);
             return response()->json([
@@ -784,10 +987,5 @@ class WocController extends Controller
             ], 500);
         }
     }
-
-
-
-
-
 // END
 }

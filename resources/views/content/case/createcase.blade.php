@@ -13,7 +13,7 @@
         }
 
         .flatpickr-day.today {
-            background: #0d6efd !important; /* Bootstrap Primary Blue */
+            background: #979797 !important; 
             color: #fff !important;
             border-radius: 6px;
         }

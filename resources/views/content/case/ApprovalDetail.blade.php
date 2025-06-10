@@ -188,7 +188,7 @@
                             </div>
                             <!--end::Row CASE ACTION-->
                             
-                             <!--Start::Row Exiciting Image-->
+                             {{-- <!--Start::Row Exiciting Image-->
                             <div class="row mb-5 pb-4">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -204,7 +204,7 @@
                                 <!--end::Label-->
                                 <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
                                     @if($images->isNotEmpty())
-                                        <div class="row" style="gap: 20px">
+                                        <div class="row" style="gap: 40px">
                                             @foreach($images as $image)
                                                 @php
                                                     $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
@@ -229,7 +229,53 @@
 
 
                             </div>
-                            <!--end::Row Exciting Image-->
+                            <!--end::Row Exciting Image--> --}}
+                            
+                             <!--Start::Row Existing Image-->
+                            <div class="row mb-5 pb-4">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                    <span>Existing Image</span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="This is the currently uploaded image. You can keep or replace it.">
+                                        <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
+                                <!--end::Label-->
+
+                                <!--begin::Image Container-->
+                                <div class="notice bg-light-primary card-rounded border-3 border-primary border-dashed p-4 p-lg-5 w-100">
+                                    @if($images->isNotEmpty())
+                                        <div class="row">
+                                            @foreach($images as $image)
+                                                @php
+                                                    $imgPath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
+                                                @endphp
+                                                <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
+                                                    <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
+                                                        <!-- Gambar thumbnail -->
+                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded"
+                                                            style="width: 100%; height: 100px; background-image: url('{{ $imgPath }}');">
+                                                        </div>
+                                                        <!-- Efek overlay -->
+                                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center"
+                                                            style="width: 100%; height: 100px;">
+                                                            <i class="bi bi-eye-fill text-white fs-2"></i>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-muted m-0">No photos available for this case.</p>
+                                    @endif
+                                </div>
+                                <!--end::Image Container-->
+                            </div>
+                            <!--end::Row Existing Image-->
                             
                             {{-- Remark --}}
                             <div class="row mb-5 pb-5">

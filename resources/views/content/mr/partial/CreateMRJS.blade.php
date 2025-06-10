@@ -77,6 +77,13 @@
                             }
                         }
                     },
+                    wo_no: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Work Order No is required'
+                            }
+                        }
+                    },
                     date: {
                         validators: {
                             notEmpty: {
@@ -260,6 +267,7 @@
                         data: { wo_no: woNo }, 
                         success: function (data) {
                             $('#case_no').val(data.Case_No ?? '');
+                            $('#case_name').val(data.Case_Name ?? '');
                             $('#created_by').val(data.created_by ?? '');
                             $('#department').val(data.department ?? '');
                         },

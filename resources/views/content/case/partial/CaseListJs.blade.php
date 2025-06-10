@@ -1,8 +1,11 @@
 
     {{-- Get All Case Data --}}
     <script>
-        const routeDetailCase = "{{ route('case.detail', ':caseNo') }}"; 
-        const editCaseUrlTemplate = "{{ route('EditCase', ['encoded_case_no' => ':encoded_case_no']) }}";
+        // Declare Route untuk page Edit dan Detail Page
+        const routeEditCase = "{{ route('EditCase', ['encoded_case_no' => 'case_no']) }}";
+        const routeCaseDetail = "{{ route('case.detail', ['case_no' => 'case_no']) }}";
+        
+        const canEditCase = @json(auth()->user()->can('view cr'));
         
         $(document).ready(function () {
             $('#statusFilter').select2({
@@ -57,18 +60,61 @@
                         }
                     },
                     {
+                        // data: "Case_No",
+                        // className: "text-start align-middle",
+                        // render: function (data, type, row) {
+                        //     const encodedCaseNo = btoa(data); 
+                        //     const baseUrl = window.location.origin + "/BmMaintenance/public";
+                            
+                        //     let buttons = '<div class="d-flex gap-2">';
+
+                        //     // Tombol Edit hanya muncul jika Case_Status = "OPEN"
+                        //     if (row.Case_Status === "OPEN" || row.Case_Status === "REJECT") {
+                        //         buttons += `
+                        //             <a href="${baseUrl}/Case/Edit/${encodedCaseNo}" 
+                        //             class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                        //             style="width: 40px; height: 40px;" 
+                        //             data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
+                        //                 <i class="ki-duotone ki-pencil fs-3 text-warning">
+                        //                     <span class="path1"></span>
+                        //                     <span class="path2"></span>
+                        //                 </i>
+                        //             </a>
+                        //         `;
+                        //     }
+
+                        //     // Tombol View
+                        //     buttons += `
+                        //         <a href="${baseUrl}/Case/Detail/${encodedCaseNo}" 
+                        //         class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                        //         style="width: 40px; height: 40px;" 
+                        //         data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
+                        //             <i class="ki-duotone ki-eye fs-3 text-primary">
+                        //                 <span class="path1"></span>
+                        //                 <span class="path2"></span>
+                        //                 <span class="path3"></span>
+                        //             </i>
+                        //         </a>
+                        //     </div>`;
+                        //     return buttons;
+                        // }
+
                         data: "Case_No",
                         className: "text-start align-middle",
                         render: function (data, type, row) {
-                            const encodedCaseNo = btoa(data); 
-                            const baseUrl = window.location.origin + "/BmMaintenance/public";
-                            
+                            if (!data) return '-';
+
+                            const encodedCaseNo = btoa(data);
+
+                            const editUrl = routeEditCase.replace('case_no', encodedCaseNo);
+                            const detailUrl = routeCaseDetail.replace('case_no', encodedCaseNo);
+
                             let buttons = '<div class="d-flex gap-2">';
 
-                            // Tombol Edit hanya muncul jika Case_Status = "OPEN"
-                            if (row.Case_Status === "OPEN" || row.Case_Status === "REJECT") {
+                            // Tombol Edit hanya jika user punya permission `view-cr` DAN status OPEN/REJECT
+                            if ((row.Case_Status === "OPEN" || row.Case_Status === "REJECT") && typeof canEditCase !== 'undefined' && canEditCase) {
                                 buttons += `
-                                    <a href="${baseUrl}/Case/Edit/${encodedCaseNo}" 
+                                    <a href="${editUrl}" 
                                     class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
                                     style="width: 40px; height: 40px;" 
                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
@@ -80,9 +126,9 @@
                                 `;
                             }
 
-                            // Tombol View
+                            // Tombol View bisa diakses semua user
                             buttons += `
-                                <a href="${baseUrl}/Case/Detail/${encodedCaseNo}" 
+                                <a href="${detailUrl}" 
                                 class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
                                 style="width: 40px; height: 40px;" 
                                 data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
@@ -93,8 +139,11 @@
                                     </i>
                                 </a>
                             </div>`;
+
                             return buttons;
                         }
+
+
                       }
                 ],
                 scrollY: "350px",
@@ -119,6 +168,8 @@
             });
         });
     </script>
+
+    
 
     {{-- Script Choose Date Range --}}
     <script>

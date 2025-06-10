@@ -17,7 +17,7 @@
         }
 
         .flatpickr-day.today {
-            background: #0d6efd !important;
+            background: #979797 !important; 
             color: #fff !important;
             border-radius: 6px;
         }

@@ -537,7 +537,6 @@ class WOController extends Controller
         return response()->json($workOrders);
     }
 
-
     // Get WO NO    
     public function GetWorkOrderNo(Request $request)
     {

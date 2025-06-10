@@ -93,7 +93,8 @@
                                             <span class="menu-title">Create Case</span>
                                         </a>
                                     </div>
-                                    
+                                @endif
+
                                     <div class="menu-item">
                                         <a class="menu-link {{ request()->routeIs('ViewCase') ? 'active' : '' }}" href="{{ route('ViewCase') }}">
                                             <span class="menu-bullet">
@@ -102,7 +103,6 @@
                                             <span class="menu-title">List Case</span>
                                         </a>
                                     </div>
-                                @endif
                                 
                                 @if(auth()->user()->hasAnyPermission(['view cr_ap']))
                                     <div class="menu-item">
@@ -184,6 +184,7 @@
                                         </a>
                                     </div>
                                 </div>
+                            @endif
 
                                 <div class="menu-sub menu-sub-accordion">
                                     <div class="menu-item">
@@ -195,7 +196,6 @@
                                         </a>
                                     </div>
                                 </div>
-                            @endif
 
                             @if(auth()->user()->hasAnyPermission(['view mr_ap']))
                                 <div class="menu-sub menu-sub-accordion">
@@ -236,7 +236,7 @@
                                             <span class="menu-title">Create Work Order Complition</span>
                                         </a>
                                     </div>
-                                    
+                                @endif    
                                     <div class="menu-item">
                                         <a class="menu-link {{ request()->routeIs('ListWOCPage') ? 'active' : '' }}" href="{{ route('ListWOCPage') }}">
                                             <span class="menu-bullet">
@@ -245,7 +245,7 @@
                                             <span class="menu-title">List Work Order Complition</span>
                                         </a>
                                     </div>
-                                @endif
+                                
 
                                 @if(auth()->user()->hasAnyPermission(['view cr_ap']))
                                     <div class="menu-item">
@@ -253,7 +253,7 @@
                                             <span class="menu-bullet">
                                                 <span class="bullet bullet-dot"></span>
                                             </span>
-                                            <span class="menu-title">List Approval WOC</span>
+                                            <span class="menu-title">Approval WOC</span>
                                         </a>
                                     </div>
                                 @endif

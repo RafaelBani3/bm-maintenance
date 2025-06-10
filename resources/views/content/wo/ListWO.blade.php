@@ -141,10 +141,6 @@
     
     @include('content.wo.partial.ListWOJS')
 
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-    </script>
-
 @endsection
 
 

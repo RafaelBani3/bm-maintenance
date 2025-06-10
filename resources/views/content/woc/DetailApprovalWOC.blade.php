@@ -173,7 +173,7 @@
                             </div>
                             <!--end::Row WO Completed-->
 
-                            <div class="row mb-5 pb-5">
+                            {{-- <div class="row mb-5 pb-5">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-6">
                                     <span class="required">Existing Image</span>
@@ -206,7 +206,52 @@
                                         </div>
                                     @endforeach
                                 </div>
+                            </div> --}}
+                            <!--Start::Row Exiciting Image-->
+                            <div class="row mb-5 pb-4">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                    <span>Existing Image</span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="This is the currently uploaded image. You can keep or replace it.">
+                                        <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
+                                <!--end::Label-->
+
+                                <div class="notice bg-light-primary card-rounded border-3 border-primary border-dashed p-4 p-lg-5 w-100">
+                                    @if($wocImages->isNotEmpty())
+                                        <div class="row">
+                                            @foreach($wocImages as $image)
+                                                @php
+                                                    $imgPath = asset('storage/woc_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
+                                                @endphp
+                                                <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
+                                                    <!--begin::Overlay-->
+                                                    <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
+                                                        <!-- Gambar thumbnail -->
+                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded"
+                                                            style="width: 100%; height: 100px; background-image: url('{{ $imgPath }}');">
+                                                        </div>
+                                                        <!-- Efek overlay -->
+                                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center"
+                                                            style="width: 100%; height: 100px;">
+                                                            <i class="bi bi-eye-fill text-white fs-2"></i>
+                                                        </div>
+                                                    </a>
+                                                    <!--end::Overlay-->
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-muted">No photos available for this case.</p>
+                                    @endif
+                                </div>
                             </div>
+                            <!--end::Row Exciting Image-->
 
                             <!--TABLE MATERIAL Request-->
                             @foreach ($matReqs as $mr)
@@ -321,13 +366,13 @@
 
                                         <div class="timeline-content mb-10 mt-n1">
                                             <div class="pe-3 mb-5">
-                                                <div class="fs-5 fw-semibold mb-2">
+                                                <div class="fs-5 fw-semibold mt-4">
                                                     @if($workOrder->WO_APStep == $step)
-                                                        Require Your Approval ({{ $info['label'] }})
+                                                        Require Your {{ $info['label'] }} - {{ $info['approver'] }}
                                                     @elseif($step < $workOrder->WO_APStep)
                                                         Approved by {{ $info['approver'] }}
                                                     @else
-                                                        Waiting for Approval ({{ $info['label'] }})
+                                                        Waiting for {{ $info['label'] }} - {{ $info['approver'] }}
                                                     @endif
                                                 </div>
 
@@ -360,7 +405,6 @@
                                                         @csrf
                                                         <input type="hidden" id="approvalNotes" name="approvalNotes">
                                                         <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
-                                                            <p class="text-muted fw-semibold">Input Your Remark or Notes Here</p>                                
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-4">
                                                             <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
@@ -408,10 +452,20 @@
 
     {{-- Script Approve & Remark --}}
     <script>
-       var quill = new Quill('#kt_docs_quill_basic', {
-            theme: 'snow'
+        var quill = new Quill('#kt_docs_quill_basic', {
+            modules: {
+                toolbar: [
+                    [{
+                    header: [1, 2, false]
+                    }],
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'code-block']
+                ]
+            },
+            placeholder: 'Input Your Remarks Here...',
+            theme: 'snow' 
         });
-
+       
         document.querySelectorAll('.approve-reject-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const action = this.getAttribute('data-action');
@@ -469,7 +523,6 @@
                                 confirmButtonColor: '#198754'
                             }).then(() => {
                                 document.getElementById("page_loader").style.display = "flex";
-
                                 setTimeout(() => {
                                     window.location.href = "http://localhost/BmMaintenance/public/WorkOrder-Complition/List-Approval";
                                 }, 1000);

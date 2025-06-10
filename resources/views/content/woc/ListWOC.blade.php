@@ -144,297 +144,187 @@
     </script>
     
     {{-- Get Data --}}
-    {{-- <script>
+    <script>
+        // Declare Route untuk ke Edit dan Detail Page
+        const routeEditWOC = "{{ route('EditWOC', ['wo_no' => 'wo_no']) }}";
+        const routeWocDetail = "{{ route('WocDetail', ['wo_no' => 'wo_no']) }}";
+
+        const canEditCase = @json(auth()->user()->can('view cr'));
+
         $(document).ready(function () {
-            const table = $('#WOCTable').DataTable({
+            const baseUrl = "{{ url('/') }}";
+
+            const table = $("#WOCTable").DataTable({
                 ajax: {
                     url: "{{ url('/WorkOrder-Complition/GetSubmittedData') }}",
-                    type: "GET",
-                    dataSrc: 'data'
+                    method: "GET",
+                    dataSrc: "data",
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error:", {
+                            status: xhr.status,
+                            response: xhr.responseText,
+                            error: error
+                        });
+                        alert("Gagal memuat data Work Order Completion. Cek console untuk detail.");
+                    }
                 },
                 columns: [
                     {
-                        data: 'WOC_No',
-                        render: function (data) {
-                            return `<span class="fw-bold text-primary fs-6">${data}</span>`;
+                        data: "WOC_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="fw-bold text-primary fs-6">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "WO_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "case.Case_Name",
+                        className: "text-center align-middle",
+                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "created_by.Fullname",
+                        className: "text-center align-middle",
+                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "created_by.position.PS_Name",
+                        className: "text-center align-middle",
+                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "WO_CompDate",
+                        className: "text-center align-middle",
+                        render: data => {
+                            if (!data) return 'N/A';
+                            const d = new Date(data);
+                            const formatted = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                            return `<span class="fw-bold fs-6">${formatted}</span>`;
                         }
                     },
                     {
-                        data: 'WO_No',
-                        render: function (data) {
-                            return `<span class="fw-bold fs-6">${data}</span>`;
-                        }
+                        data: "created_by.Fullname",
+                        className: "text-center align-middle",
+                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
                     },
                     {
-                        data: 'case.Case_Name',
-                        render: function (data) {
-                            return `<span class="fw-bold fs-6">${data}</span>`;
-                        }
-                    },
-                    {
-                        data: 'created_by.Fullname',
-                        render: function (data) {
-                            return `<span class="fw-bold fs-6">${data}</span>`;
-                        }
-                    },
-                    {
-                        data: 'created_by.position.PS_Name',
-                        render: function (data) {
-                            return `<span class="fw-bold fs-6">${data}</span>`;
-                        }
-                    },
-                    {
-                        data: 'WO_CompDate',
-                        render: function (data) {
-                            if (!data) return '';
-                            const dateObj = new Date(data);
-                            const day = String(dateObj.getDate()).padStart(2, '0');
-                            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                            const year = dateObj.getFullYear();
-                            const hours = String(dateObj.getHours()).padStart(2, '0');
-                            const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-                            return `<span class="fw-bold fs-6">${day}/${month}/${year} ${hours}:${minutes}</span>`;
-                        }
-                    },
-                    {
-                        data: 'created_by.Fullname',
-                        render: function (data) {
-                            return `<span class="fw-bold fs-6">${data}</span>`;
-                        }
-                    },
-                    {
-                        data: 'WO_Status',
-                        searchable: true,
-                        render: function (data) {
-                            let badgeClass = 'badge badge-light-secondary text-gray-900';
-                            switch (data) {
-                                case 'OPEN':
-                                case 'INPROGRESS':
-                                    badgeClass = 'badge badge-light-info text-info';
-                                    break;
-                                case 'OPEN_COMPLETION':
-                                    badgeClass = 'badge badge-light-warning text-warning';
-                                    break;
-                                case 'SUBMIT':
-                                case 'SUBMIT_COMPLETION':
-                                case 'AP1':
-                                case 'AP2':
-                                case 'AP3':
-                                case 'AP4':
-                                    badgeClass = 'badge badge-light-primary text-primary';
-                                    break;
-                                case 'REJECT':
-                                    badgeClass = 'badge badge-light-danger text-danger';
-                                    break;
-                                case 'DONE':
-                                    badgeClass = 'badge badge-light-success text-success';
-                                    break;
-                                case 'CLOSE':
-                                    badgeClass = 'badge badge-light-dark text-dark';
-                                    break;
+                        data: "WO_Status",
+                        className: "text-center align-middle",
+                        render: status => {
+                            let badgeClass = "badge-light-secondary text-gray-800";
+                            switch (status) {
+                                case "OPEN":
+                                case "INPROGRESS":
+                                    badgeClass = "badge-light-info text-info"; break;
+                                case "OPEN_COMPLETION":
+                                    badgeClass = "badge-light-warning text-warning"; break;
+                                case "SUBMIT":
+                                case "SUBMIT_COMPLETION":
+                                case "AP1":
+                                case "AP2":
+                                case "AP3":
+                                case "AP4":
+                                    badgeClass = "badge-light-primary text-primary"; break;
+                                case "REJECT":
+                                    badgeClass = "badge-light-danger text-danger"; break;
+                                case "DONE":
+                                    badgeClass = "badge-light-success text-success"; break;
+                                case "CLOSE":
+                                    badgeClass = "badge-light-dark text-dark"; break;
                             }
-                            return `<span class="${badgeClass} fw-bold fs-6">${data}</span>`;
+                            return `<span class="badge ${badgeClass} fw-semibold">${status}</span>`;
                         }
                     },
                     {
                         data: "WO_No",
-                        render: function (data) {
-                            const safeEncoded = data ? btoa(data) : '';
-                            return `<a href="${BASE_URL}/WorkOrder-Complition/Detail/${safeEncoded}" class="btn btn-secondary hover-scale">
-                                        <i class="ki-duotone ki-eye">
+                        className: "text-start align-middle",
+                        render: function (data, type, row) {
+                            if (!data) return '-';
+
+                            const encodedWONo = btoa(data);
+
+                            // Replace placeholder with actual encoded WO_No
+                            const editUrl = routeEditWOC.replace('wo_no', encodedWONo);
+                            const detailUrl = routeWocDetail.replace('wo_no', encodedWONo);
+
+                            let buttons = '<div class="d-flex gap-2">';
+
+                            // Tombol Edit
+                            if ((row.WO_Status === "OPEN_COMPLETION" || row.WO_Status === "REJECT") && typeof canEditCase !== 'undefined' && canEditCase) {
+                            // if (row.WO_Status === "OPEN_COMPLETION" || row.WO_Status === "REJECT") {
+                                buttons += `
+                                    <a href="${editUrl}" 
+                                    class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                                    style="width: 40px; height: 40px;" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Work Order">
+                                        <i class="ki-duotone ki-pencil fs-3 text-warning">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
-                                            <span class="path3"></span>
                                         </i>
-                                        View
-                                    </a>`;
-                        }
-                    }
-                ]
-            });
+                                    </a>
+                                `;
+                            }
 
-            $('#applyFilter').on('click', function () {
-        const keyword = $('#searchReport').val().toLowerCase();
-        const status = $('#statusFilter').val();
-
-        showPageLoading();
-
-        setTimeout(() => {
-            // Filter kolom Status
-            table.column(7).search(status === 'all' ? '' : status).draw();
-
-            // Filter berdasarkan keyword manual
-            table.rows().every(function () {
-                const row = this.data();
-                const rowText = [
-                    row.WOC_No,
-                    row.WO_No,
-                    row.case?.Case_Name,
-                    row.created_by?.Fullname,
-                    row.created_by?.position?.PS_Name,
-                    row.WO_CompDate,
-                    row.created_by?.Fullname
-                ].join(' ').toLowerCase();
-
-                const match = rowText.includes(keyword);
-                $(this.node()).toggle(match);
-            });
-
-            hidePageLoading();
-        }, 500);
-    });
-
-        });
-    </script> --}}
-
-    <script>
-    $(document).ready(function () {
-        const baseUrl = "{{ url('/') }}";
-
-        const table = $("#WOCTable").DataTable({
-            ajax: {
-                url: "{{ url('/WorkOrder-Complition/GetSubmittedData') }}",
-                method: "GET",
-                dataSrc: "data",
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", {
-                        status: xhr.status,
-                        response: xhr.responseText,
-                        error: error
-                    });
-                    alert("Gagal memuat data Work Order Completion. Cek console untuk detail.");
-                }
-            },
-            columns: [
-                {
-                    data: "WOC_No",
-                    className: "text-center align-middle",
-                    render: data => `<span class="fw-bold text-primary fs-6">${data ?? 'N/A'}</span>`
-                },
-                {
-                    data: "WO_No",
-                    className: "text-center align-middle",
-                    render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
-                },
-                {
-                    data: "case.Case_Name",
-                    className: "text-center align-middle",
-                    render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
-                },
-                {
-                    data: "created_by.Fullname",
-                    className: "text-center align-middle",
-                    render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
-                },
-                {
-                    data: "created_by.position.PS_Name",
-                    className: "text-center align-middle",
-                    render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
-                },
-                {
-                    data: "WO_CompDate",
-                    className: "text-center align-middle",
-                    render: data => {
-                        if (!data) return 'N/A';
-                        const d = new Date(data);
-                        const formatted = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-                        return `<span class="fw-bold fs-6">${formatted}</span>`;
-                    }
-                },
-                {
-                    data: "created_by.Fullname",
-                    className: "text-center align-middle",
-                    render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
-                },
-                {
-                    data: "WO_Status",
-                    className: "text-center align-middle",
-                    render: status => {
-                        let badgeClass = "badge-light-secondary text-gray-800";
-                        switch (status) {
-                            case "OPEN":
-                            case "INPROGRESS":
-                                badgeClass = "badge-light-info text-info"; break;
-                            case "OPEN_COMPLETION":
-                                badgeClass = "badge-light-warning text-warning"; break;
-                            case "SUBMIT":
-                            case "SUBMIT_COMPLETION":
-                            case "AP1":
-                            case "AP2":
-                            case "AP3":
-                            case "AP4":
-                                badgeClass = "badge-light-primary text-primary"; break;
-                            case "REJECT":
-                                badgeClass = "badge-light-danger text-danger"; break;
-                            case "DONE":
-                                badgeClass = "badge-light-success text-success"; break;
-                            case "CLOSE":
-                                badgeClass = "badge-light-dark text-dark"; break;
-                        }
-                        return `<span class="badge ${badgeClass} fw-semibold">${status}</span>`;
-                    }
-                },
-                {
-                    data: "WO_No",
-                    className: "text-center align-middle",
-                    render: function (data) {
-                        if (!data) return '-';
-                        try {
-                            const encoded = btoa(unescape(encodeURIComponent(data)));
-                            return `
-                                <a href="${baseUrl}/WorkOrder-Complition/Detail/${encoded}" class="btn btn-sm btn-secondary hover-scale">
-                                    <i class="ki-duotone ki-eye">
+                            // Tombol View
+                            buttons += `
+                                <a href="${detailUrl}" 
+                                class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                                style="width: 40px; height: 40px;" 
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="View Work Order">
+                                    <i class="ki-duotone ki-eye fs-3 text-primary">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
-                                    </i> View
-                                </a>`;
-                        } catch (err) {
-                            console.error("Encoding error:", err);
-                            return '-';
+                                    </i>
+                                </a>
+                            </div>`;
+
+                            return buttons;
                         }
+
                     }
-                }
-            ],
-            destroy: true,
-            scrollY: "300px",
-            scrollX: true,
-            scrollCollapse: true
+                ],
+                destroy: true,
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true
+            });
+
+            function showPageLoading() {
+                $('.page-loader').removeClass('d-none').fadeIn(200);
+            }
+
+            function hidePageLoading() {
+                setTimeout(() => {
+                    $('.page-loader').fadeOut(200, function () {
+                        $(this).addClass('d-none');
+                    });
+                }, 800);
+            }
+
+            $('#applyFilter').on('click', function () {
+                const keyword = $('#searchReport').val().toLowerCase();
+                const status = $('#statusFilter').val();
+
+                showPageLoading();
+
+                setTimeout(() => {
+                    table.search(keyword).draw();
+                    table.column(7).search(status === 'all' ? '' : status).draw();
+                    hidePageLoading();
+                }, 300);
+            });
+
+            // Optional: Auto reload
+            setInterval(() => {
+                table.ajax.reload(null, false);
+            }, 10000);
         });
+    </script>
 
-        function showPageLoading() {
-            $('.page-loader').removeClass('d-none').fadeIn(200);
-        }
-
-        function hidePageLoading() {
-            setTimeout(() => {
-                $('.page-loader').fadeOut(200, function () {
-                    $(this).addClass('d-none');
-                });
-            }, 800);
-        }
-
-        $('#applyFilter').on('click', function () {
-            const keyword = $('#searchReport').val().toLowerCase();
-            const status = $('#statusFilter').val();
-
-            showPageLoading();
-
-            setTimeout(() => {
-                table.search(keyword).draw();
-                table.column(7).search(status === 'all' ? '' : status).draw();
-                hidePageLoading();
-            }, 300);
-        });
-
-        // Optional: Auto reload
-        setInterval(() => {
-            table.ajax.reload(null, false);
-        }, 10000);
-    });
-</script>
-
- <script> 
+   <script> 
         $('#exportExcel').on('click', function () {     
             let status = $('#statusFilter').val() || 'all'; 
             let search = $('#searchReport').val() || ''; 
@@ -446,6 +336,4 @@
     </script>
 
 @endsection
-
-
 

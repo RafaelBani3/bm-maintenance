@@ -26,14 +26,16 @@
                                         </i>
                                         LOG
                                     </a>
-
-                                    @if($workOrder->WO_Status == 'REJECT')
-                                        <button 
-                                            type="button" 
-                                            class="btn btn-warning btn-lg btn-flex fw-bold" 
-                                            id="btnRevisi">
-                                            <i class="fas fa-edit me-2"></i> Revisi
-                                        </button>
+                                    
+                                    @if(auth()->user()->hasAnyPermission(['view cr']))
+                                        @if($workOrder->WO_Status == 'REJECT')
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-warning btn-lg btn-flex fw-bold" 
+                                                id="btnRevisi">
+                                                <i class="fas fa-edit me-2"></i> Revisi
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                        
@@ -223,9 +225,10 @@
                                     </span>
                                 </label>
                                 <!--end::Label-->
-                                <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed flex-shrink-0 p-4 p-lg-5 align-items-center">
+
+                                <div class="notice bg-light-primary card-rounded border-3 border-primary border-dashed p-4 p-lg-5 w-100">
                                     @if($wocImages->isNotEmpty())
-                                        <div class="row gap-5">
+                                        <div class="row">
                                             @foreach($wocImages as $image)
                                                 @php
                                                     $imgPath = asset('storage/woc_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
@@ -233,18 +236,15 @@
                                                 <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
                                                     <!--begin::Overlay-->
                                                     <a href="{{ $imgPath }}" data-fslightbox="lightbox-basic" class="d-block overlay text-center">
-                                                        <!--begin::Image-->
-                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded mx-auto"
-                                                            style="width: 100px; height: 100px; background-image: url('{{ $imgPath }}');">
+                                                        <!-- Gambar thumbnail -->
+                                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded"
+                                                            style="width: 100%; height: 100px; background-image: url('{{ $imgPath }}');">
                                                         </div>
-                                                        <!--end::Image-->
-                                    
-                                                        <!--begin::Action-->
+                                                        <!-- Efek overlay -->
                                                         <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow d-flex align-items-center justify-content-center"
-                                                            style="width: 100px; height: 100px;">
+                                                            style="width: 100%; height: 100px;">
                                                             <i class="bi bi-eye-fill text-white fs-2"></i>
                                                         </div>
-                                                        <!--end::Action-->
                                                     </a>
                                                     <!--end::Overlay-->
                                                 </div>
@@ -256,7 +256,7 @@
                                 </div>
                             </div>
                             <!--end::Row Exciting Image-->
-
+                            
                             {{-- APPROVAL STATUS --}}
                             <div class="row mb-5 ">
                                 <!--begin::Label-->
@@ -279,37 +279,34 @@
                                             $remark = strip_tags($workOrder->{'WO_RMK' . $i} ?? '');
 
                                             $stepCode = 'AP' . $i;
-                                            $isRejected = $workOrder->WO_Status === 'REJECT';
 
                                             $logStatus = [
                                                 'approve' => 'APPROVED ' . $i,
                                                 'reject' => 'REJECTED ' . $i,
                                             ];
 
-                                            $approvedLog = $logs->first(function($log) use ($logStatus, $stepCode) {
+                                            $approvedLog = $approvalLogs->first(function($log) use ($logStatus, $stepCode) {
                                                 return in_array($log->LOG_Status, $logStatus) && $log->LOG_Type === 'WO';
                                             });
 
-                                            if ($remark) {
-                                                $status = $isRejected ? 'Rejected' : 'Approved';
-                                                $badgeClass = $isRejected ? 'badge badge-light-danger' : 'badge badge-light-success';
-                                                $icon = $isRejected ? 'bi-x-circle-fill text-danger' : 'bi-check-circle-fill text-success';
+                                            if ($approvedLog) {
+                                                $status = str_contains($approvedLog->LOG_Status, 'REJECTED') ? 'Rejected' : 'Approved';
+                                                $badgeClass = $status === 'Rejected' ? 'badge badge-light-danger' : 'badge badge-light-success';
+                                                $icon = $status === 'Rejected' ? 'bi-x-circle-fill text-danger' : 'bi-check-circle-fill text-success';
                                             } else {
                                                 $status = 'Pending';
                                                 $badgeClass = 'badge badge-light-warning text-dark';
                                                 $icon = 'bi-hourglass-split';
                                             }
-
-                                            $bgClass = match($status) {
-                                                'Approved' => 'bg-success bg-opacity-10 border-success',
-                                                'Rejected' => 'bg-danger bg-opacity-10 border-danger',
-                                                'Pending' => 'bg-secondary bg-opacity-10'
-                                            };
+                                            
                                         @endphp
 
                                         <!--begin::Timeline item-->
                                         <div class="timeline-item align-items-start">
+                                            <!--line-->
                                             <div class="timeline-line w-40px"></div>
+
+                                            <!--icon-->
                                             <div class="timeline-icon symbol symbol-circle symbol-40px">
                                                 <div class="symbol-label bg-light">
                                                     <i class="ki-duotone ki-pencil fs-2 text-gray-500">
@@ -319,40 +316,46 @@
                                                 </div>
                                             </div>
 
-                                            <div class="timeline-content ps-3 mb-10 mt-n1 ">
-                                                <!--begin::Timeline heading-->
-                                                <div class="pe-3 mb-5 bs-">
-                                                    <div class="fs-5 fw-semibold mb-2">Approval Step {{ $i }} - {{ $workOrder->{'Approver'.$i} ?? 'Unknown User' }}</div>
+                                            <!--content-->
+                                            <div class="timeline-content ps-3 mb-10 mt-n1">
+                                                <!--heading-->
+                                                <div class="pe-3 mb-5">
+                                                    <div class="fs-5 fw-semibold mb-2">
+                                                        Approval Step {{ $i }} - {{ is_object($approvers[$i]) ? $approvers[$i]->Fullname : $approvers[$i] }}
+                                                    </div>
                                                     <div class="d-flex align-items-center mt-1 fs-6">
                                                         <div class="text-muted me-2 fs-7">
                                                             @if($approvedLog)
-                                                                {{ $approvedLog->LOG_Status }} on {{ \Carbon\Carbon::parse($approvedLog->LOG_Date)->format('d/m/Y H:i') }}
+                                                                {{ $logStatus[strtolower(str_contains($approvedLog->LOG_Status, 'REJECTED') ? 'reject' : 'approve')] }}
+                                                                on {{ \Carbon\Carbon::parse($approvedLog->LOG_Date)->format('d/m/Y H:i') }}
                                                             @else
                                                                 Waiting for Approval...
                                                             @endif
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!--end::Timeline heading-->
 
-                                                <!--begin::Timeline details-->
-                                                <div class="overflow-auto bg-secondary">
-                                                    <div class="notice d-flex bg-light-primary border-primary card-rounded border-3 border-dashed min-w-lg-600px flex-shrink-0 p-4 p-lg-5 align-items-center">
+                                                <!--details-->
+                                                <div class="overflow-auto pb-5">
+                                                    <div class="notice d-flex bg-light-primary card-rounded border-3 border-primary border-dashed min-w-lg-600px flex-shrink-0 p-4 p-lg-5 align-items-center">
+                                                        <i class="bi {{ $icon }} fs-2tx text-gray-800 me-4"></i>
+
                                                         <div class="flex-grow-1 d-flex justify-content-between align-items-center">
-                                                            <div class="fw-semibold">
+                                                            <div class="mb-3 mb-md-0 fw-semibold">
                                                                 <h5 class="text-gray-900 fw-bold mb-2 fs-4">Remark:</h5>
-                                                                <p class="text-gray-700 fs-5 mb-0">{{ $remark ?: 'No remark provided.' }}</p>
+                                                                <p class="text-gray-700 fs-5">{{ $remark ?: 'No remark provided.' }}</p>
                                                             </div>
-                                                            <div>
-                                                                <span class="{{ $badgeClass }} px-3 py-2 d-inline-flex align-items-center gap-1 fs-5">
-                                                                    <i class="bi {{ $icon }}"></i> {{ $status }}
-                                                                </span>
-                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <span class="{{ $badgeClass }} px-3 py-2 d-inline-flex align-items-center gap-1 fs-5">
+                                                                <i class="bi {{ $icon }}"></i> {{ $status }}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!--end::Timeline details-->
                                             </div>
+                                            <!--end::Timeline content-->
                                         </div>
                                         <!--end::Timeline item-->
                                     @endfor
@@ -383,7 +386,7 @@
     
                 <div class="modal-body">
                     @php
-                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2'];
+                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2', 'REVISION','DONE'];
                         $statusColors = [
                             'CREATED'    => 'bg-light-warning text-warning',
                             'SUBMITTED'  => 'bg-light-primary text-primary',
@@ -393,6 +396,8 @@
                             'CLOSE'      => 'bg-light-success text-success',
                             'REJECTED 1'     => 'bg-light-danger text-danger',
                             'REJECTED 2'     => 'bg-light-danger text-danger',
+                            'REVISION'   => 'bg-light-info text-info',
+                            'DONE'       => 'bg-light-success text-success',
                         ];
                     @endphp
     

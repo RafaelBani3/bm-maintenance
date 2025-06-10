@@ -22,7 +22,7 @@
         }
 
         .flatpickr-day.today {
-            background: #6099ee !important; /* Bootstrap Primary Blue */
+            background: #979797 !important; 
             color: #fff !important;
             border-radius: 6px;
         }
@@ -95,7 +95,7 @@
                                                 <!--begin::Input Case No-->
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                                         Case No
                                                     </label>
                                                     <!--end::Label-->
@@ -108,10 +108,26 @@
                                                 </div>
                                                 <!--end::Input Case No-->
 
+                                                <!--begin::Input Case Name-->
+                                                <div class="row mb-10">
+                                                    <!--begin::Label-->
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                                        Case Name
+                                                    </label>
+                                                    <!--end::Label-->
+                                                    
+                                                    <div class="col-lg-8">
+                                                        <div class="col-lg-20 fv-row">
+                                                            <input type="text" id="case_name" name="case_name" class="form-control form-control-lg form-control-solid" readonly placeholder="Auto-generated Case Name" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--end::Input Case Name-->
+
                                                 <!--begin::Input Created By-->
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                                         Created By
                                                     </label>
                                                     <!--end::Label-->
@@ -128,7 +144,7 @@
                                                 <!--begin::Input Created By-->
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
-                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-5 text-muted">
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                                         Department
                                                     </label>
                                                     <!--end::Label-->

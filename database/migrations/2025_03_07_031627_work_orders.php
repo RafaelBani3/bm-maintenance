@@ -21,7 +21,7 @@ return new class extends Migration
             $table->dateTime('WO_Start'); 
             $table->dateTime('WO_End'); 
             //  $table->dateTime('WO_'); 
-            $table->enum('WO_Status', ['OPEN', 'INPROGRESS', 'OPEN_COMPLETION', 'SUBMIT','SUBMIT_COMPLETION', 'AP1', 'AP2' ,'AP3', 'AP4', 'CLOSE', 'DONE']);
+            $table->enum('WO_Status', ['OPEN', 'REJECT', 'INPROGRESS', 'OPEN_COMPLETION', 'SUBMIT','SUBMIT_COMPLETION', 'AP1', 'AP2' ,'AP3', 'AP4', 'CLOSE', 'DONE']);
             // $table->string('WO_DoneBy'); //Foreign Key 
 
             $table->string('WO_Narative', 255);

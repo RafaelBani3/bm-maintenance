@@ -61,13 +61,15 @@
                                     </a>
                         
                                     <!-- Button Revisi (hanya muncuk ketika status = REJECTED) -->
-                                    @if($case->Case_Status == 'REJECT')
-                                        <button 
-                                            type="button" 
-                                            class="btn btn-warning btn-lg btn-flex fw-bold" 
-                                            onclick="confirmRevision('{{ $case->Case_No }}')">
-                                            <i class="fas fa-edit me-2"></i> Revisi
-                                        </button>
+                                    @if(auth()->user()->hasAnyPermission(['view cr']))
+                                        @if($case->Case_Status == 'REJECT')
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-warning btn-lg btn-flex fw-bold" 
+                                                onclick="confirmRevision('{{ $case->Case_No }}')">
+                                                <i class="fas fa-edit me-2"></i> Revisi
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </div>
@@ -416,7 +418,7 @@
     
                 <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
                     @php
-                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2','REVISION'];
+                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2','REVISION','DONE'];
                         $statusColors = [
                             'CREATED'    => 'bg-light-warning text-warning',
                             'SUBMITTED'  => 'bg-light-primary text-primary',
@@ -427,7 +429,8 @@
                             'INPROGRESS' => 'bg-light-info text-info',
                             'CLOSE'      => 'bg-light-success text-success',
                             'REJECT'     => 'bg-light-danger text-danger',
-                            'REVISION'   => 'bg-light-info text-info'
+                            'REVISION'   => 'bg-light-info text-info',
+                            'DONE'       => 'bg-light-success text-success'
                         ];
                     @endphp
     

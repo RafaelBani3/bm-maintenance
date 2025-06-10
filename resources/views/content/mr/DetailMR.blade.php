@@ -5,6 +5,26 @@
 
 @section('content')
 
+    <style>
+          #material-table th {
+        background-color: #f5f8fa;
+        color: #3f4254;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    #material-table td {
+        vertical-align: middle;
+    }
+
+    #material-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    #material-table tr:hover {
+        background-color: #eef1f6;
+    }
+    </style>
 
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
@@ -200,7 +220,7 @@
                                 </label>
                                 <!--end::Label-->
                                 <div class="table-responsive">
-                                    <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
+                                    <table class="table table-hover table-bordered table-rounded table-striped border gy-7 gs-7" id="material-table">
                                         <thead>
                                             <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                                                 <th style="width: 20%;">Item</th>

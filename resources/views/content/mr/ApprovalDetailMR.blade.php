@@ -5,174 +5,25 @@
 
 @section('content')
 
-    {{-- <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-        <!--begin::Content wrapper-->
-        <div class="d-flex flex-column flex-column-fluid py-3 py-lg-6">
-            <div id="kt_app_content" class="app-content flex-column-fluid">
-                <!--begin::Content container-->
-                <div id="kt_app_content_container" class="app-container container-xxl">
-                    <!--begin::Navbar-->
-                    <div class="card mb-5 mb-xl-10">
-                        <div class="card-header card-header-stretch">
-                        <!--begin::Title-->
-                            <div class="card-title d-flex justify-content-between align-items-center w-100">
-                                <h3 class="fw-bold m-0 text-primary">Approval Material Request Detail</h3>
-                        
-                            </div>
-                            <!--end::Title-->                          
-                        </div>
+    <style>
+    #material-table th {
+        background-color: #f5f8fa;
+        color: #3f4254;
+        vertical-align: middle;
+    }
 
-                        <div class="card-body p-9">
-                            
-                            <!--begin::Reference No (Case No)-->
-                            <div class="row mb-10 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 col-form-label required fw-semibold fs-5 text-muted">
-                                    <span>Reference No.</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" title="This is the current Case reference number.">
-                                        <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
+    #material-table td {
+        vertical-align: middle;
+    }
 
-                                <!--begin::Input-->
-                                <div class="col-lg-10 fv-row">
-                                    <select class="form-select form-select-lg form-select-solid" 
-                                            id="reference_number" name="reference_number" 
-                                            data-control="select2" data-placeholder="Select Reference No">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Reference No (Case No)-->
+    #material-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
 
-                            <!--begin::Row Material NO-->
-                            <div class="row mb-7 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Material Request No</label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="col-lg-10">
-                                    <span id="mr_no_display" class="fw-bold fs-5 text-primary">-</span>
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <!--end::Row Mterial NO-->
-
-                            <!--begin::Row Work Order NO-->
-                            <div class="row mb-7 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Work Order No</label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="col-lg-10">
-                                    <span id="wo_no_display" class="fw-bold fs-5 text-primary">-</span>
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <!--end::Row Work Order NO-->
-
-                            <!--begin::Row Created By-->
-                            <div class="row mb-7 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Created By</label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="col-lg-10">
-                                    <span id="Created_By" class="fw-bold fs-5 text-dark">-</span>
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <!--end::Row Created By-->
-
-                            <!--begin::Row Departement-->
-                            <div class="row mb-7 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Departement</label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="col-lg-10">
-                                    <span id="Departement" class="fw-bold fs-5 text-dark">-</span>
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <!--end::Row Departement-->
-
-                            <!--begin::Row Created Date-->
-                            <div class="row mb-7 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Request Date</label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="col-lg-10">
-                                    <span id="RequestDate" class="fw-bold fs-5 text-dark">-</span>
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <!--end::Row Created Date-->
-
-                            <!--begin::Row MR Allotment-->
-                            <div class="row mb-7 pb-4">
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">MR Allotment</label>
-                                <div class="col-lg-10">
-                                    <span id="mr_allotment" class="fw-bold fs-5 text-dark">-</span>
-                                </div>
-                            </div>
-
-                            <!--begin::Row Status-->
-                            <div class="row mb-7 pb-4">
-                                <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">MR Status</label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="col-lg-10 fs-5">
-                                    <span id="mr_status" class="fw-bold fs-5">-</span>
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <!--end::Row Status-->
-
-                            <div class="row mb-10">
-                                <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    Creator's Material Requests
-                                </label>
-                                <!--end::Label-->
-                                <div class="table-responsive">
-                                    <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
-                                        <thead>
-                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                <th style="width: 20%;">Item</th>
-                                                <th style="width: 20%;">Qty</th>
-                                                <th style="width: 20%;">Unit</th>
-                                                <th style="width: 25%;">Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($details as $detail)
-                                                <tr>
-                                                    <td>{{ $detail->CR_ITEM_NAME }}</td>
-                                                    <td>{{ $detail->Item_Oty }}</td>
-                                                    <td>{{ $detail->CR_ITEM_SATUAN }}</td>
-                                                    <td>{{ $detail->Remark }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+    #material-table tr:hover {
+        background-color: #eef1f6;
+    }
+    </style>
 
 
     {{-- Design 2 --}}
