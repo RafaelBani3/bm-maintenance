@@ -81,8 +81,8 @@ class WocController extends Controller
             ->orderBy('technician_Name', 'asc')
             ->get();
 
-        $assignedTechs = DB::table('wo_doneby')
-            ->join('technician', 'wo_doneby.technician_id', '=', 'technician.technician_id')
+        $assignedTechs = DB::table('WO_DoneBy')
+            ->join('technician', 'WO_DoneBy.technician_id', '=', 'technician.technician_id')
             ->where('WO_No', $woNo)
             ->select('technician.technician_id as id', 'technician.technician_Name as fullname')
             ->get();
