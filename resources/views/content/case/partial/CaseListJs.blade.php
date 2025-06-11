@@ -169,8 +169,6 @@
         });
     </script>
 
-    
-
     {{-- Script Choose Date Range --}}
     <script>
         $('#dateFilter').daterangepicker({

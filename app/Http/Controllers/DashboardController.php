@@ -38,14 +38,14 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
-        $caseByCategory = DB::table('cats')
+        $caseByCategory = DB::table('Cats')
             ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
-                $join->on('cats.Cat_No', '=', 'cases.Cat_No')
+                $join->on('Cats.Cat_No', '=', 'cases.Cat_No')
                     ->where('cases.CR_BY', '=', $userId)
                     ->whereBetween('cases.created_at', [$startOfMonth, $endOfMonth]);
             })
-            ->select('cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
-            ->groupBy('cats.Cat_Name')
+            ->select('Cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
+            ->groupBy('Cats.Cat_Name')
             ->get();
 
         return response()->json([
@@ -53,6 +53,10 @@ class DashboardController extends Controller
             'categories' => $caseByCategory,
         ]);
     }
+    
+
+
+
 
     // Controller WO
         // Controller Yang bisa Persenan + Grafik

@@ -6,7 +6,6 @@
 @section('content')
 
     <style>
-    
         .card.card-flush {
             border-radius: 1rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -65,8 +64,35 @@
             transform: scale(1.02);
             cursor: pointer;
         }
+
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px;
+        }
+
+        .border-primary {
+            border-color: #0d6efd !important; /* Bootstrap Primary */
+        }
+
+        .bg-primary {
+            background-color: #0d6efd !important;
+        }
+
+        .text-white {
+            color: white !important;
+        }
         
     </style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
              
     <!--begin::Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
@@ -123,9 +149,45 @@
                     </div>
                 </div>
 
-                <!-- Row 2: Charts -->
+                <!-- Row 2: table -->
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
-                    
+                    <div class="col-md-12">
+                        <div class="card card-flush h-md-100">
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Case No</th>
+                                            <th>Case Name</th>
+                                            <th>Status</th>
+                                            <th>Progress</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($cases as $case)
+                                        @php
+                                            $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $case['Case_No'] }}</td>
+                                            <td>{{ $case['Case_Name'] }}</td>
+                                            <td>{{ $case['Case_Status'] }}</td>
+                                            <td>
+                                                <button data-bs-toggle="modal" data-bs-target="#modalProgress{{ $safeCaseNo }}">
+                                                    Lihat Progress
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Charts -->
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
                     <!-- Case by Category Chart -->
                     <div class="col-md-4">
                         <div class="card card-flush h-md-100">
@@ -151,14 +213,76 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
             </div>
         </div>
         <!--end::Content-->
-
     @endif
+
+
+    <!-- MODAL PROGRESS -->
+    @foreach($cases as $case)
+    @php
+        $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
+    @endphp
+        <!-- Modal -->
+    <div class="modal fade" id="modalProgress{{ $safeCaseNo }}" tabindex="-1" aria-labelledby="modalLabel{{ $safeCaseNo }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel{{ $case['Case_No'] }}">Progress Case {{ $case['Case_No'] }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="d-flex align-items-center justify-content-between px-2">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="step-icon rounded-circle border @if($case['step'] >= 1) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
+                    ✓
+                    </div>
+                    <small class="d-block mt-1">Case Approved</small>
+                    
+                </div>
+
+                <div class="flex-grow-1 border-top mx-2 @if($case['step'] >= 2) border-primary @endif"></div>
+
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="step-icon rounded-circle border @if($case['step'] >= 2) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
+                    ✓
+                    </div>
+                    <small class="d-block mt-1">WO Created</small>
+                </div>
+
+                <div class="flex-grow-1 border-top mx-2 @if($case['step'] >= 3) border-primary @endif"></div>
+
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="step-icon rounded-circle border @if($case['step'] >= 3) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
+                    ✓
+                    </div>
+                    <small class="d-block mt-1">MR Approved</small>
+                </div>
+
+                <div class="flex-grow-1 border-top mx-2 @if($case['step'] == 4) border-primary @endif"></div>
+
+                <!-- Step 4 -->
+                <div class="text-center">
+                    <div class="step-icon rounded-circle border @if($case['step'] == 4) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
+                    ✓
+                    </div>
+                    <small class="d-block mt-1">Selesai</small>
+                </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+        </div>
+        @endforeach
+
 
     {{-- Dashboard APPROVAL --}}
     @if(auth()->user()->hasAnyPermission(['view cr_ap','view mr_ap']))

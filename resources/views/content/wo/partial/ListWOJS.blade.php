@@ -226,11 +226,17 @@
     </script>
         
     <script> 
+        // Declare Route 
+        const exportWOUrl = "{{ route('wo.export') }}";
+
         $('#exportExcel').on('click', function () { 
             let status = $('#statusFilter').val() || 'all'; 
             let search = $('#searchReport').val() || ''; 
-            let url = new URL(window.location.origin + "/BmMaintenance/public/wo/export"); 
-            url.searchParams.append('status', status); url.searchParams.append('search', search); 
-            window.open(url, '_blank');  
+
+            let url = new URL(exportWOUrl); 
+            url.searchParams.append('status', status); 
+            url.searchParams.append('search', search); 
+
+            window.open(url.toString(), '_blank');  
         }); 
     </script>

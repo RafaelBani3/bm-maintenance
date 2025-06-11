@@ -235,6 +235,10 @@
 
     
     <script>
+        // Declare Route
+        const getApprovalWOCUrl = "{{ route('woc.approval') }}";
+        const detailApprovalWOCBase = "{{ route('woc.detail.approval', ['encodedWO' => '__REPLACE__']) }}";
+
         $(document).ready(function () {
             $('#WOCTable').DataTable({
                 destroy: true,
@@ -246,7 +250,8 @@
                     rightColumns: 1
                 },
                 ajax: {
-                    url: "{{ url('/WorkOrder-Complition/getApprovalWOC') }}",
+                    // url: "{{ url('/WorkOrder-Complition/getApprovalWOC') }}",
+                    url: getApprovalWOCUrl,
                     type: "GET",
                     dataSrc: "data"
                 },
@@ -341,9 +346,22 @@
                     },
                     {
                         data: "WO_No",
+                        // render: function (data, type, row) {
+                        //     const safeEncoded = data ? btoa(data) : '';
+                        //     return `<a href="${BASE_URL}/WorkOrder-Complition/DetailApprovalWOC/${safeEncoded}" class="btn btn-secondary hover-scale">
+                        //                 <i class="ki-duotone ki-eye">
+                        //                     <span class="path1"></span>
+                        //                     <span class="path2"></span>
+                        //                     <span class="path3"></span>
+                        //                 </i>
+                        //                 View
+                        //             </a>`;
+                        // }
                         render: function (data, type, row) {
                             const safeEncoded = data ? btoa(data) : '';
-                            return `<a href="${BASE_URL}/WorkOrder-Complition/DetailApprovalWOC/${safeEncoded}" class="btn btn-secondary hover-scale">
+                            const detailUrl = detailApprovalWOCBase.replace('__REPLACE__', safeEncoded);
+                            
+                            return `<a href="${detailUrl}" class="btn btn-secondary hover-scale">
                                         <i class="ki-duotone ki-eye">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
@@ -352,6 +370,7 @@
                                         View
                                     </a>`;
                         }
+
                     }
                 ]
             });

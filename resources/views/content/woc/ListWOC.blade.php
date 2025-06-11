@@ -148,6 +148,8 @@
         // Declare Route untuk ke Edit dan Detail Page
         const routeEditWOC = "{{ route('EditWOC', ['wo_no' => 'wo_no']) }}";
         const routeWocDetail = "{{ route('WocDetail', ['wo_no' => 'wo_no']) }}";
+        
+        const getWOCDataUrl = "{{ route('GetWOCData') }}";
 
         const canEditCase = @json(auth()->user()->can('view cr'));
 
@@ -156,7 +158,8 @@
 
             const table = $("#WOCTable").DataTable({
                 ajax: {
-                    url: "{{ url('/WorkOrder-Complition/GetSubmittedData') }}",
+                    // url: "{{ url('/WorkOrder-Complition/GetSubmittedData') }}",
+                    url: getWOCDataUrl,
                     method: "GET",
                     dataSrc: "data",
                     error: function (xhr, status, error) {
@@ -324,15 +327,18 @@
         });
     </script>
 
+    {{-- Script Export exportExcel --}}
    <script> 
+        const exportWOCUrl = "{{ route('woc.export') }}";
+
         $('#exportExcel').on('click', function () {     
             let status = $('#statusFilter').val() || 'all'; 
             let search = $('#searchReport').val() || ''; 
-            let url = new URL(window.location.origin + "/BmMaintenance/public/WorkOrder-Complition/Export"); 
+            let url = new URL(exportWOCUrl); 
             url.searchParams.append('status', status); 
             url.searchParams.append('search', search); 
-            window.open(url, '_blank');  
-        }); 
+            window.open(url.toString(), '_blank');  
+        });  
     </script>
 
 @endsection

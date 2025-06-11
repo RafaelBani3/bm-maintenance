@@ -455,8 +455,11 @@
                         confirmButtonText: 'Yes, Revision'
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            // const woNo = "{{ base64_encode($workOrder->WO_No) }}";
+                            // window.location.href = `http://localhost/BmMaintenance/public/WorkOrder-Complition/Edit/${woNo}`;
                             const woNo = "{{ base64_encode($workOrder->WO_No) }}";
-                            window.location.href = `http://localhost/BmMaintenance/public/WorkOrder-Complition/Edit/${woNo}`;
+                            const editUrl = "{{ route('EditWOC', ['wo_no' => '__REPLACE__']) }}".replace('__REPLACE__', woNo);
+                            window.location.href = editUrl;
                         }
                     });
                 });

@@ -63,7 +63,7 @@ use Illuminate\Support\Facades\Route;
         ->where('case_no', '.*')->name('case.detail');
         
         // EXPORT
-        Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
+            Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
     // END LIST CASE
 
     // Page List MR
@@ -323,13 +323,9 @@ use Illuminate\Support\Facades\Route;
         Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC']);
 
         // Page Detail Approval WOC
-        // Route::get('/WorkOrder-Complition/Detail-ApprovalWOC', [WocController::class, 'DetailApprovalWOC'])->name('DetailApprovalWOC');
-
         Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC']);
         
-        // Route::post('/WorkOrder-Complition/approve-reject/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
-        
-        // Route::post('/WorkOrder-Complition/approve-reject/{woNo}', [WocController::class, 'approveReject']);
+        // Approve/Reject WOC
         Route::post('/workorder/approval/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
 
     }); 

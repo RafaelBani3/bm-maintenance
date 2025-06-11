@@ -591,17 +591,19 @@
         });
     </script>
 
-
     {{-- Script Button Export --}}
     <script> 
+        // DECLARE Route
+        const exportMRUrl = "{{ route('matreq.export') }}";
+
         $('#exportExcel').on('click', function () {     
             let status = $('#statusFilter').val() || 'all'; 
             let search = $('#searchReport').val() || ''; 
-            let url = new URL(window.location.origin + "/BmMaintenance/public/Material-Request/Export"); 
+            let url = new URL(exportMRUrl); 
             url.searchParams.append('status', status); 
             url.searchParams.append('search', search); 
-            window.open(url, '_blank');  
-        }); 
+            window.open(url.toString(), '_blank');  
+        });  
     </script>
 
     {{-- Script Choose Date Range --}}

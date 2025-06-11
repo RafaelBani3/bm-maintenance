@@ -155,12 +155,17 @@
     @endif
 
     <script> 
-        $('#exportExcel').on('click', function () { 
-            let status = $('#statusFilter').val() || 'all'; let search = $('#searchReport').val() || ''; 
-            let url = new URL(window.location.origin + "/BmMaintenance/public/export-cases"); 
-            url.searchParams.append('status', status); 
-            url.searchParams.append('search', search); 
-            window.open(url, '_blank');  
+        // Declare Route
+        const exportUrl = "{{ route('cases.export') }}";
+        $('#exportExcel').on('click', function () {
+            let status = $('#statusFilter').val() || 'all';
+            let search = $('#searchReport').val() || '';
+
+            let url = new URL(exportUrl);
+            url.searchParams.append('status', status);
+            url.searchParams.append('search', search);
+
+            window.open(url.toString(), '_blank');  
         }); 
     </script>
 

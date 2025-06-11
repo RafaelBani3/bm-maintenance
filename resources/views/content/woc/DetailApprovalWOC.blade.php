@@ -443,7 +443,6 @@
         <div style="margin-top: 15px; color: #fff; font-size: 1.25rem;">Loading...</div>
     </div>
 
-    
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
@@ -524,7 +523,8 @@
                             }).then(() => {
                                 document.getElementById("page_loader").style.display = "flex";
                                 setTimeout(() => {
-                                    window.location.href = "http://localhost/BmMaintenance/public/WorkOrder-Complition/List-Approval";
+                                    // window.location.href = "http://localhost/BmMaintenance/public/WorkOrder-Complition/List-Approval";
+                                    window.location.href = "{{ route('ApprovalListWOC') }}";
                                 }, 1000);
                             });
                         })

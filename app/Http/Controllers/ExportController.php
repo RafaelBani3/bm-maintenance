@@ -39,7 +39,9 @@ class ExportController extends Controller
                 $title_search = $request->search;
             }
 
-            $cases = $query->orderBy('Case_Date', 'desc')->get();
+            // $cases = $query->orderBy('Case_Date', 'desc')->get();
+            $cases = $query->with(['Category', 'User.position'])->orderBy('Case_Date', 'desc')->get();
+
 
             // SPREADSHEET SETUP
             $title = 'Case Export List';
@@ -131,6 +133,7 @@ class ExportController extends Controller
             header("Content-Disposition: attachment;filename=\"$filename\"");
             header('Cache-Control: max-age=0');
 
+            ob_end_clean();
             $writer->save('php://output');
             exit;
 
@@ -271,6 +274,7 @@ class ExportController extends Controller
             header("Content-Disposition: attachment;filename=\"$filename\"");
             header('Cache-Control: max-age=0');
 
+            ob_end_clean();
             $writer->save('php://output');
             exit;
         } catch (\Exception $e) {
@@ -279,74 +283,6 @@ class ExportController extends Controller
     }
 
     // EXPORT MR
-    // public function export()
-    // {
-    //     $matreqs = MatReq::with(['creator', 'childs'])->get();
-
-    //     $spreadsheet = new Spreadsheet();
-    //     $sheet = $spreadsheet->getActiveSheet();
-
-    //     // Header Kolom
-    //     $sheet->fromArray([
-    //         [
-    //             'MR No', 'WO No', 'Case No', 'Created Date', 'Status', 'Urgent',
-    //             'Created By', 'Allotment', 'Item Code', 'Item Name', 'Quantity', 'UOM', 'Remark'
-    //         ]
-    //     ], null, 'A1');
-
-    //     $row = 2;
-
-    //     foreach ($matreqs as $mr) {
-    //         if ($mr->childs->isEmpty()) {
-    //             $sheet->fromArray([
-    //                 [
-    //                     $mr->MR_No,
-    //                     $mr->WO_No,
-    //                     $mr->Case_No,
-    //                     date('d/m/Y H:i', strtotime($mr->CR_DT)),
-    //                     $mr->MR_Status,
-    //                     $mr->MR_IsUrgent == 'Y' ? 'Yes' : 'No',
-    //                     optional($mr->creator)->Fullname,
-    //                     $mr->MR_Allotment,
-    //                     '-', '-', '-', '-', '-'
-    //                 ]
-    //             ], null, 'A' . $row);
-    //             $row++;
-    //         } else {
-    //             foreach ($mr->childs as $child) {
-    //                 $sheet->fromArray([
-    //                     [
-    //                         $mr->MR_No,
-    //                         $mr->WO_No,
-    //                         $mr->Case_No,
-    //                         date('d/m/Y H:i', strtotime($mr->CR_DT)),
-    //                         $mr->MR_Status,
-    //                         $mr->MR_IsUrgent == 'Y' ? 'Yes' : 'No',
-    //                         optional($mr->creator)->Fullname,
-    //                         $mr->MR_Allotment,
-    //                         $child->Item_Code ?? $child->CR_ITEM_CODE,
-    //                         $child->Item_Name ?? $child->CR_ITEM_NAME,
-    //                         $child->Item_Oty,
-    //                         $child->UOM_Name,
-    //                         $child->Remark
-    //                     ]
-    //                 ], null, 'A' . $row);
-    //                 $row++;
-    //             }
-    //         }
-    //     }
-
-    //     $filename = 'material_requests_' . now()->format('Ymd_His') . '.xlsx';
-    //     $writer = new Xlsx($spreadsheet);
-
-    //     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    //     header("Content-Disposition: attachment; filename=\"$filename\"");
-    //     header('Cache-Control: max-age=0');
-
-    //     $writer->save('php://output');
-    //     exit;
-    // }
-
     public function exportMR(Request $request)
     {
         try{
@@ -466,6 +402,7 @@ class ExportController extends Controller
             header('Content-Disposition: attachment;filename="' . $filename . '"');
             header('Cache-Control: max-age=0');
 
+            ob_end_clean();
             $writer->save('php://output');
             exit;
 
@@ -574,6 +511,7 @@ class ExportController extends Controller
             header('Content-Disposition: attachment;filename="' . $filename . '"');
             header('Cache-Control: max-age=0');
 
+            ob_end_clean();
             $writer->save('php://output');
             exit;
 
