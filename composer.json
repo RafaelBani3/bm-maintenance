@@ -9,7 +9,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
-        "phpoffice/phpspreadsheet": "^4.2",
+        "phpoffice/phpspreadsheet": "^4.3",
         "spatie/laravel-permission": "^6.16",
         "yajra/laravel-datatables-oracle": "^11.1"
     },

@@ -629,7 +629,7 @@ class CaseController extends Controller
                 'cases.Case_No',
                 'cases.Case_Name',
                 'cases.CR_DT',
-                'cases.Cat_No',
+                'cases.Cat_No', 
                 'Cats.Cat_Name as Category',
                 'Subcats.Scat_Name as SubCategory', 
                 'cases.CR_BY',

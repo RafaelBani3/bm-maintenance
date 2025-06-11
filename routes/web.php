@@ -146,14 +146,15 @@ use Illuminate\Support\Facades\Route;
     // Approval Page
         // Approval List Case
         Route::get('/Case/Approval-list', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
-        Route::get('/api/Aproval-cases', [CaseController::class, 'getApprovalCases']);
+        Route::get('/api/Aproval-cases', [CaseController::class, 'getApprovalCases'])->name('approval.cases');
 
         // Detail Approval Case
-        Route::post('/Case/Approval/Detail', [CaseController::class, 'storeCaseNoApprovalList']);
+        Route::post('/Case/Approval/Detail', [CaseController::class, 'storeCaseNoApprovalList'])->name('approvaldetail');
        
         // Ambil Detail Case Berdasarkan Case No
         Route::get('/Case/Approval/Detail/{case_no}', [CaseController::class, 'ApprovalDetailCase'])
-        ->where('case_no', '.*');
+        ->where('case_no', '.*')
+        ->name('case.approval.detail');
 
         // Approve or Reject Cases
         Route::post('/cases/{caseNo}/approve-reject', [CaseController::class, 'approveReject'])

@@ -15,12 +15,17 @@
 
     {{-- Get Case untuk table --}}
     <script>
+        // Declare Route ke Detail Approval Case
+        const caseApprovalDetailRoute = "{{ route('case.approval.detail', ['case_no' => 'CASE_NO_PLACEHOLDER']) }}";
+
         $(document).ready(function () {
             const table = $('#casesTable').DataTable({
                 ajax: {
-                    url: window.location.origin + "/BmMaintenance/public/api/Aproval-cases",
+                    // url: window.location.origin + "/BmMaintenance/public/api/Aproval-cases",
+                    url: "{{ route('approval.cases') }}",
                     dataSrc: ''
                 },
+                
                 columns: [
                     { data: "Case_No", className: "text-start text-primary align-middle" },
                     { 
@@ -57,11 +62,12 @@
                         data: "Case_No",
                         className: "text-start align-middle",
                         render: function (data) {
-                            const encodedCaseNo = btoa(data); 
-                            const baseUrl = window.location.origin + "/BmMaintenance/public";
+                            const encodedCaseNo = btoa(data);
+                            const caseDetailUrl = caseApprovalDetailRoute.replace('CASE_NO_PLACEHOLDER', encodedCaseNo);
+
                             return `
                                 <div class="d-flex align-items-center">
-                                    <a href="${baseUrl}/Case/Approval/Detail/${encodedCaseNo}" class="btn btn-secondary hover-scale d-flex align-items-center gap-1">
+                                    <a href="${caseDetailUrl}" class="btn btn-secondary hover-scale d-flex align-items-center gap-1">
                                         <i class="ki-duotone ki-eye fs-5">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
@@ -71,6 +77,8 @@
                                     </a>
                                 </div>`;
                         }
+
+
                     }
                 ],
                 scrollY: "350px",
