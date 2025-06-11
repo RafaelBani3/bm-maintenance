@@ -268,8 +268,6 @@ use Illuminate\Support\Facades\Route;
 
         // Route::get('/get-case-details/{caseNo}', [MRController::class, 'getCaseDetails'])->name('api.getCaseDetails');
         Route::get('/get-case-details/{encodedCaseNo}', [MRController::class, 'getCaseDetails']);
-        Route::get('/get-case-details/{encodedCaseNo}', [MRController::class, 'getCaseDetails']);
-
 
         Route::get('/Material-Request/Approval-Detail/{encodedMRNo}', [MRController::class, 'ApprovalDetailMR'])->name('ApprovalDetailMR');
 

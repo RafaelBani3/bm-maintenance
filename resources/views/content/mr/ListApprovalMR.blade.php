@@ -478,7 +478,7 @@
     </script> --}}
 
     <script>
-        const materialRequestDetailUrl = "{{ route('MaterialRequest.Detail', ['encodedMRNo' => 'ENCODED_PLACEHOLDER']) }}";
+        const materialRequestDetailUrl = "{{ route('ApprovalDetailMR', ['encodedMRNo' => 'ENCODED_PLACEHOLDER']) }}";
 
         $(document).ready(function () {
             function safeBtoa(str) {
@@ -556,6 +556,7 @@
                                     </i> View
                                 </a>`;
                         }
+
 
                     }
                 ],
