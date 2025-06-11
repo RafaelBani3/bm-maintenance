@@ -27,7 +27,7 @@ class WocController extends Controller
         $technicians = DB::table('technician')->get();
         
         $woNo = $request->input('wo_no');
-        $selectedTechnicians = DB::table('wo_doneby')
+        $selectedTechnicians = DB::table('WO_DoneBy')
             ->where('WO_No', $woNo)
             ->pluck('technician_id')
             ->toArray();
