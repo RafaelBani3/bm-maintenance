@@ -395,6 +395,9 @@
 
     {{-- Script validate dan save WOC --}}
     <script>
+        // Declare Route Name
+        const editWocUrlTemplate = @json(route('EditWOC', ['wo_no' => 'ENCODED_PLACEHOLDER']));
+
         document.addEventListener("DOMContentLoaded", function () {
             const form = document.getElementById('WOCFrom');
             const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
@@ -556,9 +559,12 @@
                                         }
                                     }).then(() => {
                                         let encodedWoNo = btoa(data.wo_no);
-                                        let baseUrl = window.location.origin + "/BmMaintenance/public";
-                                        window.location.href = baseUrl + "/WorkOrder-Complition/Edit/" + encodedWoNo;
+                                        // let baseUrl = window.location.origin + "/BmMaintenance/public";
+                                        // window.location.href = baseUrl + "/WorkOrder-Complition/Edit/" + encodedWoNo;
+                                        let redirectUrl = editWocUrlTemplate.replace('ENCODED_PLACEHOLDER', encodedWoNo);
+                                        window.location.href = redirectUrl;
                                     });
+                                     
                                 } else {
                                     Swal.fire({
                                         title: 'Failed!',

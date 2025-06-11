@@ -39,7 +39,9 @@ use Illuminate\Support\Facades\Route;
     
     Route::get('/dashboard/wo-summary', [DashboardController::class, 'GetWOSummary'])->name('dashboard.wo-summary');
 
-    Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary']);
+    // Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary']);
+    Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary'])
+    ->name('Dashboard.MR.Summary');
 
     // Approval
     // Route::get('/ajax/pending-case-count', [DashboardController::class, 'getPendingCaseCount'])->name('ajax.pendingCaseCount');

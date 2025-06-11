@@ -604,8 +604,10 @@
         <script>
             $(document).ready(function () {
                 $.ajax({
-                    url: "{{ url('/dashboard/material-request-summary') }}",
+                    // url: "{{ url('/dashboard/material-request-summary') }}",
+                    url: "{{ route('Dashboard.MR.Summary') }}",
                     type: "GET",
+
                     success: function (data) {
                         const total = data.total || 0;
                         $("#mr-total").text(total);
@@ -620,6 +622,7 @@
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 
+        
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 fetch("{{ route('dashboard.case-wo-summary') }}")
