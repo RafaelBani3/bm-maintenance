@@ -325,7 +325,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC']);
 
         // Page Detail Approval WOC
-        Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC']);
+        Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC'])->name('woc.detail.approval');
         
         // Approve/Reject WOC
         Route::post('/workorder/approval/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
