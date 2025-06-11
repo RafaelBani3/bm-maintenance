@@ -485,7 +485,7 @@
                 return btoa(unescape(encodeURIComponent(str)));
             }
 
-            const baseUrl = window.location.origin + "/BmMaintenance/public";
+            // const baseUrl = window.location.origin + "/BmMaintenance/public";
 
             const table = $("#matreq_table").DataTable({
                 ajax: {

@@ -410,7 +410,11 @@
 
     <script>
         // Declare Script untuk Menuju Page Detail MR
-        const mrDetailRoute = @json(route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']));
+        // const mrDetailRoute = @json(route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']));
+        const mrDetailRoute = "{{ route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']) }}";
+        const mrEditRoute = "{{ route('EditMR', ['mr_no' => 'PLACEHOLDER']) }}";
+
+        const canEditMR = @json(auth()->user()->can('view mr'));
 
         $(document).ready(function () {
             const baseUrl = "{{ url('/') }}";
@@ -507,18 +511,57 @@
                         render: data => data ?? '-'
                     },
                     {
+                        // data: "MR_No",
+                        // className: "",
+                        // render: function (data,type, row) {
+                        //     const encoded = btoa(data); 
+                        //     const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded); 
+
+                        //     let buttons = '<div class="d-flex gap-2">';
+
+                        //     // Tombol Edit hanya muncul jika Case_Status = "OPEN"
+                        //     if (row.MR_Status === "OPEN" || row.MR_Status === "REJECT") {
+                        //         buttons += `
+                        //             <a href="${baseUrl}/Material-Request/Edit/${encoded}" 
+                        //             class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                        //             style="width: 40px; height: 40px;" 
+                        //             data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
+                        //                 <i class="ki-duotone ki-pencil fs-3 text-warning">
+                        //                     <span class="path1"></span>
+                        //                     <span class="path2"></span>
+                        //                 </i>
+                        //             </a>
+                        //         `;
+                        //     }
+
+                        //     // Tombol View
+                        //     buttons += `
+                        //         <a href="${baseUrl}/Material-Request/Detail/${encoded}" 
+                        //         class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                        //         style="width: 40px; height: 40px;" 
+                        //         data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
+                        //             <i class="ki-duotone ki-eye fs-3 text-primary">
+                        //                 <span class="path1"></span>
+                        //                 <span class="path2"></span>
+                        //                 <span class="path3"></span>
+                        //             </i>
+                        //         </a>
+                        //     </div>`;
+                        //     return buttons;
+                        // }
                         data: "MR_No",
                         className: "",
-                        render: function (data,type, row) {
-                            const encoded = btoa(data); // Encode MR_No
-                            const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded); // Ganti PLACEHOLDER
+                        render: function (data, type, row) {
+                            const encoded = btoa(data); 
+                            const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded); 
+                            const editUrl = mrEditRoute.replace('PLACEHOLDER', encoded); 
 
                             let buttons = '<div class="d-flex gap-2">';
 
-                            // Tombol Edit hanya muncul jika Case_Status = "OPEN"
-                            if (row.MR_Status === "OPEN" || row.MR_Status === "REJECT") {
+                            // Tombol Edit hanya jika MR_Status = "OPEN" atau "REJECT"
+                            if (row.MR_Status === "OPEN" || row.MR_Status === "REJECT" && typeof canEditMR !== 'undefined' && canEditMR) {
                                 buttons += `
-                                    <a href="${baseUrl}/Material-Request/Edit/${encoded}" 
+                                    <a href="${editUrl}" 
                                     class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
                                     style="width: 40px; height: 40px;" 
                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
@@ -532,7 +575,7 @@
 
                             // Tombol View
                             buttons += `
-                                <a href="${baseUrl}/Material-Request/Detail/${encoded}" 
+                                <a href="${detailUrl}" 
                                 class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
                                 style="width: 40px; height: 40px;" 
                                 data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
@@ -543,8 +586,11 @@
                                     </i>
                                 </a>
                             </div>`;
+
                             return buttons;
                         }
+
+                  
                     }
                 ],
                 destroy: true,
