@@ -274,7 +274,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/Material-Request/Approval-Detail/{encodedMRNo}', [MRController::class, 'ApprovalDetailMR'])->name('ApprovalDetailMR');
 
         // Approve or Reject MR        
-        Route::post('/material-request/approve/{mr_no}', [MRController::class, 'approveReject']);
+        Route::post('/material-request/approve/{mr_no}', [MRController::class, 'approveReject'])->name('MaterialRequest.ApproveReject');
 
     }); 
 
