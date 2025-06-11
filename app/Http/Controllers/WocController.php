@@ -766,11 +766,11 @@ class WocController extends Controller
             ->select('t.*')
             ->get();
 
-        $matReqs = DB::table('mat_req as mr')
+        $matReqs = DB::table('Mat_Req as mr')
             ->where('mr.WO_No', $WO_No)
             ->get();
 
-        $matReqChildren = DB::table('mat_req_child as mrc')
+        $matReqChildren = DB::table('Mat_Req_Child as mrc')
             ->whereIn('mrc.MR_No', $matReqs->pluck('MR_No'))
             ->get()
             ->groupBy('MR_No');
