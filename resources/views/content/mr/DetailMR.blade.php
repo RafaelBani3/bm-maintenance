@@ -52,14 +52,16 @@
                                         </i>
                                         LOG
                                     </a>
-    
-                                    @if($materialRequest->MR_Status == 'REJECT')
-                                        <button 
-                                            type="button" 
-                                            class="btn btn-warning btn-lg btn-flex fw-bold" 
-                                            id="btnRevisi">
-                                            <i class="fas fa-edit me-2"></i> Revisi
-                                        </button>
+                                    
+                                    @if(auth()->user()->hasAnyPermission(['view cr']))
+                                        @if($materialRequest->MR_Status == 'REJECT')
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-warning btn-lg btn-flex fw-bold" 
+                                                id="btnRevisi">
+                                                <i class="fas fa-edit me-2"></i> Revisi
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

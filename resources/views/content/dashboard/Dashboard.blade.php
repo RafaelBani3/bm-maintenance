@@ -150,7 +150,7 @@
                 </div>
 
                 <!-- Row 2: table -->
-                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                {{-- <div class="row gx-5 gx-xl-10 mb-xl-10">
                     <div class="col-md-12">
                         <div class="card card-flush h-md-100">
                             <div class="card-body">
@@ -184,7 +184,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Row 3: Charts -->
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
@@ -221,7 +221,7 @@
     @endif
 
 
-    <!-- MODAL PROGRESS -->
+    {{-- <!-- MODAL PROGRESS -->
     @foreach($cases as $case)
     @php
         $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
@@ -281,7 +281,7 @@
             </div>
         </div>
         </div>
-        @endforeach
+        @endforeach --}}
 
 
     {{-- Dashboard APPROVAL --}}
@@ -622,7 +622,7 @@
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 
-        
+
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 fetch("{{ route('dashboard.case-wo-summary') }}")
