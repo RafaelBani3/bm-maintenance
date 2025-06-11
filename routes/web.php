@@ -322,7 +322,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/WorkOrder-Complition/List-Approval', [WocController::class, 'ApprovalListWOC'])->name('ApprovalListWOC');
 
         // Ambil Data WOC dgn Status "SBUMIT" untuk ditampilkan pada page List Approval WOC
-        Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC']);
+        Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC'])->name('getdatawoc');
 
         // Page Detail Approval WOC
         Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC'])->name('woc.detail.approval');

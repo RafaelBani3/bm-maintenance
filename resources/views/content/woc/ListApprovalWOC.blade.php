@@ -236,7 +236,7 @@
     
     <script>
         // Declare Route
-        const getApprovalWOCUrl = "{{ route('ApprovalListWOC') }}";
+        const getApprovalWOCUrl = "{{ route('getdatawoc') }}";
         const detailApprovalWOCBase = "{{ route('woc.detail.approval', ['encodedWO' => '__REPLACE__']) }}";
 
         $(document).ready(function () {
