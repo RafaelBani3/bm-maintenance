@@ -392,9 +392,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
-                
-
                         </div>
                     </div>
                 </div>
@@ -514,7 +511,8 @@
         });
     </script>
     
-    {{-- Quil untuk Remark  Approval dan Reject --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <script>
         var quill = new Quill('#kt_docs_quill_basic', {
             modules: {
@@ -530,18 +528,23 @@
             theme: 'snow' // or 'bubble'
         });
     </script>
-    
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Approve & Reject MR --}}
     <script>
+        // Declare Route Name
+        const approveRejectUrlTemplate = @json(route('MaterialRequest.ApproveReject', ['mr_no' => 'ENCODED_PLACEHOLDER']));
+        const approvalListUrl = "{{ route('ApprovalListMR') }}";
+
         document.querySelectorAll('.approve-reject-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const action = this.getAttribute('data-action');
                 const actionText = action === 'approve' ? 'Approve' : 'Reject';
-                const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}"; 
+                // const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}"; 
                 // const baseUrl = "BmMaintenance/public";
-                const url = window.location.origin + `/BmMaintenance/public/material-request/approve/${mr_no_encoded}`;
+                // const url = window.location.origin + `/BmMaintenance/public/material-request/approve/${mr_no_encoded}`;
+
+                const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}";
+                const url = approveRejectUrlTemplate.replace('ENCODED_PLACEHOLDER', mr_no_encoded);
 
 
                 const quillContentRaw = document.querySelector('#kt_docs_quill_basic .ql-editor')?.innerText.trim() || '';
@@ -639,8 +642,10 @@
                                         title: 'Success',
                                         text: response.data.message,
                                     }).then(() => {
-                                        window.location.href = window.location.origin + `/BmMaintenance/public/Material-Request/List-Approval`;
+                                        // window.location.href = window.location.origin + `/BmMaintenance/public/Material-Request/List-Approval`;
+                                        window.location.href = approvalListUrl; 
                                     });
+
                                 })
                                 .catch(error => {
                                     loader.style.display = 'none';
@@ -660,6 +665,7 @@
             });
         });
     </script>
+
 
    
 @endsection
