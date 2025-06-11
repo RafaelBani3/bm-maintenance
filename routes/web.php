@@ -74,6 +74,7 @@ use Illuminate\Support\Facades\Route;
         
         // Mengarahkan user ke page Detail MR berdasarkan MR yang dipilih
         Route::get('/Material-Request/Detail/{encodedMRNo}', [MRController::class, 'detail'])->name('MaterialRequest.Detail');
+    
 
         // EXPORT DATA MR
         Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');

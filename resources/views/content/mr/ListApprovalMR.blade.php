@@ -118,7 +118,6 @@
         </div>
     </div>
 
-
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
@@ -479,6 +478,8 @@
     </script> --}}
 
     <script>
+        const materialRequestDetailUrl = "{{ route('MaterialRequest.Detail', ['encodedMRNo' => 'ENCODED_PLACEHOLDER']) }}";
+
         $(document).ready(function () {
             function safeBtoa(str) {
                 return btoa(unescape(encodeURIComponent(str)));
@@ -529,15 +530,33 @@
                         }
                     },
                     { 
-                        data: "MR_No", className: "text-start align-middle", orderable: false, width: "120px",
+                        // data: "MR_No", className: "text-start align-middle", orderable: false, width: "120px",
+                        // render: function (data) {
+                        //     const encodedMRNo = safeBtoa(data);
+                        //     return `
+                        //         <a href="${baseUrl}/Material-Request/Approval-Detail/${encodedMRNo}" 
+                        //         class="btn btn-secondary hover-scale">
+                        //             <i class="ki-duotone ki-eye"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> View
+                        //         </a>`;
+                        // }
+                        data: "MR_No",
+                        className: "text-start align-middle",
+                        orderable: false,
+                        width: "120px",
                         render: function (data) {
                             const encodedMRNo = safeBtoa(data);
+                            const detailUrl = materialRequestDetailUrl.replace('ENCODED_PLACEHOLDER', encodedMRNo);
+
                             return `
-                                <a href="${baseUrl}/Material-Request/Approval-Detail/${encodedMRNo}" 
-                                class="btn btn-secondary hover-scale">
-                                    <i class="ki-duotone ki-eye"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> View
+                                <a href="${detailUrl}" class="btn btn-secondary hover-scale">
+                                    <i class="ki-duotone ki-eye">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> View
                                 </a>`;
                         }
+
                     }
                 ],
                 scrollY: "300px",
@@ -573,8 +592,6 @@
             });
         });
     </script>
-
-    
 
     {{-- Script Data Range --}}
     <script>
