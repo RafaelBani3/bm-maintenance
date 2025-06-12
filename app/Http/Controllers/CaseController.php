@@ -377,17 +377,17 @@ class CaseController extends Controller
                     : redirect()->back()->with('error', 'Case tidak ditemukan.');
             }
 
-            $formattedDate = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+            // $formattedDate = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
 
-            $case->Case_Name = $request->cases;
-            $case->Case_Date = $formattedDate;
-            $case->Cat_No = $request->category;
-            $case->Scat_No = $request->sub_category;
-            $case->Case_Chronology = $request->chronology;
-            $case->Case_Outcome = $request->impact;
-            $case->Case_Suggest = $request->suggestion;
-            $case->Case_Action = $request->action;
-            $case->Update_Date = now();
+            // $case->Case_Name = $request->cases;
+            // $case->Case_Date = $formattedDate;
+            // $case->Cat_No = $request->category;
+            // $case->Scat_No = $request->sub_category;
+            // $case->Case_Chronology = $request->chronology;
+            // $case->Case_Outcome = $request->impact;
+            // $case->Case_Suggest = $request->suggestion;
+            // $case->Case_Action = $request->action;
+            // $case->Update_Date = now();
 
             $user = User::find($case->CR_BY);
             if (!$user) {

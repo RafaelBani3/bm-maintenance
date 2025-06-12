@@ -89,10 +89,6 @@
         }
         
     </style>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
              
     <!--begin::Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
@@ -149,43 +145,41 @@
                     </div>
                 </div>
 
-                <!-- Row 2: table -->
-                {{-- <div class="row gx-5 gx-xl-10 mb-xl-10">
-                    <div class="col-md-12">
+                <!-- Row 2: Waitting Cards -->
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                    <!-- Cases Approved (Need to Create WO) -->
+                    <div class="col-md-6">
                         <div class="card card-flush h-md-100">
                             <div class="card-body">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Case No</th>
-                                            <th>Case Name</th>
-                                            <th>Status</th>
-                                            <th>Progress</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($cases as $case)
-                                        @php
-                                            $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
-                                        @endphp
-                                        <tr>
-                                            <td>{{ $case['Case_No'] }}</td>
-                                            <td>{{ $case['Case_Name'] }}</td>
-                                            <td>{{ $case['Case_Status'] }}</td>
-                                            <td>
-                                                <button data-bs-toggle="modal" data-bs-target="#modalProgress{{ $safeCaseNo }}">
-                                                    Lihat Progress
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="text-gray-800 fw-bold mb-0">Cases Approved</h4>
+                                    <span class="badge badge-light">Need to Create WO</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-2hx fw-bold text-dark me-2" id="total-case-ap2">0</span>
+                                    <span class="text-muted fs-6">ready for WO</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div> --}}
 
+                    <!-- Material Requests Approved (Need to Create WO-C) -->
+                    <div class="col-md-6">
+                        <div class="card card-flush h-md-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="text-gray-800 fw-bold mb-0">Material Requests Approved</h4>
+                                    <span class="badge badge-light">MR Done</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-2hx fw-bold text-dark me-2" id="total-mr-ap4">0</span>
+                                    <span class="text-muted fs-6">ready for WO-C</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
                 <!-- Row 3: Charts -->
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
                     <!-- Case by Category Chart -->
@@ -220,69 +214,42 @@
         <!--end::Content-->
     @endif
 
-
-    {{-- <!-- MODAL PROGRESS -->
-    @foreach($cases as $case)
-    @php
-        $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
-    @endphp
-        <!-- Modal -->
-    <div class="modal fade" id="modalProgress{{ $safeCaseNo }}" tabindex="-1" aria-labelledby="modalLabel{{ $safeCaseNo }}" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-3">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel{{ $case['Case_No'] }}">Progress Case {{ $case['Case_No'] }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-
-                <div class="d-flex align-items-center justify-content-between px-2">
-                <!-- Step 1 -->
-                <div class="text-center">
-                    <div class="step-icon rounded-circle border @if($case['step'] >= 1) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
-                    ✓
+            <!-- Row 2: table -->
+            {{-- <div class="row gx-5 gx-xl-10 mb-xl-10">
+                <div class="col-md-12">
+                    <div class="card card-flush h-md-100">
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Case No</th>
+                                        <th>Case Name</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($cases as $case)
+                                    @php
+                                        $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $case['Case_No'] }}</td>
+                                        <td>{{ $case['Case_Name'] }}</td>
+                                        <td>{{ $case['Case_Status'] }}</td>
+                                        <td>
+                                            <button data-bs-toggle="modal" data-bs-target="#modalProgress{{ $safeCaseNo }}">
+                                                Lihat Progress
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <small class="d-block mt-1">Case Approved</small>
-                    
                 </div>
-
-                <div class="flex-grow-1 border-top mx-2 @if($case['step'] >= 2) border-primary @endif"></div>
-
-                <!-- Step 2 -->
-                <div class="text-center">
-                    <div class="step-icon rounded-circle border @if($case['step'] >= 2) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
-                    ✓
-                    </div>
-                    <small class="d-block mt-1">WO Created</small>
-                </div>
-
-                <div class="flex-grow-1 border-top mx-2 @if($case['step'] >= 3) border-primary @endif"></div>
-
-                <!-- Step 3 -->
-                <div class="text-center">
-                    <div class="step-icon rounded-circle border @if($case['step'] >= 3) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
-                    ✓
-                    </div>
-                    <small class="d-block mt-1">MR Approved</small>
-                </div>
-
-                <div class="flex-grow-1 border-top mx-2 @if($case['step'] == 4) border-primary @endif"></div>
-
-                <!-- Step 4 -->
-                <div class="text-center">
-                    <div class="step-icon rounded-circle border @if($case['step'] == 4) bg-primary text-white @else bg-light @endif" style="width: 40px; height: 40px; line-height: 40px;">
-                    ✓
-                    </div>
-                    <small class="d-block mt-1">Selesai</small>
-                </div>
-                </div>
-
-            </div>
-            </div>
-        </div>
-        </div>
-        @endforeach --}}
-
+            </div> --}}
 
     {{-- Dashboard APPROVAL --}}
     @if(auth()->user()->hasAnyPermission(['view cr_ap','view mr_ap']))
@@ -299,7 +266,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-gray-600 fw-bold fs-4">Approval Cases</span>
-                                    <span class="badge badge-light-primary fs-8">Pending Approval</span>
+                                    {{-- <span class="badge badge-light-primary fs-8">Pending Approval</span> --}}
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-primary me-2" id="total-case-to-approve">0</span>
@@ -314,7 +281,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-gray-600 fw-bold fs-4">Approval Material Requests</span>
-                                    <span class="badge badge-light-info fs-8">Pending Approval</span>
+                                    {{-- <span class="badge badge-light-info fs-8">Pending Approval</span> --}}
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-info me-2" id="pending-mr-count">0</span>
@@ -328,8 +295,8 @@
                         <a href="{{ route('ApprovalListWOC') }}" class="card card-flush h-md-100 flex-grow-1 text-decoration-none hover-scale" style="transition: all 0.3s;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="text-gray-600 fw-bold fs-4">Approval WO's Completed</span>
-                                    <span class="badge badge-light-success fs-8">Pending Approval</span>
+                                    <span class="text-gray-600 fw-bold fs-4">Approval WO's Complition</span>
+                                    {{-- <span class="badge badge-light-success fs-8">Pending Approval</span> --}}
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-success me-2" id="pending-woc-count">0</span>
@@ -391,6 +358,35 @@
     <!--Script: Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
         
+        <script>
+            $(document).ready(function () {
+                fetchWaitingCounts();
+
+                function fetchWaitingCounts() {
+                    $.ajax({
+                        url: "{{ route('dashboard.waitingCounts') }}", // Buat route ini di web.php
+                        method: "GET",
+                        success: function (res) {
+                            $("#total-case-ap2").text(res.total_case_ap2);
+                            $("#total-mr-ap4").text(res.total_mr_ap4);
+                        },
+                        error: function () {
+                            console.error("Failed to fetch waiting data.");
+                        }
+                    });
+                }
+            });
+        </script>
+
+
+
+
+
+
+
+
+
+
     <!--Script Case Chart & Total Case-->
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {

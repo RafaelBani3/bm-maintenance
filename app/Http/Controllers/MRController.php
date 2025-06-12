@@ -291,7 +291,7 @@ class MRController extends Controller
                     'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'MR',
                     'LOG_RefNo' => $mr->MR_No,
-                    'LOG_Status' => 'REJECT_RESET',
+                    'LOG_Status' => 'REVISION',
                     'LOG_User' => Auth::id(),
                     'LOG_Date' => now(),
                     'LOG_Desc' => 'MR status and reject fields reset due to revision.',
@@ -537,7 +537,7 @@ class MRController extends Controller
         $mrLine = $request->input('mr_line');
 
         try {
-            $deleted = DB::table('mat_req_child')
+            $deleted = DB::table('Mat_Req_Child')
                 ->where('MR_No', $mrNo)
                 ->where('MR_Line', $mrLine)
                 ->delete();

@@ -37,8 +37,6 @@ class RolePermission extends Seeder
         $permission = Permission::create(['name' => 'view mr_ap']);
         $permission = Permission::create(['name' => 'approve mr_ap']);
         
-
-
         $admin = Role::create(['name' => 'Admin']);
 
         $cr = Role::create(['name' => 'cr']);

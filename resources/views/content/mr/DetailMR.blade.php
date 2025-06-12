@@ -358,7 +358,7 @@
             <div class="modal-content">
                 
                 <div class="modal-header">
-                    <h3 class="modal-title text-primary fw-bold">Log History - Case {{ $materialRequest->MR_No }}</h3>
+                    <h3 class="modal-title text-primary fw-bold">Log History - MR {{ $materialRequest->MR_No }}</h3>
                     <button type="button" class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                         <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                     </button>

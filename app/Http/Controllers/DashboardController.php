@@ -23,6 +23,18 @@ class DashboardController extends Controller
         return view('content.dashboard.Dashboard', compact('cases'));
     }
 
+    public function getWaitingCounts()
+    {
+        $total_case_ap2 = DB::table('cases')->where('Case_Status', 'AP2')->count();
+        $total_mr_ap4 = DB::table('mat_req')->whereIn('MR_Status', ['AP4', 'DONE'])->count();
+
+        return response()->json([
+            'total_case_ap2' => $total_case_ap2,
+            'total_mr_ap4' => $total_mr_ap4,
+        ]);
+    }
+
+
     // Controller Case : Total Case & Chart Total Case By Category
     public function caseSummary()
     {

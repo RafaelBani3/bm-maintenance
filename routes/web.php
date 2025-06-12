@@ -54,6 +54,9 @@ use Illuminate\Support\Facades\Route;
     Route::get('/dashboard/case-wo-summary', [DashboardController::class, 'getCaseWOSummary'])->name('dashboard.case-wo-summary');
 
 
+    Route::get('/dashboard/waiting-counts', [DashboardController::class, 'getWaitingCounts'])->name('dashboard.waitingCounts');
+
+
     
     // List/View Case Table Page
         //List/View Cases
