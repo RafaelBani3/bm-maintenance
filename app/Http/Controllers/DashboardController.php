@@ -13,20 +13,80 @@ use Illuminate\Support\Facades\DB;
 class DashboardController extends Controller
 {
 
-    public function PageDashboard(){
+    // public function PageDashboard(){
                 
+    //     $cases = Cases::with([
+    //         'creator',
+    //         'workOrder.materialRequest'
+    //     ])->get();
+
+    //     return view('content.dashboard.Dashboard', compact('cases'));
+    // }
+
+    public function PageDashboard() {
+        $userId = Auth::id();
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+
         $cases = Cases::with([
             'creator',
             'workOrder.materialRequest'
         ])->get();
 
-        return view('content.dashboard.Dashboard', compact('cases'));
+        $totalApproved = Cases::where('CR_BY', $userId)
+            ->whereIn('Case_Status', ['AP2']) // tambahkan jika AP1 juga dianggap Approved
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $totalRejected = Cases::where('CR_BY', $userId)
+            ->where('Case_Status', 'REJECT')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $totalWOtoMR = WorkOrder::where('WO_MR', $userId)
+            ->where('WO_NeedMat', 'Y') 
+            ->whereIn('WO_Status', ['SUBMIT']) 
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
+            ->where('CR_BY', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $TotalMRrejected = MatReq::where('MR_Status', 'REJECT')
+            ->where('CR_BY', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        return view('content.dashboard.Dashboard', compact(
+  'cases', 
+ 'totalApproved', 
+            'totalRejected',
+            'totalWOtoMR',
+            'TotalMRapproved',
+            'TotalMRrejected',
+        ));
     }
+
 
     public function getWaitingCounts()
     {
-        $total_case_ap2 = DB::table('cases')->where('Case_Status', 'AP2')->count();
-        $total_mr_ap4 = DB::table('mat_req')->whereIn('MR_Status', ['AP4', 'DONE'])->count();
+        $userId = Auth::id(); // ambil ID user yang login
+
+        // Hitung total case dengan status AP2 milik user yang login
+        $total_case_ap2 = DB::table('cases')
+            ->where('Case_Status', 'AP2')
+            ->where('CR_BY', $userId)
+            ->count();
+
+        // Hitung total material request dengan status AP4 atau DONE milik user yang login
+        $total_mr_ap4 = DB::table('mat_req')
+            ->whereIn('MR_Status', ['AP4', 'DONE'])
+            ->where('CR_BY', $userId)
+            ->count();
 
         return response()->json([
             'total_case_ap2' => $total_case_ap2,
@@ -36,6 +96,37 @@ class DashboardController extends Controller
 
 
     // Controller Case : Total Case & Chart Total Case By Category
+    
+    // public function caseSummary()
+    // {
+    //     $userId = Auth::id();
+    //     $now = Carbon::now();
+    //     $startOfMonth = $now->copy()->startOfMonth();
+    //     $endOfMonth = $now->copy()->endOfMonth();
+
+    //     $startLastMonth = $now->copy()->subMonth()->startOfMonth();
+    //     $endLastMonth = $now->copy()->subMonth()->endOfMonth();
+
+    //     $totalCases = Cases::where('CR_BY', $userId)
+    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+    //         ->count();
+
+    //     $caseByCategory = DB::table('Cats')
+    //         ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
+    //             $join->on('Cats.Cat_No', '=', 'cases.Cat_No')
+    //                 ->where('cases.CR_BY', '=', $userId)
+    //                 ->whereBetween('cases.created_at', [$startOfMonth, $endOfMonth]);
+    //         })
+    //         ->select('Cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
+    //         ->groupBy('Cats.Cat_Name')
+    //         ->get();
+
+    //     return response()->json([
+    //         'totalCases' => $totalCases,
+    //         'categories' => $caseByCategory,
+    //     ]);
+    // }
+    
     public function caseSummary()
     {
         $userId = Auth::id();
@@ -43,10 +134,17 @@ class DashboardController extends Controller
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        $startLastMonth = $now->copy()->subMonth()->startOfMonth();
-        $endLastMonth = $now->copy()->subMonth()->endOfMonth();
-
         $totalCases = Cases::where('CR_BY', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $totalApproved = Cases::where('CR_BY', $userId)
+            ->where('Case_Status', ['AP2'])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $totalRejected = Cases::where('CR_BY', $userId)
+            ->where('Case_Status', 'REJECT')
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
@@ -62,46 +160,14 @@ class DashboardController extends Controller
 
         return response()->json([
             'totalCases' => $totalCases,
+            'totalApproved' => $totalApproved,
+            'totalRejected' => $totalRejected,
             'categories' => $caseByCategory,
         ]);
     }
-    
 
 
-
-
-    // Controller WO
-        // Controller Yang bisa Persenan + Grafik
-    // public function GetWOSummary()
-    // {
-    //     $userId = Auth::id();
-
-    //     $startOfMonth = Carbon::now()->startOfMonth();
-    //     $endOfMonth = Carbon::now()->endOfMonth();
-
-    //     $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
-    //     $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
-
-    //     $woQueryThisMonth = WorkOrder::where('CR_BY', $userId)
-    //         ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth]);
-
-    //     $totalWO = $woQueryThisMonth->count();
-    //     $submitCount = (clone $woQueryThisMonth)->where('WO_Status', 'REJECT')->count();
-    //     $inprogressCount = (clone $woQueryThisMonth)->where('WO_Status', 'INPROGRESS')->count();
-    //     $completedCount = (clone $woQueryThisMonth)->where('WO_Status', 'DONE')->count();
-
-    //     $lastMonthTotal = WorkOrder::where('CR_BY', $userId)
-    //         ->whereBetween('CR_DT', [$startOfLastMonth, $endOfLastMonth])
-    //         ->count();
-
-    //     return response()->json([
-    //         'total' => $totalWO,
-    //         'submitCount' => $submitCount,
-    //         'inprogressCount' => $inprogressCount,
-    //         'completedCount' => $completedCount,
-    //         'lastMonthTotal' => $lastMonthTotal,
-    //     ]);
-    // }
+    // // Controller WO
     public function GetWOSummary()
     {
         $userId = Auth::id();
@@ -113,45 +179,42 @@ class DashboardController extends Controller
             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
             ->count();
 
+        $inprogress = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_Status', 'SUBMIT')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $done = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_Status', 'DONE')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
         return response()->json([
             'total' => $totalWO,
+            'inprogress' => $inprogress,
+            'done' => $done,
         ]);
     }
 
+    
     // Controller MR
-    // Controller untuk tampil data, Persenan perbandingan, Grafik
-        // public function getMRSummary(Request $request)
-        // {
-        //     $userId = Auth::id();
-
-        //     $now = now();
-        //     $thisMonthStart = $now->copy()->startOfMonth();
-        //     $thisMonthEnd = $now->copy()->endOfMonth();
-        //     $lastMonthStart = $now->copy()->subMonth()->startOfMonth();
-        //     $lastMonthEnd = $now->copy()->subMonth()->endOfMonth();
-
-        //     $queryThisMonth = MatReq::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
-        //         ->where('CR_BY', $userId);
-
-        //     $total = $queryThisMonth->count();
-        //     $submitted = (clone $queryThisMonth)->where('MR_Status', 'REJECT')->count();
-        //     $inProgress = (clone $queryThisMonth)->where('MR_Status', 'INPROGRESS')->count();
-        //     $done = (clone $queryThisMonth)->where('MR_Status', 'DONE')->count();
-
-        //     $totalLastMonth = MatReq::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-        //         ->where('CR_BY', $userId)
-        //         ->count();
-
-        //     return response()->json([
-        //         'total' => $total,
-        //         'submitted' => $submitted,
-        //         'inProgress' => $inProgress,
-        //         'done' => $done,
-        //         'totalLastMonth' => $totalLastMonth,
-        //     ]);
-        // }
-
     // Controller MR untuk Tampil data MR 
+    // public function getMRSummary(Request $request)
+    // {
+    //     $userId = Auth::id();
+
+    //     $thisMonthStart = now()->startOfMonth();
+    //     $thisMonthEnd = now()->endOfMonth();
+
+    //     $total = MatReq::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+    //         ->where('CR_BY', $userId)
+    //         ->count();
+
+    //     return response()->json([
+    //         'total' => $total,
+    //     ]);
+    // }
+
     public function getMRSummary(Request $request)
     {
         $userId = Auth::id();
@@ -163,10 +226,23 @@ class DashboardController extends Controller
             ->where('CR_BY', $userId)
             ->count();
 
+        $approved = MatReq::where('MR_Status', 'AP5')
+            ->where('CR_BY', $userId)
+            ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+            ->count();
+
+        $rejected = MatReq::where('MR_Status', 'REJECT')
+            ->where('CR_BY', $userId)
+            ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+            ->count();
+
         return response()->json([
             'total' => $total,
+            'approved' => $approved,
+            'rejected' => $rejected,
         ]);
     }
+
 
 
     public function getCaseWOSummary()
@@ -202,7 +278,6 @@ class DashboardController extends Controller
             'woData' => $woData,
         ]);
     }
-
 
 // DASHBOARD APPROVER
     public function getCaseApprovalProgress()
@@ -314,8 +389,8 @@ class DashboardController extends Controller
                 })->orWhere(function ($q) use ($userId) {
                     $q->where('WO_APStep', 5)->where('WO_AP5', $userId);
                 });
-            })
-            ->whereNotIn('WO_Status', ['DONE', 'CLOSE']) 
+            }) 
+            ->whereNotIn('WO_Status', ['DONE', 'CLOSE','REJECT','OPEN', 'OPEN_COMPLETION', 'REJECT_COMPLETION', 'INPROGRESS']) 
             ->count();
 
         return response()->json(['count' => $pendingWOC]);

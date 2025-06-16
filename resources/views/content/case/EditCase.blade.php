@@ -73,12 +73,12 @@
                                         <!--end::Alert-->
 
                                         <!--begin::Form-->
-                                        <form action="" method="POST" id="caseForm" enctype="multipart/form-data" class="form">
+                                        {{-- <form action="" method="POST" id="caseForm" enctype="multipart/form-data" class="form"> --}}
+                                        <form action="" method="POST" id="caseForm" class="form view-only" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="case_no" value="{{ $case->Case_No }}">
                                             <!--begin::Card body-->
                                             <div class="card-body p-2">
-                                        
                                                 <!--begin::Input Cases-->
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
@@ -278,7 +278,7 @@
 
                                             <!--begin::Actions-->
                                             <div class="card-footer d-flex justify-content-end py-6 px-9 gap-5">
-                                                <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-warning" name="save_case" value="1">
+                                                {{-- <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-warning" name="save_case" value="1">
                                                     <span class="indicator-label text">
                                                       Save Case
                                                     </span>
@@ -295,6 +295,27 @@
                                                         Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                                                     </span>
                                                 </button>
+
+                                                <button id="edit-case-btn" type="button" class="btn btn-secondary">
+                                                    Edit Case
+                                                </button> --}}
+
+                                                {{-- VERSI EDIT  --}}
+                                                <button id="btn-edit-case" type="button" class="btn btn-warning">
+                                                    Edit Case
+                                                </button>
+                                                <!-- Save Case Button -->
+                                                <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-info save-submit-group" name="save_case" value="1" style="display: none;">
+                                                    <span class="indicator-label text">Save Case</span>
+                                                    <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                                </button>
+
+                                                <!-- Submit Case Button -->
+                                                <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary save-submit-group" style="display: none;">
+                                                    <span class="indicator-label">Submit Case</span>
+                                                    <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                                </button>
+
                                             </div>
                                             <!--end::Actions-->   
                                         </form>

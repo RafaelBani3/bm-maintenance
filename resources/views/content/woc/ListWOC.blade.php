@@ -163,6 +163,18 @@
                     method: "GET",
                     dataSrc: "data",
                     error: function (xhr, status, error) {
+                        if (xhr.status === 401 || xhr.responseText.includes('login')) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Session Expired',
+                                text: 'Your session has expired. Please login again.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = "{{ route('login') }}";
+                            });
+                            return;
+                        }
+
                         console.error("AJAX Error:", {
                             status: xhr.status,
                             response: xhr.responseText,
@@ -170,6 +182,7 @@
                         });
                         alert("Gagal memuat data Work Order Completion. Cek console untuk detail.");
                     }
+
                 },
                 columns: [
                     {

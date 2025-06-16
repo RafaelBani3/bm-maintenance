@@ -211,7 +211,6 @@
                                                     </div>
                                                     <!--end::Input Designation-->
 
-                                                    
                                                     @php $rowCount = 1; @endphp
 
                                                     <div class="row mb-10">
@@ -243,7 +242,9 @@
                                                                             </td>
                                                                             <td>
                                                                                 <input type="text" name="items[{{ $index }}][unit]" class="fv-row form-control form-control-lg" 
-                                                                                    value="{{ $child->CR_ITEM_SATUAN }}">
+                                                                                    value="{{ $child->UOM_Name }}" readonly>
+
+                                                                                <input type="hidden" name="items[{{ $index }}][unit_cd]" value="{{ $child->UOM_Code }}" readonly>
                                                                             </td>
                                                                             <td>
                                                                                 <input type="text" name="items[{{ $index }}][code]" class="fv-row form-control form-control-lg" 
@@ -310,19 +311,6 @@
                                             <!--end::Actions-->        
                                         </form>
                                         <!--end::Form-->
-
-                                        {{-- Coba anda lihat Form HTML yang saya berikan diatas. pada bagian bawah terdapat 2 button yaitu Button Save MR dan Submit MR.
-                                        
-                                        Berdasarkan Script diatas Saya mau anda melakukan beberapa penyesuaian terhadap Code diatas.
-                                        Alurnya User Harus/Wajib untuk Clik button Save MR terlebih dahulu baru click button Submit/Update MR.
-                                        untuk alurnya:
-                                        1. User Clik Button Save MR. ketika sudah diclick maka akan muncul pop up success atau error.
-                                        2. Jika Pop up succes muncul dan user clik Ok, maka buat Button Save MR ini hilang tapi jika error jgn dihilangkan
-                                        3. Setelah Button Save MR hilang barulah user clik button Submit/Update MR. Jika user langsung clik button submit mr tanpa clik button save mr maka munculkan pop up warning.
-                                        4. Jika user clik button Submit/Update mr setelah clik button save mr,munculkan pop up succes atau error.
-                                        Saya berikan COntorller Save Draft MR saya dibawha ini dan routenya
-                                     --}}
-
                                     </div>
                                     <!--end::Content-->
                                 </div>

@@ -15,6 +15,11 @@ return new class extends Migration
             $table->string('technician_id',20)->primary();
             $table->string('technician_Name',50);
             $table->timestamps();
+            $table->unsignedBigInteger('PS_ID');
+
+            // Foreign Key
+            $table->foreign('PS_ID')->references('id')->on('Positions')->onDelete('cascade');
+
         });
 
         

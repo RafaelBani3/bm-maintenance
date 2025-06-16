@@ -8,6 +8,8 @@ class Position extends Model
 {
 
     protected $table = 'Positions';
+    public $timestamps = true;
+
     protected $fillable = 
     [
         'PS_Name', 

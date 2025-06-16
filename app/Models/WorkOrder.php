@@ -11,6 +11,8 @@ class WorkOrder extends Model
     public $incrementing = false; 
     protected $keyType = 'string'; 
     protected $table = 'Work_Orders';
+    public $timestamps = true;
+
     
     protected $fillable = [
         'WO_No', 'Case_No', 'WOC_No', 'CR_BY', 'CR_DT',

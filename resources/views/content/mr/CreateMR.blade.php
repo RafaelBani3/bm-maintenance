@@ -26,8 +26,6 @@
             color: #fff !important;
             border-radius: 6px;
         }
-
-
     </style>
 
 
@@ -211,45 +209,38 @@
                                                         <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
                                                             <thead>
                                                                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                    <th>No</th>
-                                                                    <th>Quantity</th>
-                                                                    <th>Unit</th>
-                                                                    <th>Item Code</th>
-                                                                    <th>Item Name</th>
-                                                                    <th>Description</th>
-                                                                    <th>Action</th>
+                                                                    <th style="width: 5%;">No</th>
+                                                                    <th style="width: 10%;">Quantity</th>
+                                                                    <th style="width: 20%;">Unit</th> <!-- Lebih panjang -->
+                                                                    <th style="width: 15%;">Item Code</th>
+                                                                    <th style="width: 20%;">Item Name</th>
+                                                                    <th style="width: 20%;">Description</th>
+                                                                    <th style="width: 10%;">Action</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody id="material-body">
                                                                 <tr>
                                                                     <td class="text-center">1</td>
-                                                                    <td><input type="number" name="items[0][qty]" class="fv-row form-control" ></td>
-                                                                    {{-- <td><input type="text" name="items[0][unit]" class="form-control"></td> --}}
                                                                     <td>
-                                                                        <select name="items[0][unit]" class="form-select select2-unit" style="width: 100%;">
-                                                                            <option value="pcs">pcs (pieces)</option>
-                                                                            <option value="unit">unit (digunakan untuk alat/mesin)</option>
-                                                                            <option value="box">box</option>
-                                                                            <option value="pack">pack</option>
-                                                                            <option value="liter">liter</option>
-                                                                            <option value="kg">kg (kilogram)</option>
-                                                                            <option value="meter">meter</option>
-                                                                            <option value="dozen">dozen</option>
-                                                                            <option value="roll">roll</option>
-                                                                            <option value="set">set</option>
-                                                                            <option value="can">can (kaleng)</option>
-                                                                            <option value="bottle">bottle</option>
-                                                                            <option value="sheet">sheet</option>
-                                                                            <option value="pair">pair</option>
-                                                                        </select>
+                                                                        <input type="number" name="items[0][qty]" class="fv-row form-control" />
                                                                     </td>
-                                                                    
-                                                                    <td><input type="text" name="items[0][code]" class="fv-row form-control"></td>
-                                                                    <td><input type="text" name="items[0][name]" class="fv-row form-control" ></td>
-                                                                    <td><input type="text" name="items[0][desc]" class="fv-row form-control"></td>
-                                                                    <td class="text-center text-white">
-                                                                        <button type="button" class="btn btn-danger remove-row text-center text-white">
-                                                                            <i class="ki-duotone ki-trash fs-2 text-center text-white" style="color: white">
+                                                                    <td>
+                                                                        <select name="items[0][unit]" class="form-select select2-unit w-100" style="min-width: 150px;"></select>
+                                                                        <input type="hidden" name="items[0][unit_cd]">
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <input type="text" name="items[0][code]" class="fv-row form-control" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="text" name="items[0][name]" class="fv-row form-control" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="text" name="items[0][desc]" class="fv-row form-control" />
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <button type="button" class="btn btn-danger remove-row text-white">
+                                                                            <i class="ki-duotone ki-trash fs-2">
                                                                                 <span class="path1"></span>
                                                                                 <span class="path2"></span>
                                                                                 <span class="path3"></span>
@@ -260,8 +251,8 @@
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
-                                                          
                                                         </table>
+
                                                     </div>
 
                                                     <div class="col-lg-8">
@@ -313,6 +304,60 @@
     <script>
         const BASE_URL = "{{ url('') }}";
     </script>
+
+    <script>
+        let uomData = [];
+
+        $(document).ready(function () {
+            // Ambil UOM dari API
+            $.ajax({
+                url: "http://10.10.10.86:8088/erp_api/api/ifca/get/uom",
+                type: "GET",
+                headers: {
+                    "accept": "application/json"
+                },
+                success: function (response) {
+                    if (response.success && response.data.uom.length > 0) {
+                        uomData = response.data.uom;
+                        initSelect2Unit();
+                    } else {
+                        console.error('No UOM data found');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to load UOM data:", error);
+                }
+            });
+
+            // Fungsi inisialisasi select2 dan isi opsi
+            function initSelect2Unit() {
+                $('.select2-unit').each(function () {
+                    const select = $(this);
+                    select.empty().append('<option value="">Select Unit</option>');
+
+                    $.each(uomData, function (index, item) {
+                        select.append('<option value="' + item.descs + '" data-code="' + item.uom_cd + '">' + item.descs + '</option>');
+                    });
+
+                    select.select2({
+                        placeholder: "Select Unit",
+                        allowClear: true,
+                        width: '100%'
+                    });
+                });
+            }
+
+            // Saat select berubah, isi input unit_cd dengan uom_cd
+            $(document).on('change', '.select2-unit', function () {
+                const selectedOption = $(this).find(':selected');
+                const code = selectedOption.data('code'); // uom_cd
+                $(this).closest('td').find('input[name$="[unit_cd]"]').val(code ?? '');
+            });
+        });
+    </script>
+
+
+
 
     @include('content.mr.partial.CreateMRJS')
 

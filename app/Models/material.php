@@ -11,6 +11,8 @@ class material extends Model
     protected $primaryKey = 'Material_No';
     public $incrementing = false;
     protected $keyType = 'string';
+        public $timestamps = true;
+
 
     protected $fillable = [
         'Material_No',

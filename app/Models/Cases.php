@@ -12,6 +12,8 @@ class Cases extends Model
     public $incrementing = false; 
     protected $keyType = 'string'; 
     protected $table = 'cases';
+    public $timestamps = true;
+
 
     protected $fillable = [
         'Case_No',    

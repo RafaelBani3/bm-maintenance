@@ -11,6 +11,7 @@ class Matrix extends Model
     protected $primaryKey = 'Mat_No';
     public $incrementing = false;
     protected $fillable = ['Mat_No', 'Position', 'Mat_Type', 'Mat_Max', 'AP1', 'AP2', 'AP3', 'AP4', 'AP5'];
+    public $timestamps = true;
 
     public function position()
     {

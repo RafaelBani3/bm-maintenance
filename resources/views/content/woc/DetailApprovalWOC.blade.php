@@ -450,71 +450,72 @@
     <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
 
     {{-- Script Approve & Remark --}}
+    
+
     <script>
-        var quill = new Quill('#kt_docs_quill_basic', {
-            modules: {
-                toolbar: [
-                    [{
+    var quill = new Quill('#kt_docs_quill_basic', {
+        modules: {
+            toolbar: [
+                [{
                     header: [1, 2, false]
-                    }],
-                    ['bold', 'italic', 'underline'],
-                    ['image', 'code-block']
-                ]
-            },
-            placeholder: 'Input Your Remarks Here...',
-            theme: 'snow' 
-        });
-       
-        document.querySelectorAll('.approve-reject-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const action = this.getAttribute('data-action');
-                const notes = quill.root.innerHTML.trim();
+                }],
+                ['bold', 'italic', 'underline'],
+                ['image', 'code-block']
+            ]
+        },
+        placeholder: 'Input Your Remarks Here...',
+        theme: 'snow'
+    });
 
-                if (
-                    notes === '' ||
-                    notes === '<p><br></p>' ||
-                    notes.includes('Input Your Remark or Notes Here')
-                ) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Empty Note',
-                        text: 'Please enter your note or remark before proceeding.',
-                    });
-                    return;
-                }
+    document.querySelectorAll('.approve-reject-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.getAttribute('data-action'); // 'approve' atau 'reject'
+            const notes = quill.root.innerHTML.trim();
 
+            // Validasi hanya jika REJECT
+            const isNotesEmpty = (notes === '' || notes === '<p><br></p>');
+
+            if (action === 'reject' && isNotesEmpty) {
                 Swal.fire({
-                    title: `Are you sure you want to ${action.toUpperCase()} this Work Order Completion?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#198754',
-                    cancelButtonColor: '#dc3545',
-                    confirmButtonText: 'Yes!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const formData = {
-                            _token: '{{ csrf_token() }}',
-                            approvalNotes: notes,
-                            action: action
-                        };
+                    icon: 'warning',
+                    title: 'Empty Note',
+                    text: 'Please enter your note or remark before rejecting.',
+                });
+                return;
+            }
 
-                        fetch("{{ route('workorder.approveReject', ['wo_no' => base64_encode($workOrder->WO_No)]) }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(formData)
+            Swal.fire({
+                title: `Are you sure you want to ${action.toUpperCase()} this Work Order Completion?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#dc3545',
+                confirmButtonText: 'Yes!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = {
+                        _token: '{{ csrf_token() }}',
+                        approvalNotes: notes,
+                        action: action
+                    };
+
+                    fetch("{{ route('workorder.approveReject', ['wo_no' => base64_encode($workOrder->WO_No)]) }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('HTTP error ' + response.status);
+                            }
+                            return response.json();
                         })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('HTTP error ' + response.status);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
+                        .then(data => {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
@@ -523,15 +524,16 @@
                             }).then(() => {
                                 document.getElementById("page_loader").style.display = "flex";
                                 setTimeout(() => {
-                                    // window.location.href = "http://localhost/BmMaintenance/public/WorkOrder-Complition/List-Approval";
                                     window.location.href = "{{ route('ApprovalListWOC') }}";
                                 }, 1000);
                             });
-                        })
-                    }
-                });
+                        });
+                }
             });
         });
+    });
+
+    
     </script>
 
   

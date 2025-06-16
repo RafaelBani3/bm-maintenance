@@ -351,21 +351,21 @@ class CaseController extends Controller
     {
         Log::debug('Tanggal yang dikirim:', ['date' => $request->CR_DT]);
 
-        $request->validate([
-            'case_no' => 'required|string|exists:cases,Case_No',
-            'cases' => 'required|string|max:255',
-            'date' => 'required|string',
-            'category' => 'required|string|exists:Cats,Cat_No',
-            'sub_category' => 'required|string|exists:Subcats,Scat_No',
-            'chronology' => 'required|string|max:255',
-            'impact' => 'required|string|max:255',
-            'suggestion' => 'required|string|max:255',
-            'action' => 'required|string|max:255',
-            'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
-        ]);
+        // $request->validate([
+        //     'case_no' => 'required|string|exists:cases,Case_No',
+        //     'cases' => 'required|string|max:255',
+        //     'date' => 'required|string',
+        //     'category' => 'required|string|exists:Cats,Cat_No',
+        //     'sub_category' => 'required|string|exists:Subcats,Scat_No',
+        //     'chronology' => 'required|string|max:255',
+        //     'impact' => 'required|string|max:255',
+        //     'suggestion' => 'required|string|max:255',
+        //     'action' => 'required|string|max:255',
+        //     'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+        // ]);
 
         try {
-            
+                
             Log::info('UpdateCase: Memulai proses update case', ['case_no' => $request->case_no]);
 
             $case = Cases::where('Case_No', $request->case_no)->first();

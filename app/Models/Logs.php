@@ -10,6 +10,8 @@ class Logs extends Model
     use HasFactory;
     protected $table = 'Logs';
     protected $primaryKey = 'Logs_No';
+        public $timestamps = true;
+
     
     protected $fillable = [
         'Logs_No',

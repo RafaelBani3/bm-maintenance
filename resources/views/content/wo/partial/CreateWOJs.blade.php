@@ -8,6 +8,19 @@
             altFormat: "d/m/Y H:i", 
             dateFormat: "d/m/Y H:i",
             minDate: "today",
+            defaultDate: new Date(), 
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const today = new Date();
+                const date = dayElem.dateObj;
+
+                if (
+                    date.getDate() === today.getDate() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getFullYear() === today.getFullYear()
+                ) {
+                    dayElem.classList.add("today-highlight");
+                }
+            }
         });
 
         $("#end_date").flatpickr({
@@ -16,6 +29,7 @@
             altFormat: "d/m/Y H:i", 
             dateFormat: "d/m/Y H:i",
             minDate: "today",
+            
         });
 
         $(document).ready(function() {
@@ -233,28 +247,26 @@
     {{-- Assigned To --}}
     <script>
         $(document).ready(function () {
-            $('#assigned_to').select2({
-                ajax: {
-                    url: "{{ route('GetTechnician') }}", // route name
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function (data) {
-                        return {
-                            results: data.map(item => ({
-                                id: item.technician_id,
-                                text: `${item.technician_id} - ${item.technician_Name}`
-                            }))
-                        };
-                    },
-                    cache: true
+             $('#assigned_to').select2({
+            ajax: {
+                url: "{{ route('GetTechnician') }}",
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data // sudah dalam format optgroup
+                    };
                 },
-                placeholder: 'Select technician(s)',
-                minimumInputLength: 0,
-                allowClear: true
-            });
+                cache: true
+            },
+            placeholder: 'Select technician(s)',
+            minimumInputLength: 0,
+            allowClear: true
+        });
+            
         });
     </script>
-
+  
     {{-- View Details Case --}}
     <script>
         $(document).ready(function () {

@@ -19,6 +19,9 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
+        public $timestamps = true;
+
+
     protected $fillable = [
         'Fullname',
         'Username',

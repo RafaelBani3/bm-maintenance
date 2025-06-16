@@ -378,9 +378,18 @@
                                 @php
                                     use Illuminate\Support\Facades\Auth;
 
-                                    $logAp1 = $logs->first(function($log) {
-                                        return $log->LOG_Status === 'APPROVED 1' && $log->LOG_Type === 'BA';
+                                    // $logAp1 = $logs->first(function($log) {
+                                    //     return $log->LOG_Status === 'APPROVED 1' && $log->LOG_Type === 'BA';
+                                    // });
+
+                                    $logAp1 = $logs
+                                    ->where('LOG_Status', 'APPROVED 1')
+                                    ->where('LOG_Type', 'BA')
+                                    ->sortByDesc('LOG_Date')  // Sort by latest
+                                    ->first(function($log) use ($case) {
+                                        return \Carbon\Carbon::parse($log->LOG_Date)->greaterThanOrEqualTo($case->Update_Date); 
                                     });
+
 
                                     $canApprove = $case->Case_Status === 'SUBMIT' && $case->Case_ApStep == 1 && $case->Case_AP1 == Auth::id();
                                 @endphp
@@ -401,7 +410,7 @@
                                                 <div class="d-flex align-items-center mt-1 fs-6">
                                                     <div class="text-muted me-2 fs-7">
                                                         @if($logAp1)
-                                                            Approved at {{ \Carbon\Carbon::parse($logAp1->LOG_Date)->format('d/m/Y   H:i') }}
+                                                            Approved at {{ \Carbon\Carbon::parse($logAp1->LOG_Date)->format('d/m/Y H:i') }}
                                                         @else
                                                             Approval date not found.
                                                         @endif

@@ -367,7 +367,7 @@
                 {{-- <div class="modal-body"> --}}
                     <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
                     @php
-                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'APPROVED 3', 'APPROVED 4', 'APPROVED 5', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2', 'REJECTED 3', 'REJECTED 4', 'REJECTED 5', 'REJECT_RESET', 'DONE' ];
+                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'APPROVED 3', 'APPROVED 4', 'APPROVED 5', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2', 'REJECTED 3', 'REJECTED 4', 'REJECTED 5', 'REVISION', 'DONE' ];
                         $statusColors = [
                             'CREATED'    => 'bg-light-warning text-warning',
                             'SUBMITTED'  => 'bg-light-primary text-primary',
@@ -385,6 +385,7 @@
                             'CLOSE'      => 'bg-light-success text-success',
                             'DONE'      => 'bg-light-success text-success',
                             'REJECT'     => 'bg-light-danger text-danger',
+                            'REVISION'  => 'bg-light-info text-info',
                         ];
                     @endphp
     

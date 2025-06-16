@@ -1,8 +1,8 @@
 <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 
-   {{-- Script Date  --}}
-     <script>
+    {{-- Script Date  --}}
+    <script>
         $("#start_date").flatpickr({
             enableTime: true,
             altInput: true,
@@ -26,68 +26,272 @@
 
     {{-- Script Validation dan Update WO --}}
     <script>
-        let isSavedWO = false;
+    $(document).ready(function () {
+        const form = $('#kt_docs_formvalidation_text');
+        const btnEdit = $('#btnEditWO');
+        const btnSave = $('#kt_docs_formvalidation_text_save');
+        const btnSubmit = $('#kt_docs_formvalidation_text_submit');
 
-        $(document).ready(function () {
-            // Handle tombol Save WO
-            $('#kt_docs_formvalidation_text_save').on('click', function (e) {
+        const requiredFields = [
+            { selector: '#reference_number', message: 'Reference Number is required' },
+            { selector: '#start_date', message: 'Start Date is required' },
+            { selector: '#end_date', message: 'End Date is required' },
+            { selector: 'textarea[name="work_description"]', message: 'Work Description is required' }
+        ];
+
+        // Initial State
+        // Disable all normal fields
+        form.find('input, textarea, select').not('.exclude-disable, [type="hidden"], .readonly-select, .readonly-checkbox').prop('disabled', true);
+
+        // Simulasikan readonly untuk select
+        form.find('.readonly-select').each(function () {
+            $(this).on('mousedown', function (e) {
+                e.preventDefault(); // cegah dropdown
+                this.blur();        // hilangkan fokus
+            }).addClass('select-readonly');
+        });
+
+        // Simulate readonly for checkbox
+        form.find('.readonly-checkbox').each(function () {
+            $(this).on('click.readonly', function (e) {
                 e.preventDefault();
+                return false;
+            }).addClass('checkbox-readonly');
+        });
 
-                const $btn = $(this);
-                $btn.attr("data-kt-indicator", "on");
-                $btn.prop("disabled", true);
 
-                let isValid = true;
-                const requiredFields = ['#reference_number', '#start_date', '#end_date', 'textarea[name="work_description"]'];
+        
+        
+        btnSave.addClass('d-none');
+        btnEdit.removeClass('d-none');
+        btnSubmit.removeClass('d-none');
 
-                requiredFields.forEach(function (selector) {
-                    if (!$(selector).val()) {
-                        isValid = false;
-                        $(selector).addClass('is-invalid');
-                    } else {
-                        $(selector).removeClass('is-invalid');
+        // ===== HANDLE EDIT CASE =====
+        btnEdit.on('click', function () {
+            let isEmpty = false;
+
+            // Clear previous messages
+            form.find('.invalid-feedback').remove();
+            form.find('.is-invalid').removeClass('is-invalid');
+
+            requiredFields.forEach(field => {
+                const input = $(field.selector);
+                const container = input.closest('.fv-row');
+                if (!input.val()) {
+                    isEmpty = true;
+                    input.addClass('is-invalid');
+                    if (container.find('.invalid-feedback').length === 0) {
+                        container.append(`<div class="invalid-feedback d-block">${field.message}</div>`);
                     }
-                });
-
-                if (!isValid) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Please fill all required fields.'
-                    });
-
-                    $btn.removeAttr("data-kt-indicator");
-                    $btn.prop("disabled", false);
-                    return;
                 }
+            });
 
+            if (isEmpty) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'There are required fields that are still empty. Please complete them before editing.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            // Show loader before enabling form
+            const loadingEl = document.createElement("div");
+            loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
+            loadingEl.innerHTML = `
+                <span class="spinner-border text-primary" role="status"></span>
+                <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+            `;
+            document.body.prepend(loadingEl);
+
+            setTimeout(() => {
+                loadingEl.remove();
+                form.find('input, textarea, select').not('.exclude-disable, [type="hidden"]').prop('disabled', false);
+                form.find('.readonly-select').off('mousedown').removeClass('select-readonly');
+                form.find('.readonly-checkbox').off('click.readonly').removeClass('checkbox-readonly');
+
+                btnSave.removeClass('d-none');
+                btnEdit.addClass('d-none');
+                btnSubmit.addClass('d-none');
+            }, 800);
+        });
+
+        // ===== HANDLE SAVE CASE =====
+        btnSave.on('click', function (e) {
+            e.preventDefault();
+            handleSaveWO($(this));
+        });
+
+        // ===== HANDLE SUBMIT CASE =====
+        btnSubmit.on('click', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Submit Work Order?',
+                text: "Make sure all information is correct before submitting this Work Order.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Submit WO',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitWorkOrder();
+                } else if (result.isDenied) {
+                    handleSaveWO(btnSave);
+                }
+            });
+        });
+
+        // ====== SAVE WO FUNCTION ======
+        function handleSaveWO($btn) {
+        $btn.attr("data-kt-indicator", "on");
+        $btn.prop("disabled", true);
+
+        let isValid = true;
+
+        // Reset error state
+        form.find('.invalid-feedback').remove();
+        form.find('.is-invalid').removeClass('is-invalid');
+
+        requiredFields.forEach(field => {
+            const input = $(field.selector);
+            const container = input.closest('.fv-row');
+            if (!input.val()) {
+                isValid = false;
+                input.addClass('is-invalid');
+                if (container.find('.invalid-feedback').length === 0) {
+                    container.append(`<div class="invalid-feedback d-block">${field.message}</div>`);
+                }
+            }
+        });
+
+        if (!isValid) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error!',
+                text: 'Please complete all required fields before saving.',
+                confirmButtonText: 'OK'
+            });
+            $btn.removeAttr("data-kt-indicator");
+            $btn.prop("disabled", false);
+            return;
+        }
+
+        // Konfirmasi sebelum menyimpan
+        Swal.fire({
+            title: 'Save Work Order?',
+            text: "Are you sure you want to save the changes?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Save',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loader
+                const loadingEl = document.createElement("div");
+                loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
+                loadingEl.innerHTML = `
+                    <span class="spinner-border text-primary" role="status"></span>
+                    <span class="text-gray-800 fs-6 fw-semibold mt-5">Saving...</span>
+                `;
+                document.body.prepend(loadingEl);
+
+                setTimeout(() => {
+                    $.ajax({
+                        url: "{{ route('WorkOrder.SaveDraft') }}",
+                        type: "POST",
+                        data: form.serialize(),
+                        success: function (response) {
+                            loadingEl.remove();
+
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Saved!',
+                                    text: response.message,
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    location.reload(); 
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Failed!',
+                                    text: response.message
+                                });
+                                $btn.removeAttr("data-kt-indicator");
+                                $btn.prop("disabled", false);
+                            }
+                        },
+                        error: function (xhr) {
+                            loadingEl.remove();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: xhr.responseJSON?.message || 'Something went wrong.'
+                            });
+                            $btn.removeAttr("data-kt-indicator");
+                            $btn.prop("disabled", false);
+                        }
+                    });
+                }, 500);
+            } else {
+                $btn.removeAttr("data-kt-indicator");
+                $btn.prop("disabled", false);
+            }
+        });
+    }
+
+        // ====== SUBMIT WO FUNCTION ======
+        function submitWorkOrder() {
+            const $btn = btnSubmit;
+            $btn.attr("data-kt-indicator", "on");
+            $btn.prop("disabled", true);
+
+            const loadingEl = document.createElement("div");
+            loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
+            loadingEl.innerHTML = `
+                <span class="spinner-border text-primary" role="status"></span>
+                <span class="text-gray-800 fs-6 fw-semibold mt-5">Submitting...</span>
+            `;
+            document.body.prepend(loadingEl);
+            KTApp.showPageLoading();
+
+            setTimeout(() => {
                 $.ajax({
-                    url: "{{ route('WorkOrder.SaveDraft') }}", 
+                    url: "{{ route('WorkOrder.Update') }}",
                     type: "POST",
-                    data: $('#kt_docs_formvalidation_text').serialize(),
+                    data: form.serialize(),
                     success: function (response) {
+                        KTApp.hidePageLoading();
+                        loadingEl.remove();
+
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Saved!',
-                                text: response.message,
-                                confirmButtonText: 'OK'
+                                title: 'Success!',
+                                text: response.message
                             }).then(() => {
-                                $('#kt_docs_formvalidation_text_save').hide(); 
-                                isSavedWO = true; 
+                                const redirectUrl = $('#require_material_checkbox').is(':checked')
+                                    ? "{{ route('CreateMR') }}"
+                                    : "{{ route('ListWO') }}";
+                                window.location.href = redirectUrl;
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Failed to Save!',
+                                title: 'Failed!',
                                 text: response.message
                             });
-
                             $btn.removeAttr("data-kt-indicator");
                             $btn.prop("disabled", false);
                         }
                     },
                     error: function (xhr) {
+                        KTApp.hidePageLoading();
+                        loadingEl.remove();
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
@@ -98,85 +302,9 @@
                         $btn.prop("disabled", false);
                     }
                 });
-            });
-
-            // Handle tombol Submit WO
-            $('#kt_docs_formvalidation_text_submit').on('click', function (e) {
-                e.preventDefault();
-
-                const $btn = $(this);
-
-                if (!isSavedWO) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Action Required!',
-                        text: 'Please save the Work Order first before submitting.'
-                    });
-                    return;
-                }
-
-                $btn.attr("data-kt-indicator", "on");
-                $btn.prop("disabled", true);
-
-                const loadingEl = document.createElement("div");
-                document.body.prepend(loadingEl);
-                loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25");
-                loadingEl.innerHTML = `
-                    <span class="spinner-border text-primary" role="status"></span>
-                    <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
-                `;
-
-                KTApp.showPageLoading();
-
-                setTimeout(() => {
-                    $.ajax({
-                        url: "{{ route('WorkOrder.Update') }}", // Route untuk submit
-                        type: "POST",
-                        data: $('#kt_docs_formvalidation_text').serialize(),
-                        success: function (response) {
-                            KTApp.hidePageLoading();
-                            loadingEl.remove();
-
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: response.message
-                                }).then(() => {
-                                    const isNeedMaterial = $('#require_material_checkbox').is(':checked');
-                                    const redirectUrl = isNeedMaterial
-                                        ? "{{ route('CreateMR') }}"
-                                        : "{{ route('ListWO') }}";
-                                    window.location.href = redirectUrl;
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Failed!',
-                                    text: response.message
-                                });
-
-                                $btn.removeAttr("data-kt-indicator");
-                                $btn.prop("disabled", false);
-                            }
-                        },
-                        error: function (xhr) {
-                            KTApp.hidePageLoading();
-                            loadingEl.remove();
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: xhr.responseJSON?.message || 'Something went wrong.'
-                            });
-
-                            $btn.removeAttr("data-kt-indicator");
-                            $btn.prop("disabled", false);
-                        }
-                    });
-                }, 500);
-            });
-        });
+            }, 600);
+        }
+    });
     </script>
 
     {{-- Checkbox Ditujukan Oleh --}}
@@ -369,3 +497,4 @@
             });
         });
     </script>
+

@@ -8,7 +8,8 @@ class WoDoneBy extends Model
 {
     protected $keyType = 'string'; 
     protected $table = 'wo_doneby';
-    public $timestamps = false; 
+        public $timestamps = true;
+
     
     protected $fillable = [ 
         'WO_No',

@@ -11,6 +11,8 @@ class Cats extends Model
     public $incrementing = false; 
     protected $keyType = 'string'; 
     protected $table = 'Cats';
+        public $timestamps = true;
+
 
     protected $fillable = [
         'Cat_No',    

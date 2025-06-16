@@ -93,7 +93,7 @@
 
                                                     <div class="fv-row col-lg-8">
                                                         <div class="d-flex align-items-center gap-5">
-                                                            <select class="form-select form-select-lg form-select-solid flex-grow-1" 
+                                                            <select class="form-select form-select-lg form-select-solid flex-grow-1 exclude-disable" 
                                                                 id="reference_number" name="reference_number" data-control="select2" 
                                                                 data-placeholder="Select Reference">
                                                                 <option value="{{ $case->Case_No }}" selected>{{ $case->Case_No }}</option>
@@ -112,9 +112,8 @@
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Created By</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
-                                                        <input type="text" id="created_by" name="created_by" class="form-control form-control-lg form-control-solid" 
+                                                        <input type="text" id="created_by" name="created_by" class="form-control form-control-lg form-control-solid exclude-disable" 
                                                         value="{{ $case->user->Fullname }}" disabled />
-                                                
                                                     </div>
                                                 </div>
                                                 <!--end::Input Craeted By-->
@@ -125,20 +124,19 @@
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Position</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
-                                                        <input type="text" id="department" name="department" class="form-control form-control-lg form-control-solid" 
+                                                        <input type="text" id="department" name="department" class="exclude-disable form-control form-control-lg form-control-solid" 
                                                         value="{{ $case->user->position->PS_Name }}" disabled />
-
                                                     </div>
                                                 </div>
                                                 <!--end::Input Position-->
                                                         
                                                 <!--begin::Input date-->
-                                                <div class="fv-row row mb-10">
+                                                <div class="fv-row row mb-10">  
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Date</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
-                                                        <input type="text" id="date" name="date" class="form-control form-control-lg form-control-solid" 
+                                                        <input type="text" id="date" name="date" class="exclude-disable form-control form-control-lg form-control-solid" 
                                                             value="{{ $case->created_at->format('d/m/Y H:i') }}" disabled />
                                                     </div>
                                                 </div>
@@ -248,7 +246,7 @@
                                                     </label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
-                                                        <input class="form-check-input me-3" name="require_material" type="checkbox" 
+                                                        <input class="form-check-input me-3 readonly-checkbox" name="require_material" type="checkbox" 
                                                         value="yes" id="require_material_checkbox" {{ $wo->WO_NeedMat == 'Y' ? 'checked' : '' }} />
                                                     
                                                         <label class="form-check-label" for="require_material_checkbox">
@@ -258,8 +256,8 @@
                                                 </div>
                                                 <!--end::Input Work Description-->
 
-                                                <!--begin::Input Work Description-->
-                                                <div id="intended_for_section" class="fv-row row mb-10 {{ $wo->WO_NeedMat == 'Y' ? '' : 'd-none' }}"">
+                                                <!--begin::Input Itended For-->
+                                                <div id="intended_for_section" class="fv-row row mb-10 {{ $wo->WO_NeedMat == 'Y' ? '' : 'd-none' }} readonly-select">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                                         <span class="required">Intended for</span>
@@ -273,7 +271,7 @@
                                                     </label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
-                                                        <select name="intended_for" class="form-select" id="intended_for">
+                                                        <select name="intended_for" class="form-select readonly-select" id="intended_for">
                                                             <option value="">Choose User</option>
                                                             @foreach($users as $user)
                                                                 <option value="{{ $user->id }}" {{ $user->id == $wo->WO_MR ? 'selected' : '' }}>
@@ -283,13 +281,17 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <!--end::Input Work Description-->
+                                                <!--end::Input Itended For-->
                                             </div>
                                             <!--end::Card body-->
                                             
                                             <!--begin::Actions-->
                                             <div class="card-footer d-flex justify-content-end py-6 px-9 gap-4">
-                                                <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-warning" name="save_case" value="1">
+                                                <button id="btnEditWO" type="button" class="btn btn-warning">
+                                                    Edit Work Order
+                                                </button>
+                                                
+                                                <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-info" name="save_case" value="1">
                                                     <span class="indicator-label text">
                                                       Save Work Order
                                                     </span>
@@ -306,6 +308,7 @@
                                                         Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                                                     </span>
                                                 </button>
+
                                             </div>
                                             <!--end::Actions-->        
                                         </form>

@@ -11,15 +11,23 @@ class technician extends Model
     protected $primaryKey = 'technician_id';
     public $incrementing = false;
     protected $keyType = 'string';
+        public $timestamps = true;
+
 
     protected $fillable = [
         'technician_id',
         'technician_Name',
+        'PS_ID'
     ];
 
     public function workOrders()
     {
         return $this->belongsToMany(WorkOrder::class, 'WO_DoneBy', 'technician_id', 'WO_No');
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class, 'PS_ID');
     }
 
     public function getIncrementTechnicianNo()

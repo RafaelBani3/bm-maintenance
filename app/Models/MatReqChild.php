@@ -12,6 +12,7 @@ class MatReqChild extends Model
     public $incrementing = false;
     protected $primaryKey = null;
     protected $keyType = 'string';
+    public $timestamps = true;
 
     protected $fillable = [
         'MR_No',

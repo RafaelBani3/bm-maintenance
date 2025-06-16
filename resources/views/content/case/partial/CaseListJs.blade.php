@@ -195,7 +195,10 @@
                             if ((row.Case_Status === "OPEN" || row.Case_Status === "REJECT") && canEditCase) {
                                 buttons += `
                                     <a href="${editUrl}" class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" title="Edit Case">
-                                        <i class="ki-duotone ki-pencil fs-3 text-warning"></i>
+                                        <i class="ki-duotone ki-pencil fs-2 align-middle text-center">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
                                     </a>`;
                             }
                             buttons += `

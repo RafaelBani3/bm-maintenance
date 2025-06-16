@@ -11,7 +11,6 @@
             color: #fff !important;
             border-radius: 6px;
         }
-
     </style>
 
     <div id="app_content" class="app-content flex-column-fluid">
@@ -100,7 +99,7 @@
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    <span class="required">Start Date</span>
+                                    <span class="required">Start Date of Work</span>
                                     <span class="ms-1" data-bs-toggle="tooltip" title="Select the start date for this Work Order.">
                                         <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
                                             <span class="path1"></span>
@@ -120,7 +119,7 @@
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
-                                    <span class="required">Estimate Date</span>
+                                    <span class="required">Estimated Completion Date</span>
                                     <span class="ms-1" data-bs-toggle="tooltip" title="Select the expected completion date for this Work Order.">
                                         <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
                                             <span class="path1"></span>
@@ -131,7 +130,7 @@
                                 </label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
-                                    <input type="text" id="end_date" name="end_date" class="form-control form-control-lg form-control-solid" placeholder="Pick a date" />
+                                    <input type="text" id="end_date" name="end_date" class="form-control form-control-lg form-control-solid" placeholder="Estimate Work Order date" />
                                 </div>
                             </div>
                             <!--end::Input end date-->
@@ -163,9 +162,6 @@
                                 </div>
                             </div>
                             <!--end::Input assigned to-->
-
-                            
-                            
 
                             <!--begin::Input Work Description-->
                             <div class="fv-row row mb-10">
@@ -263,7 +259,7 @@
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title" id="caseDetailsModalLabel">
-                    Case Details – <span id="modal_case_no"></span>
+                    Case Details – <span id="modal_case_no"></span> 
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -272,6 +268,10 @@
                     <!-- Bagian Informasi Utama (Category, Subcategory, Created By, Department) -->
                     <div class="row mb-3">
                         <div class="col-md-6">
+                            <dl class="row mb-2">
+                            <dt class="col-sm-4 text-muted">Case Name                                               </dt>
+                            <dd class="col-sm-8 fw-semibold" id="modal_case_name"></dd>
+                            </dl>
                             <dl class="row mb-2">
                             <dt class="col-sm-4 text-muted">Category</dt>
                             <dd class="col-sm-8 fw-semibold" id="modal_category"></dd>
@@ -282,7 +282,7 @@
                             </dl>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-6">  
                             <dl class="row mb-2">
                             <dt class="col-sm-4 text-muted">Created By</dt>
                             <dd class="col-sm-8 fw-semibold" id="modal_created_by"></dd>

@@ -115,6 +115,8 @@ class MRController extends Controller
                     'CR_ITEM_CODE' => $item['code'] ?? '-',
                     'CR_ITEM_NAME' => $item['name'],
                     'Remark' => $item['desc'] ?? '-',
+                    'UOM_Code' => $item['unit_cd'] ?? '-',
+                    'UOM_Name' => $item['unit'] ?? '-'
                 ]);
             }
 
@@ -241,6 +243,8 @@ class MRController extends Controller
                     'CR_ITEM_SATUAN' => $item['unit'],
                     'Item_Oty' => $item['qty'],
                     'Remark' => $item['desc'],
+                    'UOM_Code' => $item['unit_cd'] ?? '-',
+                    'UOM_Name' => $item['unit'] ?? '-'
                 ]);
             }
 
@@ -261,7 +265,6 @@ class MRController extends Controller
         }
     }
 
-  
     public function UpdateMR(Request $request)
     {
         $userId = Auth::id();
@@ -303,7 +306,7 @@ class MRController extends Controller
             $mr->MR_Allotment = $request->Designation;
 
             $matrix = collect([
-                ['Mat_No' => 9, 'Position' => 9, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                ['Mat_No' => 9, 'Position' => 5, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 10, 'Position' => 3, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 11, 'Position' => 8, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 12, 'Position' => 2, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
@@ -340,6 +343,8 @@ class MRController extends Controller
                     'CR_ITEM_SATUAN' => $item['unit'],
                     'Item_Oty' => $item['qty'],
                     'Remark' => $item['desc'],
+                    'UOM_Code' => $item['unit_cd'] ?? '-',
+                    'UOM_Name' => $item['unit'] ?? '-'
                 ]);
             }
 
@@ -380,7 +385,7 @@ class MRController extends Controller
                 'LOG_Status' => 'FAILED',
                 'LOG_User'   => $userId,
                 'LOG_Date'   => now(),
-                'LOG_Desc'   => 'FAILED TO SUBMIT Material Request. Error: ' . $e->getMessage(),
+                'LOG_Desc'   => substr('FAILED TO SUBMIT Material Request. Error: ' . $e->getMessage(), 0, 255),
             ]);
 
             Log::error('Material Request update failed by user_id: ' . $userId . ', Error: ' . $e->getMessage());
@@ -749,12 +754,12 @@ class MRController extends Controller
         $materialRequestDetails = MatReqChild::where('MR_No', $mrNo)->get();
 
         $logs = DB::table('Logs')
-        ->join('users', 'Logs.LOG_User', '=', 'users.id')
-        ->select('Logs.*', 'users.Fullname as user_name')
-        ->where('LOG_Type', 'MR') 
-        ->where('LOG_RefNo', $materialRequest->MR_No)
-        ->orderBy('LOG_Date', 'desc')
-        ->get();
+            ->join('users', 'Logs.LOG_User', '=', 'users.id')
+            ->select('Logs.*', 'users.Fullname as user_name')
+            ->where('LOG_Type', 'MR') 
+            ->where('LOG_RefNo', $materialRequest->MR_No)
+            ->orderBy('LOG_Date', 'desc')
+            ->get();
 
         return view('content.mr.ApprovalDetailMR', [
             'materialRequest' => $materialRequest,

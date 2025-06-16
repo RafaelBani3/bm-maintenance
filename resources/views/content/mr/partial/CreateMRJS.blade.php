@@ -1,5 +1,5 @@
     {{-- Date --}}
-    <script>
+    <script>    
         $("#date").flatpickr({
             enableTime: true,
             altInput: true,
@@ -7,6 +7,19 @@
             altFormat: "d/m/Y H:i",
             dateFormat: "Y-m-d H:i",
             minDate: "today",
+             defaultDate: new Date(), // Set default to now
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const today = new Date();
+                const date = dayElem.dateObj;
+
+                if (
+                    date.getDate() === today.getDate() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getFullYear() === today.getFullYear()
+                ) {
+                    dayElem.classList.add("today-highlight");
+                }
+            }
         });
     </script>
 
@@ -285,7 +298,7 @@
     </script>
         
     {{-- Script Add Row Table --}}
-    <script>
+    {{-- <script>
         function updateRowNumbers() {
             const rows = document.querySelectorAll('#material-body tr');
             rows.forEach((row, index) => {
@@ -354,4 +367,187 @@
             }
         });
     
-    </script>
+    </script> --}}
+
+    {{-- <script>
+    let uomOptionsHtml = '';
+
+    // Fetch UOM once when the page loads
+    async function fetchUOMOptions() {
+        try {
+            const response = await fetch('http://10.10.10.86:8088/erp_api/api/ifca/get/uom', {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success && Array.isArray(data.data.uom)) {
+                uomOptionsHtml = data.data.uom.map(uom => {
+                    return `<option value="${uom.uom_cd}">${uom.uom_cd} - ${uom.descs}</option>`;
+                }).join('');
+            }
+        } catch (error) {
+            console.error('Failed to load UOM:', error);
+        }
+    }
+
+    // Call it on page load
+    fetchUOMOptions();
+
+    // Update numbering and input name attributes
+    function updateRowNumbers() {
+        const rows = document.querySelectorAll('#material-body tr');
+        rows.forEach((row, index) => {
+            row.querySelector('td:first-child').textContent = index + 1;
+            const inputs = row.querySelectorAll('input');
+            const select = row.querySelector('select');
+            if (inputs.length >= 4 && select) {
+                inputs[0].setAttribute('name', `items[${index}][qty]`);
+                select.setAttribute('name', `items[${index}][unit]`);
+                inputs[1].setAttribute('name', `items[${index}][code]`);
+                inputs[2].setAttribute('name', `items[${index}][name]`);
+                inputs[3].setAttribute('name', `items[${index}][desc]`);
+            }
+        });
+    }
+
+    // Add Row Button
+    document.getElementById('add-row').addEventListener('click', () => {
+        const table = document.getElementById('material-body');
+        const rowCount = table.querySelectorAll('tr').length;
+
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td class="text-center">${rowCount + 1}</td>
+            <td><input type="number" name="items[${rowCount}][qty]" class="form-control"></td>
+            <td>
+                <select name="items[${rowCount}][unit]" class="form-select select2-unit w-100" style="min-width: 150px;">
+                    ${uomOptionsHtml}</select>
+                <input type="hidden" name="items[${rowCount}][unit_cd]">
+            </td>
+            <td><input type="text" name="items[${rowCount}][code]" class="form-control"></td>
+            <td><input type="text" name="items[${rowCount}][name]" class="form-control"></td>
+            <td><input type="text" name="items[${rowCount}][desc]" class="form-control"></td>
+            <td class="text-center text-white">
+                <button type="button" class="btn btn-danger remove-row text-white">
+                    <i class="ki-duotone ki-trash fs-2 text-white">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                        <span class="path5"></span>
+                    </i>
+                </button>
+            </td>
+        `;
+
+        table.appendChild(newRow);
+        updateRowNumbers();
+    });
+
+    // Remove Row
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.remove-row')) {
+            e.target.closest('tr').remove();
+            updateRowNumbers();
+        }
+    });
+</script> --}}
+
+<script>
+    let uomOptionsHtml = '';
+
+    // Ambil UOM saat halaman dimuat
+    async function fetchUOMOptions() {
+        try {
+            const response = await fetch('http://10.10.10.86:8088/erp_api/api/ifca/get/uom', {
+                headers: { 'Accept': 'application/json' }
+            });
+
+            const data = await response.json();
+            if (data.success && Array.isArray(data.data.uom)) {
+                uomOptionsHtml = data.data.uom.map(uom => {
+                    return `<option value="${uom.descs}" data-code="${uom.uom_cd}">${uom.uom_cd} - ${uom.descs}</option>`;
+                }).join('');
+                initializeSelect2();
+            }
+        } catch (error) {
+            console.error('Failed to load UOM:', error);
+        }
+    }
+
+    fetchUOMOptions(); // Panggil saat load
+
+    // Init select2 untuk elemen dengan .select2-unit
+    function initializeSelect2() {
+        document.querySelectorAll('.select2-unit').forEach(select => {
+            if (!select.dataset.loaded) {
+                select.innerHTML = '<option value="">Select Unit</option>' + uomOptionsHtml;
+                $(select).select2({ placeholder: "Select Unit", allowClear: true, width: '100%' });
+                select.dataset.loaded = true;
+            }
+        });
+    }
+
+    // Update nomor dan name input tiap baris
+    function updateRowNumbers() {
+        document.querySelectorAll('#material-body tr').forEach((row, index) => {
+            row.querySelector('td:first-child').textContent = index + 1;
+            row.querySelector('input[name$="[qty]"]').setAttribute('name', `items[${index}][qty]`);
+            row.querySelector('select').setAttribute('name', `items[${index}][unit]`);
+            row.querySelector('input[name$="[unit_cd]"]').setAttribute('name', `items[${index}][unit_cd]`);
+            row.querySelector('input[name$="[code]"]').setAttribute('name', `items[${index}][code]`);
+            row.querySelector('input[name$="[name]"]').setAttribute('name', `items[${index}][name]`);
+            row.querySelector('input[name$="[desc]"]').setAttribute('name', `items[${index}][desc]`);
+        });
+    }
+
+    // Tombol tambah row
+    document.getElementById('add-row').addEventListener('click', () => {
+        const tbody = document.getElementById('material-body');
+        const rowCount = tbody.querySelectorAll('tr').length;
+
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td class="text-center">${rowCount + 1}</td>
+            <td><input type="number" name="items[${rowCount}][qty]" class="form-control" /></td>
+            <td>
+                <select name="items[${rowCount}][unit]" class="form-select select2-unit w-100" style="min-width:150px;"></select>
+                <input type="hidden" name="items[${rowCount}][unit_cd]">
+            </td>
+            <td><input type="text" name="items[${rowCount}][code]" class="form-control" /></td>
+            <td><input type="text" name="items[${rowCount}][name]" class="form-control" /></td>
+            <td><input type="text" name="items[${rowCount}][desc]" class="form-control" /></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger remove-row text-white">
+                    <i class="ki-duotone ki-trash fs-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        <span class="path4"></span><span class="path5"></span>
+                    </i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(newRow);
+        updateRowNumbers();
+        initializeSelect2();
+    });
+
+    // Tombol hapus row
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.remove-row')) {
+            e.target.closest('tr').remove();
+            updateRowNumbers();
+        }
+    });
+
+    // Saat unit berubah, isi hidden input unit_cd
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('select2-unit')) {
+            const selected = e.target.options[e.target.selectedIndex];
+            const code = selected.dataset.code || '';
+            const hiddenInput = e.target.parentElement.querySelector('input[type="hidden"]');
+            hiddenInput.value = code;
+        }
+    });
+</script>

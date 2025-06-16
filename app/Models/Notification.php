@@ -11,6 +11,7 @@ class Notification extends Model
 
     protected $table = 'Notification';
     protected $primaryKey = 'Notif_No';
+    public $timestamps = true;
 
     protected $fillable = [
         'Notif_No',

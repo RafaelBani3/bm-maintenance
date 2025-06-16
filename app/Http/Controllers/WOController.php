@@ -105,12 +105,34 @@ class WOController extends Controller
     // Ambil Data Technician 
     public function getTechnicians()
     {
-        $technicians = DB::table('technician')
-            ->select('technician_id', 'technician_Name')
-            ->orderBy('technician_Name', 'asc')
-            ->get();
+        // $technicians = DB::table('technician')
+        //     ->select('technician_id', 'technician_Name')
+        //     ->orderBy('technician_Name', 'asc')
+        //     ->get();
 
-        return response()->json($technicians);
+        // return response()->json($technicians);
+        $technicians = Technician::with('position')->get();
+
+        $grouped = $technicians->groupBy(function ($tech) {
+            return $tech->position->PS_Name ?? 'Unknown';
+        });
+
+        $result = [];
+        foreach ($grouped as $position => $group) {
+            $children = $group->map(function ($tech) {
+                return [
+                    'id' => $tech->technician_id,
+                    'text' => "{$tech->technician_id} - {$tech->technician_Name}"
+                ];
+            })->toArray();
+
+            $result[] = [
+                'text' => $position,
+                'children' => $children
+            ];
+        }
+
+        return response()->json($result);
     }
 
     // Ambil Data User 
@@ -403,35 +425,35 @@ class WOController extends Controller
             // Validasi data
             $request->validate([
                 'wo_no' => 'required|string',
-                'reference_number' => 'required|string',
-                'start_date' => 'required|string',
-                'end_date' => 'required|string',
-                'work_description' => 'required|string',
-                'assigned_to' => 'nullable|array',
+                // 'reference_number' => 'required|string',
+                // 'start_date' => 'required|string',
+                // 'end_date' => 'required|string',
+                // 'work_description' => 'required|string',
+                // 'assigned_to' => 'nullable|array',
                 'require_material' => 'nullable|string',
             ]);
     
             $wo = WorkOrder::where('WO_No', $request->wo_no)->firstOrFail();
-            
-            
-            $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
-            $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
+             
+            // $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
+            // $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
 
-            Log::info("Work Order update process {$request->wo_no} started by user ID: {$user->id}");
+            // Log::info("Work Order update process {$request->wo_no} started by user ID: {$user->id}");
     
-            $wo->Case_No = $request->reference_number;
-            $wo->WO_Start = $startDate;
-            $wo->WO_End = $endDate;
-            $wo->WO_Narative = $request->work_description;
+            // $wo->Case_No = $request->reference_number;
+            // $wo->WO_Start = $startDate;
+            // $wo->WO_End = $endDate;
+            // $wo->WO_Narative = $request->work_description;
             $wo->Update_Date = now();
+
             if ($request->has('require_material') && $request->require_material === 'yes') {
                 $wo->WO_NeedMat = 'Y';
                 $wo->WO_MR = $request->intended_for ?? $wo->WO_MR; 
                 $wo->WO_Status = 'Submit';
             } else {
-                $wo->WO_NeedMat = 'N';
+                $wo->WO_NeedMat = 'N';   
                 $wo->WO_MR = null;
-                $wo->WO_Status = 'INPROGRESS';
+                $wo->WO_Status = 'OPEN';
             }
             
             $wo->save();
@@ -453,25 +475,26 @@ class WOController extends Controller
                 ]);
         
             }
-            if ($request->has('assigned_to')) {
-                $existingTechnicians = DB::table('WO_DoneBy')
-                    ->where('WO_No', $request->wo_no)
-                    ->pluck('technician_id')
-                    ->toArray();
+
+            // if ($request->has('assigned_to')) {
+            //     $existingTechnicians = DB::table('WO_DoneBy')
+            //         ->where('WO_No', $request->wo_no)
+            //         ->pluck('technician_id')
+            //         ->toArray();
     
-                foreach ($request->assigned_to as $tech_id) {
-                    if (!in_array($tech_id, $existingTechnicians)) {
-                        DB::table('WO_DoneBy')->insert([
-                            'WO_No' => $request->wo_no,
-                            'technician_id' => $tech_id,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
+            //     foreach ($request->assigned_to as $tech_id) {
+            //         if (!in_array($tech_id, $existingTechnicians)) {
+            //             DB::table('WO_DoneBy')->insert([
+            //                 'WO_No' => $request->wo_no,
+            //                 'technician_id' => $tech_id,
+            //                 'created_at' => now(),
+            //                 'updated_at' => now(),
+            //             ]);
     
-                        Log::info("Technician {$tech_id} added to WO {$request->wo_no} by {$user->Fullname}");
-                    }
-                }
-            }
+            //             Log::info("Technician {$tech_id} added to WO {$request->wo_no} by {$user->Fullname}");
+            //         }
+            //     }
+            // }
     
             Logs::create([
                 'Logs_No' => Logs::generateLogsNo(),

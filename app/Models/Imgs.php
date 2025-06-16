@@ -12,6 +12,8 @@ class Imgs extends Model
     public $incrementing = false; 
     protected $keyType = 'string'; 
     protected $table = 'imgs';
+        public $timestamps = true;
+
 
     protected $fillable = [
         'IMG_No',    

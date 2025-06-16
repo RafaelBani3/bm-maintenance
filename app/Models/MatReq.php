@@ -14,6 +14,8 @@ class MatReq extends Model
     protected $primaryKey = 'MR_No';
     public $incrementing = false;
     protected $keyType = 'string';
+        public $timestamps = true;
+
 
     protected $fillable = [
         'MR_No',

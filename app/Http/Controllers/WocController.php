@@ -332,7 +332,7 @@ class WocController extends Controller
     {
         $user = auth::user();
         $request->validate([
-            'reference_number' => 'required|string',
+            // 'reference_number' => 'required|string',
             'start_date' => 'required|string',
             'end_date' => 'required|string',
             'work_description' => 'required|string',
@@ -436,18 +436,25 @@ class WocController extends Controller
     
         try {
             // Validasi data
-            $request->validate([
-                'reference_number' => 'required|string',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
-                'work_description' => 'required|string',
-                'assigned_to' => 'nullable|array',
-            ]);
-    
-            $wo = WorkOrder::where('WO_No', $request->reference_number)->firstOrFail();
-            
-            Log::info("Work Order Complition Submit process {$request->reference_number} started by user ID: {$user->id}");
-            
+            // $request->validate([
+            //     // 'reference_number' => 'required|string',
+            //     'start_date' => 'required|date',
+            //     'end_date' => 'required|date|after_or_equal:start_date',
+            //     'work_description' => 'required|string',
+            //     'assigned_to' => 'nullable|array',
+            // ]);
+
+            Log::info('Submitted WOC Data:', $request->all());
+
+            $wo = WorkOrder::where('WO_No', $request->reference_number)->first();
+            if (!$wo) {
+                Log::error("Work Order with number {$request->reference_number} not found by user ID: {$user->id}");
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Work Order not found.'
+                ], 404);
+            }
             // Matriks Approval
             $matrix = collect([
                 ['Mat_No' => 1, 'Position' => 1, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 11, 'AP2' => 15],
@@ -471,8 +478,6 @@ class WocController extends Controller
                 $wo->WO_APMaxStep = $matrixRow['Mat_Max'];
             }
 
-            // $wocNo = (new WorkOrder)->getIncrementWOCNo();
-            // $wo->WOC_No = $wocNo;
             $wo->WO_Start = $request->start_date;
             $wo->WO_Compdate = Carbon::createFromFormat('Y-m-d H:i', $request->end_date)->format('Y-m-d H:i:s');
             $wo->WO_Narative = $request->work_description;
@@ -494,7 +499,7 @@ class WocController extends Controller
                     'Logs_No' => Logs::generateLogsNo(),
                     'LOG_Type' => 'BA',
                     'LOG_RefNo' => $wo->WOC_No,
-                    'LOG_Status' => 'REJECT_RESET',
+                    'LOG_Status' => 'REVISION',
                     'LOG_User' => Auth::id(),
                     'LOG_Date' => now(),
                     'LOG_Desc' => 'WOC status and reject fields reset due to revision.',
@@ -503,26 +508,6 @@ class WocController extends Controller
 
             $wo->save();
     
-            if ($request->has('assigned_to')) {
-                $existingTechnicians = DB::table('WO_DoneBy')
-                    ->where('WO_No', $request->reference_number)
-                    ->pluck('technician_id')
-                    ->toArray();
-            
-                foreach ($request->assigned_to as $tech_id) {
-                    if (!in_array($tech_id, $existingTechnicians)) {
-                        DB::table('WO_DoneBy')->insert([
-                            'WO_No' => $request->reference_number,
-                            'technician_id' => $tech_id,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-            
-                        Log::info("Technician {$tech_id} added to WO {$request->reference_number} by {$user->Fullname}");
-                    }
-                }
-            }
-            
             Logs::create([
                 'LOG_Type' => 'WO',
                 'LOG_RefNo' => $wo->WOC_No,
@@ -795,11 +780,6 @@ class WocController extends Controller
     {
         try {
             Log::info('Request received for WO approval/rejection', $request->all());
-
-            $request->validate([
-                'approvalNotes' => ['required', 'string', 'not_regex:/^<p><br><\/p>$/i'],
-                'action' => 'required|in:approve,reject',
-            ]);
 
             $decoded_wo_no = base64_decode($wo_no);
             $wo = WorkOrder::where('WO_No', $decoded_wo_no)->firstOrFail();
