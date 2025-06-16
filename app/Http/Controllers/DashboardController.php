@@ -61,6 +61,18 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
+        $rejectedWoc = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_Status', 'REJECT_COMPLETION')
+            ->whereNotNull('WOC_No')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $doneWoc = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_Status', 'DONE')
+            ->whereNotNull('WOC_No')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
         return view('content.dashboard.Dashboard', compact(
   'cases', 
  'totalApproved', 
@@ -68,6 +80,8 @@ class DashboardController extends Controller
             'totalWOtoMR',
             'TotalMRapproved',
             'TotalMRrejected',
+            'rejectedWoc',
+            'doneWoc'
         ));
     }
 
@@ -240,6 +254,39 @@ class DashboardController extends Controller
             'total' => $total,
             'approved' => $approved,
             'rejected' => $rejected,
+        ]);
+    }
+
+
+    public function GetWOCSummary()
+    {
+        $userId = Auth::id();
+
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $totalWOC = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_IsComplete', 'Y') 
+            ->whereNotNull('WOC_No')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $rejectedWoc = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_Status', 'REJECT_COMPLETION')
+            ->whereNotNull('WOC_No')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $doneWoc = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_Status', 'DONE')
+            ->whereNotNull('WOC_No')
+            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        return response()->json([
+            'total' => $totalWOC,
+            'rejectedWoc' => $rejectedWoc,
+            'doneWoc' => $doneWoc,
         ]);
     }
 

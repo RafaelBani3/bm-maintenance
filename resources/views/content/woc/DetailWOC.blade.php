@@ -18,6 +18,7 @@
                             <div class="card-title d-flex justify-content-between align-items-center w-100">
                                 <h3 class="fw-bold m-0 text-primary">Work Order Detail : {{ $workOrder->WO_No }} </h3>
                                 
+                                {{-- Button Log + Revisi --}}
                                 <div class="d-flex gap-2">
                                     <a href="#" class="btn btn-lg btn-flex btn-secondary fw-bold" data-bs-toggle="modal" data-bs-target="#kt_modal_scrollable_2">
                                         <i class="ki-duotone ki-chart fs-1 text-muted me-2">
@@ -28,7 +29,7 @@
                                     </a>
                                     
                                     @if(auth()->user()->hasAnyPermission(['view cr']))
-                                        @if($workOrder->WO_Status == 'REJECT')
+                                        @if($workOrder->WO_Status == 'REJECT_COMPLETION')
                                             <button 
                                                 type="button" 
                                                 class="btn btn-warning btn-lg btn-flex fw-bold" 
@@ -386,7 +387,7 @@
     
                 <div class="modal-body">
                     @php
-                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2', 'REVISION','DONE'];
+                        $allowedStatuses = ['CREATED', 'SUBMITTED', 'APPROVED 1', 'APPROVED 2', 'INPROGRESS', 'CLOSE', 'REJECTED 1', 'REJECTED 2', 'REVISION','DONE', 'REJECT_COMPLETION'];
                         $statusColors = [
                             'CREATED'    => 'bg-light-warning text-warning',
                             'SUBMITTED'  => 'bg-light-primary text-primary',
@@ -398,6 +399,7 @@
                             'REJECTED 2'     => 'bg-light-danger text-danger',
                             'REVISION'   => 'bg-light-info text-info',
                             'DONE'       => 'bg-light-success text-success',
+                            'REJECT_COMPLETION' => 'bg-light-danger text-danger'
                         ];
                     @endphp
     

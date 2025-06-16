@@ -453,7 +453,7 @@ class WOController extends Controller
             } else {
                 $wo->WO_NeedMat = 'N';   
                 $wo->WO_MR = null;
-                $wo->WO_Status = 'OPEN';
+                $wo->WO_Status = 'INPROGRESS';
             }
             
             $wo->save();

@@ -29,6 +29,19 @@
             altFormat: "d/m/Y H:i", 
             dateFormat: "d/m/Y H:i",
             minDate: "today",
+            defaultDate: new Date(), 
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const today = new Date();
+                const date = dayElem.dateObj;
+
+                if (
+                    date.getDate() === today.getDate() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getFullYear() === today.getFullYear()
+                ) {
+                    dayElem.classList.add("today-highlight");
+                }
+            }
             
         });
 
@@ -254,7 +267,7 @@
                 delay: 250,
                 processResults: function (data) {
                     return {
-                        results: data // sudah dalam format optgroup
+                        results: data 
                     };
                 },
                 cache: true

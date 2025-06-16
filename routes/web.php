@@ -43,6 +43,9 @@ use Illuminate\Support\Facades\Route;
     Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary'])
     ->name('Dashboard.MR.Summary');
 
+    Route::get('/dashboard/summary-woc', [DashboardController::class, 'GetWOCSummary'])->name('WOC.Summary');
+
+
     // Approval
     // Route::get('/ajax/pending-case-count', [DashboardController::class, 'getPendingCaseCount'])->name('ajax.pendingCaseCount');
     Route::get('/dashboard/pending-woc-count', [DashboardController::class, 'getPendingWOCCount'])->name('ajax.pendingWOCCount');
@@ -52,7 +55,6 @@ use Illuminate\Support\Facades\Route;
     Route::get('/ajax/pending-mr-count', [DashboardController::class, 'getPendingMRCount'])->name('ajax.pendingMRCount');
 
     Route::get('/dashboard/case-wo-summary', [DashboardController::class, 'getCaseWOSummary'])->name('dashboard.case-wo-summary');
-
 
     Route::get('/dashboard/waiting-counts', [DashboardController::class, 'getWaitingCounts'])->name('dashboard.waitingCounts');
 

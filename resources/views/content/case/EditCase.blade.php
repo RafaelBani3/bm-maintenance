@@ -12,7 +12,6 @@
             color: #fff !important;
             border-radius: 6px;
         }
-
     </style>
     
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">

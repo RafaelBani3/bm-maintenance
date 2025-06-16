@@ -400,12 +400,10 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
 
                 <!-- Row 2: Waitting Cards -->
-                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                {{-- <div class="row gx-5 gx-xl-10 mb-xl-10">
                     <!-- Cases Approved (Need to Create WO) -->
                     <div class="col-md-6">
                         <div class="card card-flush h-md-100">
@@ -441,8 +439,127 @@
                             </a>
                         </div>
                     </div>
+                </div> --}}
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                    <!-- LEFT SIDE: Work Order Completion Summary -->
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card card-flush shadow-sm h-md-100 border-0">
+                            <div class="card-body d-flex flex-column">
+                                <!-- Header -->
+                                <div class="mb-6">
+                                    <h3 class="text-dark fw-bold mb-1">Your Work Order Completion Summary</h3>
+                                    <span class="text-muted">This month</span>
+                                </div>
+
+                                <!-- Total WO-C -->
+                                <div class="d-flex align-items-center mb-5">
+                                    <div class="symbol symbol-60px me-4">
+                                        <div class="symbol-label bg-info">
+                                            <i class="ki-duotone ki-briefcase fs-3hx text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                            </i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fs-1 fw-bolder text-dark" id="woc-total"></div>
+                                        <div class="text-muted">Total WO Completion</div>
+                                    </div>
+                                </div>
+
+                                <!-- Status Breakdown Pills -->
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ route('ListWOCPage', ['status' => 'REJECT_COMPLETION']) }}"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-watch fs-2 text-danger me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="fw-semibold text-danger">Rejected</span>
+                                        </div>
+                                        <span class="fw-bold text-danger" id="woc-reject">{{ $rejectedWoc }}</span>
+                                    </a>
+
+                                    <a href="{{ route('ListWOCPage', ['status' => 'DONE']) }}"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
+                                            <span class="fw-semibold text-success">Completed</span>
+                                        </div>
+                                        <span class="fw-bold text-success" id="woc-done">{{ $doneWoc }}</span>
+                                    </a>
+                                </div>
+
+                                <!-- Button Section -->
+                                @if ($rejectedWoc > 0)
+                                    <div class="mt-5">
+                                        <a href="{{ route('ListWOCPage', ['status' => 'REJECT_COMPLETION']) }}"
+                                            class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                            style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-cross-square fs-2hx me-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Review Rejected WO-C</span>
+                                                <small class="text-white-50">{{ $rejectedWoc }} Rejected</small>
+                                            </span>
+                                        </a>
+                                    </div>
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- RIGHT SIDE: Case & MR Approval Cards -->
+                    <div class="col-md-6 col-xl-8">
+                        <div class="row gy-5">
+                            <!-- Cases Approved -->
+                            <div class="col-md-6">
+                                <div class="card card-flush h-md-100">
+                                    <a href="{{ route('CreateWO') }}">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h4 class="text-gray-800 fw-bold mb-0">Cases Approved</h4>
+                                                <span class="badge badge-light">Need to Create WO</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-2hx fw-bold text-dark me-2" id="total-case-ap2">0</span>
+                                                <span class="text-muted fs-6">ready for WO</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Material Requests Approved -->
+                            <div class="col-md-6">
+                                <div class="card card-flush h-md-100">
+                                    <a href="{{ route('CreateWOC') }}">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h4 class="text-gray-800 fw-bold mb-0">Material Requests Approved</h4>
+                                                <span class="badge badge-light">MR Done</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-2hx fw-bold text-dark me-2" id="total-mr-ap4">0</span>
+                                                <span class="text-muted fs-6">ready for WO-C</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-        
+
+
+
                 <!-- Row 3: Charts -->
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
                     <!-- Case by Category Chart -->
@@ -814,19 +931,17 @@
         </script> --}}
 
         <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch("{{ route('dashboard.wo-summary') }}")
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("wo-total").textContent = data.total ?? 0;
-                document.getElementById("wo-inprogress").textContent = data.inprogress ?? 0;
-                document.getElementById("wo-done").textContent = data.done ?? 0;
-            })
-            .catch(error => console.error("Gagal ambil data WO:", error));
-    });
-</script>
-
-
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch("{{ route('dashboard.wo-summary') }}")
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("wo-total").textContent = data.total ?? 0;
+                        document.getElementById("wo-inprogress").textContent = data.inprogress ?? 0;
+                        document.getElementById("wo-done").textContent = data.done ?? 0;
+                    })
+                    .catch(error => console.error("Gagal ambil data WO:", error));
+            });
+        </script>
 
         {{-- SCRIPT MR --}}
         {{-- Script MR tampil total data + Persen Perbandingan + Grafik --}}
@@ -890,25 +1005,40 @@
             });
         </script> --}}
 
-<script>
-    $(document).ready(function () {
-        $.ajax({
-            url: "{{ route('Dashboard.MR.Summary') }}",
-            type: "GET",
-            success: function (data) {
-                $("#mr-total").text(data.total || 0);
-                $("#mr-approved").text(data.approved || 0);
-                $("#mr-rejected").text(data.rejected || 0);
-            },
-            error: function (xhr) {
-                console.error("Gagal mengambil data Material Request", xhr);
-            }
-        });
-    });
-</script>
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    url: "{{ route('Dashboard.MR.Summary') }}",
+                    type: "GET",
+                    success: function (data) {
+                        $("#mr-total").text(data.total || 0);
+                        $("#mr-approved").text(data.approved || 0);
+                        $("#mr-rejected").text(data.rejected || 0);
+                    },
+                    error: function (xhr) {
+                        console.error("Gagal mengambil data Material Request", xhr);
+                    }
+                });
+            });
+        </script>
 
-
-
+        {{-- SCRIPT WOC --}}
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    url: "{{ route('WOC.Summary') }}", 
+                    type: 'GET',
+                    success: function (response) {
+                        $('#woc-total').text(response.total ?? 0);
+                        $('#woc-done').text(response.doneWoc ?? 0);
+                        $('#woc-reject').text(response.rejectedWoc ?? 0); 
+                    },
+                    error: function () {
+                        console.error('Failed to load WOC Summary');
+                    }
+                });
+            });
+        </script>
 
 
 

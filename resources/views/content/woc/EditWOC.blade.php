@@ -32,14 +32,14 @@
                         <div id="work_order_complition_form" class="card-body p-5">
                             <form id="WOCFrom" enctype="multipart/form-data" method="POST">
                                 @csrf
-                                <input type="text" name="case_no" value="{{ $workOrder->Case_No }}" readonly>
-                                <input type="text" name="wo_no" value="{{ $workOrder->WO_No }}" readonly>
-                                <input type="text" name="woc_no" value="{{ $workOrder->WOC_No }}" readonly>
-
+                                <input type="hidden" name="case_no" value="{{ $workOrder->Case_No }}" readonly>
+                                <input type="hidden" name="wo_no" value="{{ $workOrder->WO_No }}" readonly>
+                                <input type="hidden" name="woc_no" value="{{ $workOrder->WOC_No }}" readonly>
 
                                 <!--begin::Card body-->
                                 <div class="card-body p-2">
-                                    <!--begin::Input Cases-->
+                                    
+                                    <!--begin::Reference Cases-->
                                     <div class="fv-row row mb-10">
                                         <!--begin::Label-->
                                         <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -67,11 +67,10 @@
                                                         {{ $workOrder->WO_No }}
                                                     </option>
                                                 </select>
-
                                             </div>
                                         </div>
                                     </div>
-                                    <!--End::Input Cases-->
+                                    <!--End::Reference Cases-->
 
                                     <!--begin::Input date-->
                                     <div class="fv-row row mb-10">
@@ -82,10 +81,11 @@
                                             <input type="text" id="work_order_date" name="work_order_date" 
                                                 class="form-control form-control-lg form-control-solid" 
                                                 placeholder="Work Order Date" 
-                                                value="{{ $workOrder->CR_DT }}" disabled /></div>
+                                                value="{{ $workOrder->CR_DT }}" readonly/>
                                         </div>
+                                    </div>
                                     <!--end::Input date-->
-
+                
                                     <!--begin::Input Created By-->
                                     <div class="fv-row row mb-10">
                                         <!--begin::Label--> 
@@ -94,7 +94,7 @@
                                         <div class="col-lg-8 fv-row">
                                             <input type="text" id="created_by" name="created_by" 
                                             class="form-control form-control-lg form-control-solid" 
-                                            value="{{ $workOrder->createdBy->Fullname ?? '' }}" disabled />
+                                            value="{{ $workOrder->createdBy->Fullname ?? '' }}" readonly />
                                         </div>
                                     </div>
                                     <!--end::Input Craeted By-->
@@ -107,7 +107,7 @@
                                         <div class="col-lg-8 fv-row">
                                             <input type="text" id="position" name="position" 
                                             class="form-control form-control-lg form-control-solid" 
-                                            value="{{ $workOrder->CreatedBy->position->PS_Name ?? '' }}" disabled />
+                                            value="{{ $workOrder->CreatedBy->position->PS_Name ?? '' }}"  readonly/>
                                         </div>
                                     </div>
                                     <!--end::Input Position-->
@@ -157,7 +157,7 @@
                                     <!--end::Input end date-->
 
                                     <!--begin::Input assigned to-->
-                                    <div class="fv-row row mb-10">
+                                    {{-- <div class="fv-row row mb-10">
                                         <!--begin::Label-->
                                         <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
                                             <span class="required">Assigned To</span>
@@ -183,8 +183,29 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <!--end::Input assingned to-->
+
+                                    <!--begin::Input assigned to-->
+                                    <div class="fv-row row mb-10">
+                                        <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                            <span class="required">Assigned To</span>
+                                            <span class="ms-1" data-bs-toggle="tooltip" title="Select the technician or team responsible for this Work Order.">
+                                                <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                            </span>
+                                        </label>
+                                        <div class="col-lg-8 fv-row">
+                                            <select id="assigned_to" name="assigned_to[]" multiple="multiple" 
+                                                class="form-select form-select-lg form-select-solid"
+                                                data-control="select2" data-close-on-select="false" data-placeholder="Select technician" data-allow-clear="true">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--end::Input assigned to-->
 
                                     <!--begin::Input Work Description-->
                                     <div class="fv-row row mb-10">
@@ -267,9 +288,14 @@
 
                                 <!-- Submit Button -->
                                 <div class="text-end mt-4">
-                                    <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-warning" name="save_case" value="1">
+                                    
+                                    <button id="btn-edit-woc" type="button" class="btn btn-warning">
+                                        Edit WorkOrder Complition
+                                    </button>
+
+                                    <button id="kt_docs_formvalidation_text_save" type="submit" class="btn btn-info" name="save_case" value="1">
                                         <span class="indicator-label text">
-                                            Save Work Order Complition
+                                            Save WorkOrder Complition
                                         </span>
                                         <span class="indicator-progress">
                                             Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -278,15 +304,11 @@
 
                                     <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary shadow-sm px-5">
                                         <span class="indicator-label">
-                                        Submit Work Order Complition
+                                        Submit WorkOrder Complition
                                         </span>
                                         <span class="indicator-progress">
                                             Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                                         </span>
-                                    </button>
-
-                                    <button id="btn-edit-woc" type="button" class="btn btn-secondary">
-                                        Edit WorkOrder Complition
                                     </button>
                                 </div>
                             </form>   
@@ -320,6 +342,37 @@
 
     <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js')}}"></script>
 
+    {{-- Script untuk Assigned To --}}
+    <script>
+        $(document).ready(function () {
+            const routeGetTechnician = "{{ route('GetTechnician') }}";
+
+            // Ambil teknisi dari server
+            $.ajax({
+                url: routeGetTechnician,
+                type: "GET",
+                success: function (technicians) {
+                    const select = $('#assigned_to');
+                    select.empty();
+
+                    technicians.forEach(group => {
+                        const optgroup = $('<optgroup>').attr('label', group.text);
+                        group.children.forEach(tech => {
+                            const isSelected = @json($selectedTechnicians).includes(tech.id);
+                            optgroup.append(`<option value="${tech.id}" ${isSelected ? 'selected' : ''}>${tech.text}</option>`);
+                        });
+                        select.append(optgroup);
+                    });
+
+                    select.trigger('change'); 
+                },
+                error: function (xhr) {
+                    console.error("Gagal mengambil data teknisi:", xhr.responseText);
+                }
+            });
+        });
+    </script>
+
     {{-- Script Date --}}
     <script>
         flatpickr("#work_order_date", {
@@ -327,7 +380,8 @@
             altInput: true,
             altFormat: "d/m/Y H:i",
             dateFormat: "Y-m-d H:i",
-            time_24hr: true
+            time_24hr: true,
+            minDate: "today",
         });
 
         flatpickr("#start_date", {
@@ -335,7 +389,8 @@
             altInput: true,
             altFormat: "d/m/Y H:i",
             dateFormat: "Y-m-d H:i",
-            time_24hr: true
+            time_24hr: true,
+            minDate: "today",
         });
 
         flatpickr("#end_date", {
@@ -343,10 +398,10 @@
             altInput: true,
             altFormat: "d/m/Y H:i",
             dateFormat: "Y-m-d H:i",
-            time_24hr: true
+            time_24hr: true,
+            minDate: "today",
         });
     </script>
-
 
     {{-- Script Validate & Update WOC --}}
     {{-- <script>
@@ -599,7 +654,7 @@
         });
     </script> --}}
     
-    <script>
+    {{-- <script>
         const updateWOCUrl = "{{ route('UpdateWOC') }}";
         const listWOCPageUrl = "{{ route('ListWOCPage') }}";
         const saveWOCUrl = "{{ route('WOC.SaveDraft') }}";
@@ -650,6 +705,7 @@
 
             // Default state
             $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', true);
+            $('#start_date, #end_date').prop('disabled', true).css('pointer-events', 'none');
             
             // $('#reference_number').prop('disabled', true);
             $('#kt_docs_formvalidation_text_save').hide(); 
@@ -685,6 +741,8 @@
                 setTimeout(() => {
                     $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
                     $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('disabled', false);
+                    // $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', true);
+
                     $('#reference_number').prop('disabled', true);
                     $('#btn-edit-woc').hide();
                     $('#kt_docs_formvalidation_text_submit').hide();
@@ -836,20 +894,761 @@
                 });
             });
         });
-    </script>
+    </script> --}}
+
+    {{-- <script>
+    const updateWOCUrl = "{{ route('UpdateWOC') }}";
+    const listWOCPageUrl = "{{ route('ListWOCPage') }}";
+    const saveWOCUrl = "{{ route('WOC.SaveDraft') }}";
+
+    Dropzone.autoDiscover = false;
+    let uploadedFiles = [];
+
+    const myDropzone = new Dropzone("#case-dropzone", {
+        url: "https://keenthemes.com/scripts/void.php",
+        autoProcessQueue: false,
+        addRemoveLinks: true,
+        maxFiles: 5,
+        maxFilesize: 2,
+        acceptedFiles: 'image/jpeg,image/png,image/jpg',
+        dictDefaultMessage: 'Drop files here or click to upload.',
+        dictMaxFilesExceeded: 'Maximum 5 files allowed.',
+        dictFileTooBig: 'File size must not exceed 2MB.',
+        dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
+        init: function () {
+            this.on("addedfile", function (file) {
+                if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+                    this.removeFile(file);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid File',
+                        text: 'Only JPG, JPEG, PNG under 2MB are allowed.'
+                    });
+                    return;
+                }
+
+                if (uploadedFiles.length >= 5) {
+                    this.removeFile(file);
+                    Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
+                    return;
+                }
+
+                uploadedFiles.push(file);
+            });
+
+            this.on("removedfile", function (file) {
+                uploadedFiles = uploadedFiles.filter(f => f !== file);
+            });
+        }
+    });
+
+    $(document).ready(function () {
+        const form = document.getElementById('WOCFrom');
+
+        // SET INITIAL STATE (form readonly)
+        setFormReadonly(true);
+
+        const validator = FormValidation.formValidation(form, {
+            fields: {
+                'reference_number': { validators: { notEmpty: { message: 'Reference No. is required' } } },
+                'start_date': { validators: { notEmpty: { message: 'Start Date is required' } } },
+                'end_date': { validators: { notEmpty: { message: 'End Date is required' } } },
+                'assigned_to[]': { validators: { notEmpty: { message: 'Assigned To is required' } } },
+                'work_description': { validators: { notEmpty: { message: 'Work Description is required' } } }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        });
+
+        // === EDIT MODE ===
+        $('#btn-edit-woc').on('click', function () {
+            showLoader();
+            setTimeout(() => {
+                hideLoader();
+                setFormReadonly(false);
+            }, 800);
+        });
+
+        // === SAVE DRAFT ===
+        $('#kt_docs_formvalidation_text_save').on('click', function (e) {
+            e.preventDefault();
+
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    Swal.fire({
+                        title: 'Confirm Save',
+                        text: 'Are you sure you want to save the changes?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Save it',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            showLoader();
+                            $('#kt_docs_formvalidation_text_save .indicator-label').hide();
+                            $('#kt_docs_formvalidation_text_save .indicator-progress').show();
+                            $('#kt_docs_formvalidation_text_save').prop('disabled', true);
+
+                            const formData = new FormData(form);
+                            uploadedFiles.forEach(file => formData.append('new_images[]', file));
+
+                            $.ajax({
+                                url: saveWOCUrl,
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    setTimeout(() => {
+                                        hideLoader();
+                                        $('#kt_docs_formvalidation_text_save .indicator-label').show();
+                                        $('#kt_docs_formvalidation_text_save .indicator-progress').hide();
+
+                                        if (response.success) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Saved',
+                                                text: response.message,
+                                                confirmButtonText: 'OK'
+                                            }).then(() => {
+                                                setFormReadonly(true);
+                                            });
+                                        } else {
+                                            $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+                                            Swal.fire({ icon: 'error', title: 'Error', text: response.message });
+                                        }
+                                    }, 800);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Form Incomplete',
+                        text: 'Please fill out all required fields before saving.'
+                    });
+                }
+            });
+        });
+
+        // === SUBMIT ===
+        $('#WOCFrom').on('submit', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Submit Work Order Completion?',
+                text: 'Are you sure all data is correct before submitting?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Submit WOC!',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    validator.validate().then(function (status) {
+                        if (status === 'Valid') {
+                            showLoader();
+                            $('#kt_docs_formvalidation_text_submit .indicator-label').hide();
+                            $('#kt_docs_formvalidation_text_submit .indicator-progress').show();
+                            $('#kt_docs_formvalidation_text_submit').prop('disabled', true);
+
+                            const formData = new FormData(form);
+
+                            $.ajax({
+                                url: updateWOCUrl,
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function () {
+                                    hideLoader();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success',
+                                        text: 'Work Order Completion has been submitted!',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                        window.location.href = listWOCPageUrl;
+                                    });
+                                },
+                                error: function () {
+                                    hideLoader();
+                                    $('#kt_docs_formvalidation_text_submit .indicator-label').show();
+                                    $('#kt_docs_formvalidation_text_submit .indicator-progress').hide();
+                                    $('#kt_docs_formvalidation_text_submit').prop('disabled', false);
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Something went wrong. Please check the input or try again.'
+                                    });
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Form Incomplete',
+                                text: 'Please fill out all required fields before submitting.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // === Helper Function ===
+        function setFormReadonly(readonly) {
+            $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('disabled', readonly);
+
+            // Force keep these disabled
+            $('#start_date, #end_date, #reference_number').prop('disabled', true);
+
+            if (readonly) {
+                $('#kt_docs_formvalidation_text_save').hide();
+                $('#kt_docs_formvalidation_text_submit').show();
+                $('#btn-edit-woc').show();
+
+                myDropzone.disable();
+                $('#case-dropzone').addClass('dz-disabled');
+                $('#case-dropzone .dz-message').css('pointer-events', 'none');
+                $('.delete-photo').hide();
+            } else {
+                $('#kt_docs_formvalidation_text_save').show();
+                $('#kt_docs_formvalidation_text_submit').hide();
+                $('#btn-edit-woc').hide();
+
+                myDropzone.enable();
+                $('#case-dropzone').removeClass('dz-disabled');
+                $('#case-dropzone .dz-message').css('pointer-events', 'auto');
+                $('.delete-photo').show();
+            }
+        }
+
+        function showLoader() {
+            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+        }
+
+        function hideLoader() {
+            $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+        }
+    });
+</script> --}}
+
+    {{-- <script>
+    const updateWOCUrl = "{{ route('UpdateWOC') }}";
+    const listWOCPageUrl = "{{ route('ListWOCPage') }}";
+    const saveWOCUrl = "{{ route('WOC.SaveDraft') }}";
+
+    Dropzone.autoDiscover = false;
+    let uploadedFiles = [];
+
+    const myDropzone = new Dropzone("#case-dropzone", {
+        url: "https://keenthemes.com/scripts/void.php",
+        autoProcessQueue: false,
+        addRemoveLinks: true,
+        maxFiles: 5,
+        maxFilesize: 2,
+        acceptedFiles: 'image/jpeg,image/png,image/jpg',
+        dictDefaultMessage: 'Drop files here or click to upload.',
+        dictMaxFilesExceeded: 'Maximum 5 files allowed.',
+        dictFileTooBig: 'File size must not exceed 2MB.',
+        dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
+        init: function () {
+            this.on("addedfile", function (file) {
+                if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+                    this.removeFile(file);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid File',
+                        text: 'Only JPG, JPEG, PNG under 2MB are allowed.'
+                    });
+                    return;
+                }
+
+                if (uploadedFiles.length >= 5) {
+                    this.removeFile(file);
+                    Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
+                    return;
+                }
+
+                uploadedFiles.push(file);
+            });
+
+            this.on("removedfile", function (file) {
+                uploadedFiles = uploadedFiles.filter(f => f !== file);
+            });
+        }
+    });
+
+    $(document).ready(function () {
+        const form = document.getElementById('WOCFrom');
+
+        // Set default semua input ke readonly atau disabled
+        $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', true).prop('disabled', true);
+        $('#btn-edit-woc').show();
+        $('#kt_docs_formvalidation_text_save').hide();
+        $('#kt_docs_formvalidation_text_submit').show();
+        myDropzone.disable();
+        $('#case-dropzone').addClass('dz-disabled');
+        $('#case-dropzone .dz-message').css('pointer-events', 'none');
+        $('.delete-photo').hide();
+
+        const validator = FormValidation.formValidation(form, {
+            fields: {
+                'reference_number': { validators: { notEmpty: { message: 'Reference No. is required' } } },
+                'start_date': { validators: { notEmpty: { message: 'Start Date is required' } } },
+                'end_date': { validators: { notEmpty: { message: 'End Date is required' } } },
+                'assigned_to[]': { validators: { notEmpty: { message: 'Assigned To is required' } } },
+                'work_description': { validators: { notEmpty: { message: 'Work Description is required' } } }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        });
+
+        // Tombol EDIT
+        $('#btn-edit-woc').on('click', function () {
+            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+
+            setTimeout(() => {
+                $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+
+                // Enable semua form
+                $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', false).prop('disabled', false);
+
+                // Tetap disabled/read-only untuk field tertentu
+                $('#start_date, #end_date').prop('disabled', true).css('pointer-events', 'none');
+                $('#position, #created_by, #reference_number').prop('disabled', true).css('pointer-events', 'none');
+
+                // Toggle tombol
+                $('#btn-edit-woc').hide();
+                $('#kt_docs_formvalidation_text_submit').hide();
+                $('#kt_docs_formvalidation_text_save').show();
+
+                // Aktifkan dropzone
+                myDropzone.enable();
+                $('#case-dropzone').removeClass('dz-disabled');
+                $('#case-dropzone .dz-message').css('pointer-events', 'auto');
+                $('.delete-photo').show();
+            }, 800);
+        });
+
+        // Tombol SAVE
+        $('#kt_docs_formvalidation_text_save').on('click', function (e) {
+            e.preventDefault();
+
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    Swal.fire({
+                        title: 'Confirm Save',
+                        text: 'Are you sure you want to save the changes?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Save it',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+                            $('#kt_docs_formvalidation_text_save .indicator-label').hide();
+                            $('#kt_docs_formvalidation_text_save .indicator-progress').show();
+                            $('#kt_docs_formvalidation_text_save').prop('disabled', true);
+
+                            const formData = new FormData(form);
+                            uploadedFiles.forEach(file => formData.append('new_images[]', file));
+
+                            $.ajax({
+                                url: saveWOCUrl,
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    setTimeout(() => {
+                                        $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                        $('#kt_docs_formvalidation_text_save .indicator-label').show();
+                                        $('#kt_docs_formvalidation_text_save .indicator-progress').hide();
+
+                                        if (response.success) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Saved',
+                                                text: response.message,
+                                                confirmButtonText: 'OK'
+                                            }).then(() => {
+                                                $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', true).prop('disabled', true);
+                                                $('#kt_docs_formvalidation_text_save').hide();
+                                                $('#btn-edit-woc').show();
+                                                $('#kt_docs_formvalidation_text_submit').show();
+                                                $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+                                            });
+                                        } else {
+                                            $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+                                            Swal.fire({ icon: 'error', title: 'Error', text: response.message });
+                                        }
+                                    }, 800);
+                                },
+                                error: function () {
+                                    $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                    $('#kt_docs_formvalidation_text_save .indicator-label').show();
+                                    $('#kt_docs_formvalidation_text_save .indicator-progress').hide();
+                                    $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+                                    Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong. Please try again.' });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Form Incomplete',
+                        text: 'Please fill out all required fields before saving.'
+                    });
+                }
+            });
+        });
+
+        // Tombol SUBMIT
+        $('#WOCFrom').on('submit', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Submit Work Order Completion?',
+                text: 'Are you sure all data is correct before submitting?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Submit WOC!',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    validator.validate().then(function (status) {
+                        if (status === 'Valid') {
+                            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+                            $('#kt_docs_formvalidation_text_submit .indicator-label').hide();
+                            $('#kt_docs_formvalidation_text_submit .indicator-progress').show();
+                            $('#kt_docs_formvalidation_text_submit').prop('disabled', true);
+
+                            const formData = new FormData(form);
+
+                            $.ajax({
+                                url: updateWOCUrl,
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function () {
+                                    $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success',
+                                        text: 'Work Order Completion has been submitted!',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                        window.location.href = listWOCPageUrl;
+                                    });
+                                },
+                                error: function () {
+                                    $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                    $('#kt_docs_formvalidation_text_submit .indicator-label').show();
+                                    $('#kt_docs_formvalidation_text_submit .indicator-progress').hide();
+                                    $('#kt_docs_formvalidation_text_submit').prop('disabled', false);
+                                    Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong. Please try again.' });
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Form Incomplete',
+                                text: 'Please fill out all required fields before submitting.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script> --}}
+
+
+<script>
+    const updateWOCUrl = "{{ route('UpdateWOC') }}";
+    const listWOCPageUrl = "{{ route('ListWOCPage') }}";
+    const saveWOCUrl = "{{ route('WOC.SaveDraft') }}";
+
+    Dropzone.autoDiscover = false;
+    let uploadedFiles = [];
+
+    const myDropzone = new Dropzone("#case-dropzone", {
+        url: "https://keenthemes.com/scripts/void.php",
+        autoProcessQueue: false,
+        addRemoveLinks: true,
+        maxFiles: 5,
+        maxFilesize: 2,
+        acceptedFiles: 'image/jpeg,image/png,image/jpg',
+        dictDefaultMessage: 'Drop files here or click to upload.',
+        dictMaxFilesExceeded: 'Maximum 5 files allowed.',
+        dictFileTooBig: 'File size must not exceed 2MB.',
+        dictInvalidFileType: 'Only JPG, JPEG, and PNG files are allowed.',
+        init: function () {
+            this.on("addedfile", function (file) {
+                if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+                    this.removeFile(file);
+                    Swal.fire({ icon: 'warning', title: 'Invalid File', text: 'Only JPG, JPEG, PNG under 2MB are allowed.' });
+                    return;
+                }
+
+                if (uploadedFiles.length >= 5) {
+                    this.removeFile(file);
+                    Swal.fire({ icon: 'warning', title: 'Max Files', text: 'You can upload up to 5 images.' });
+                    return;
+                }
+
+                uploadedFiles.push(file);
+            });
+
+            this.on("removedfile", function (file) {
+                uploadedFiles = uploadedFiles.filter(f => f !== file);
+            });
+        }
+    });
+
+    $(document).ready(function () {
+        const form = document.getElementById('WOCFrom');
+
+        // Default: semua field readonly dan disable
+        $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', true);
+        // $('#WOCFrom select').prop('disabled', true);
+        $('#start_date, #end_date').prop('readonly', true).css('pointer-events', 'none');
+
+
+        $('#kt_docs_formvalidation_text_save').hide();
+        $('#btn-edit-woc').show();
+        $('#kt_docs_formvalidation_text_submit').show();
+        myDropzone.disable();
+        $('#case-dropzone').addClass('dz-disabled');
+        $('#case-dropzone .dz-message').css('pointer-events', 'none');
+        $('.delete-photo').hide();
+
+        const validator = FormValidation.formValidation(form, {
+            fields: {
+                'reference_number': { validators: { notEmpty: { message: 'Reference No. is required' } } },
+                'start_date': { validators: { notEmpty: { message: 'Start Date is required' } } },
+                'end_date': { validators: { notEmpty: { message: 'End Date is required' } } },
+                'assigned_to[]': { validators: { notEmpty: { message: 'Assigned To is required' } } },
+                'work_description': { validators: { notEmpty: { message: 'Work Description is required' } } }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        });
+
+        // === Button Edit ===
+        $('#btn-edit-woc').on('click', function () {
+            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+
+            setTimeout(() => {
+                $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+
+                // Enable all inputs except yang ingin tetap readonly
+                $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', false).prop('disabled', false);
+                $('#reference_number').prop('readonly', true);
+                $('#start_date, #end_date').prop('readonly', true).css('pointer-events', 'none');
+                
+                $('#btn-edit-woc').hide();
+                $('#kt_docs_formvalidation_text_submit').hide();
+                $('#kt_docs_formvalidation_text_save').show();
+
+                myDropzone.enable();
+                $('#case-dropzone').removeClass('dz-disabled');
+                $('#case-dropzone .dz-message').css('pointer-events', 'auto');
+                $('.delete-photo').show();
+            }, 800);
+        });
+
+        // === Button Save Draft ===
+        $('#kt_docs_formvalidation_text_save').on('click', function (e) {
+            e.preventDefault();
+
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    Swal.fire({
+                        title: 'Confirm Save',
+                        text: 'Are you sure you want to save the changes?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Save it',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+                            $('#kt_docs_formvalidation_text_save .indicator-label').hide();
+                            $('#kt_docs_formvalidation_text_save .indicator-progress').show();
+                            $('#kt_docs_formvalidation_text_save').prop('disabled', true);
+
+                            const formData = new FormData(form);
+                            uploadedFiles.forEach(file => formData.append('new_images[]', file));
+
+                            $.ajax({
+                                url: saveWOCUrl,
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    setTimeout(() => {
+                                        $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                        $('#kt_docs_formvalidation_text_save .indicator-label').show();
+                                        $('#kt_docs_formvalidation_text_save .indicator-progress').hide();
+
+                                        if (response.success) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Saved',
+                                                text: response.message,
+                                                confirmButtonText: 'OK'
+                                            }).then(() => {
+                                                // Tampilkan loader
+                                                $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+
+                                                // Kembalikan form ke readonly
+                                                $('#WOCFrom input, #WOCFrom textarea, #WOCFrom select').prop('readonly', true);
+                                                $('#WOCFrom select').prop('disabled', true);
+                                                $('#start_date, #end_date').prop('readonly', true).css('pointer-events', 'none');
+
+                                                $('#kt_docs_formvalidation_text_save').hide();
+                                                $('#btn-edit-woc').show();
+                                                $('#kt_docs_formvalidation_text_submit').show();
+                                                $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+
+                                                // Refresh halaman setelah delay 800ms
+                                                setTimeout(() => {
+                                                    location.reload();
+                                                }, 800);
+                                            });
+                                        } else {
+                                            $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: response.message
+                                            });
+                                        }
+
+                                    }, 800);
+                                },
+                                error: function () {
+                                    $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                    $('#kt_docs_formvalidation_text_save .indicator-label').show();
+                                    $('#kt_docs_formvalidation_text_save .indicator-progress').hide();
+                                    $('#kt_docs_formvalidation_text_save').prop('disabled', false);
+
+                                    Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong while saving.' });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({ icon: 'warning', title: 'Form Incomplete', text: 'Please fill out all required fields before saving.' });
+                }
+            });
+        });
+
+        // === Button Submit ===
+        $('#WOCFrom').on('submit', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Submit Work Order Completion?',
+                text: 'Are you sure all data is correct before submitting?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Submit WOC!',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    validator.validate().then(function (status) {
+                        if (status === 'Valid') {
+                            $('#page_loader').css('display', 'flex').addClass('d-flex justify-content-center align-items-center');
+                            $('#kt_docs_formvalidation_text_submit .indicator-label').hide();
+                            $('#kt_docs_formvalidation_text_submit .indicator-progress').show();
+                            $('#kt_docs_formvalidation_text_submit').prop('disabled', true);
+
+                            const formData = new FormData(form);
+
+                            $.ajax({
+                                url: updateWOCUrl,
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function () {
+                                    $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success',
+                                        text: 'Work Order Completion has been submitted!',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                        window.location.href = listWOCPageUrl;
+                                    });
+                                },
+                                error: function () {
+                                    $('#page_loader').hide().removeClass('d-flex justify-content-center align-items-center');
+                                    $('#kt_docs_formvalidation_text_submit .indicator-label').show();
+                                    $('#kt_docs_formvalidation_text_submit .indicator-progress').hide();
+                                    $('#kt_docs_formvalidation_text_submit').prop('disabled', false);
+
+                                    Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong. Please check the input or try again.' });
+                                }
+                            });
+                        } else {
+                            Swal.fire({ icon: 'warning', title: 'Form Incomplete', text: 'Please fill out all required fields before submitting.' });
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
 
 
 
 
 
-
-
-
-
-
-
-
-
+    
     {{-- Delete Foto --}}
     <script>
         $(document).ready(function () {

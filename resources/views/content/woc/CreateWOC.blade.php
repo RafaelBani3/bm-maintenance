@@ -30,10 +30,13 @@
                     <form id="WOCFrom" enctype="multipart/form-data" method="POST">
                         @csrf
                         {{-- <input type="text" name="wo_no" value="{{ $workOrder->WO_No }}"> --}}
+                        <input type="hidden" id="wo_no" value="{{ $woNo }}">
+<input type="hidden" id="wo_no" name="wo_no" value="{{ $woNo }}">
 
                         <!--begin::Card body-->
                         <div class="card-body p-2">
-                            <!--begin::Input Cases-->
+                           
+                            <!--begin::Refeerence Cases-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -59,7 +62,7 @@
                                 </div>
                                 
                             </div>
-                            <!--End::Input Cases-->
+                            <!--End::Refeerence Cases-->
 
                             <!--begin::Input Case No-->
                             <div class="fv-row row mb-10">
@@ -82,8 +85,6 @@
                                 </div>
                             </div>
                             <!--end::Input Case Name-->
-
-
 
                             <!--begin::Input date-->
                             <div class="fv-row row mb-10">
@@ -173,9 +174,18 @@
                                 </label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
-                                    <select id="assigned_to" name="assigned_to[]" multiple="multiple" class="form-select form-select-lg form-select-solid"
-                                        data-control="select2" data-close-on-select="false" data-placeholder="Select technician" data-allow-clear="true">
+                                    <select id="assigned_to" name="assigned_to[]" multiple="multiple"
+                                        class="form-select form-select-lg form-select-solid"
+                                        data-control="select2" data-close-on-select="false"
+                                        data-placeholder="Select technician" data-allow-clear="true">
+                                        @foreach($selectedTechnicians as $technician)
+                                            <option value="{{ $technician->technician_id }}"
+                                                {{ in_array($technician->technician_id, $selectedTechnicians) ? 'selected' : '' }}>
+                                                {{ $technician->technician_name }}
+                                            </option>
+                                        @endforeach
                                     </select>
+
                                 </div>
                             </div>
                             <!--end::Input assingned to-->
@@ -268,27 +278,26 @@
     {{-- Script Get WO_No dan WO Detail --}}
     <script>
         $(document).ready(function () {
-            // Declare Time
+            // Flatpickr untuk tanggal mulai dan selesai
             const startPicker = flatpickr("#start_date", {
                 enableTime: true,
                 dateFormat: "d/m/Y H:i",
                 time_24hr: true
             });
-    
+
             const endPicker = flatpickr("#end_date", {
                 enableTime: true,
                 dateFormat: "d/m/Y H:i",
                 time_24hr: true
             });
-            // End Time
 
-            // Declare Route untuk ambil data WO_No yang sesuai untuk Create WOC
+            // Route Laravel
             const routeGetWoDataforWOC = "{{ route('GetWoDataforWOC') }}";
-            // Deklare Route untuk Get WO Detail
             const routeGetWoDetail = "{{ route('GetWoDetail', ['encoded' => 'ENCODED_PLACEHOLDER']) }}";
+            const routeRemoveTechnician = "{{ route('work-order.remove-technician') }}";
 
+            // Load daftar WO ke select Reference
             $.ajax({
-                // url: '/BmMaintenance/public/get-work-orders',
                 url: routeGetWoDataforWOC,
                 type: 'GET',
                 success: function (data) {
@@ -302,96 +311,125 @@
                     console.error("Failed to get Work Orders:", xhr);
                 }
             });
-    
-            $('#reference_number').on('change', function () {
-                const encoded = $(this).val();
-                if (!encoded) return;
 
-                // Ambil Routenya dan masukan WO_No 
-                const ajaxUrl = routeGetWoDetail.replace('ENCODED_PLACEHOLDER', encoded);
-    
-                $.ajax({
-                    url: ajaxUrl,
-                    type: 'GET',
-                    success: function (data) {
-                        $('#case_no').val(data.Case_No);
-                        $('#case_name').val(data.Case_Name);
-                        $('#work_order_date').val(data.CR_DT);
-                        $('#created_by').val(data.Created_By);
-                        $('#position').val(data.Position);
-                        $('#work_description').val(data.WO_Narative);
-    
-                        startPicker.setDate(data.WO_Start, true, "Y-m-d H:i:S");
-                        endPicker.setDate(data.WO_End, true, "Y-m-d H:i:S");
-    
-                        const select = $('#assigned_to');
-                        select.empty();
-                        data.All_Technicians.forEach(tech => {
-                            select.append(`<option value="${tech.id}">${tech.fullname}</option>`);
+            // Saat Reference No dipilih
+            // Saat Reference No dipilih
+$('#reference_number').on('change', function () {
+    const encoded = $(this).val();
+    if (!encoded) return;
+
+    const ajaxUrl = routeGetWoDetail.replace('ENCODED_PLACEHOLDER', encoded);
+    const select = $('#assigned_to');
+
+    $.ajax({
+        url: ajaxUrl,
+        type: 'GET',
+        success: function (data) {
+            // Isi form WO
+            $('#case_no').val(data.Case_No);
+            $('#case_name').val(data.Case_Name);
+            $('#work_order_date').val(data.CR_DT);
+            $('#created_by').val(data.Created_By);
+            $('#position').val(data.Position);
+            $('#work_description').val(data.WO_Narative);
+
+            startPicker.setDate(data.WO_Start, true, "Y-m-d H:i:S");
+            endPicker.setDate(data.WO_End, true, "Y-m-d H:i:S");
+
+            // Step 1: Load All Technicians from route('GetTechnician')
+            $.ajax({
+                url: "{{ route('GetTechnician') }}",
+                type: "GET",
+                success: function (technicians) {
+                    const select = $('#assigned_to');
+                    select.empty(); // Kosongkan isi
+
+                    technicians.forEach(group => {
+                        const optgroup = $('<optgroup>').attr('label', group.text);
+
+                        group.children.forEach(tech => {
+                            optgroup.append(`<option value="${tech.id}">${tech.text}</option>`);
                         });
-    
-                        const selectedIds = data.Assigned_To.map(t => t.id);
-                        select.val(selectedIds).trigger('change');
+
+                        select.append(optgroup);
+                    });
+
+                    // Tandai teknisi yang sudah ditugaskan (jika ada)
+                    const selectedIds = data.Assigned_To.map(t => t.id);
+                    select.val(selectedIds).trigger('change');
+                },
+                error: function (xhr) {
+                    console.error("Gagal mengambil data teknisi:", xhr.responseText);
+                }
+            });
+
+        },
+        error: function (xhr) {
+            console.error("Failed to get WO Detail:", xhr);
+        }
+    });
+});
+
+
+            // Event saat teknisi dihapus dari select2
+            $('#assigned_to').on('select2:unselect', function (e) {
+                const technician_id = e.params.data.id;
+                const technician_name = e.params.data.text;
+                const encoded_wo_no = $('#reference_number').val();
+
+                if (!encoded_wo_no) return;
+
+                const wo_no = decodeURIComponent(escape(atob(encoded_wo_no)));
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Do you want to remove "${technician_name}" from this Work Order?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, remove it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(".page-loader").fadeIn();
+
+                        setTimeout(() => {
+                            $.ajax({
+                                url: routeRemoveTechnician,
+                                method: "POST",
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    wo_no: wo_no,
+                                    technician_id: technician_id
+                                },
+                                success: function (response) {
+                                    Swal.fire('Removed!', 'Technician has been removed.', 'success');
+                                },
+                                error: function (xhr) {
+                                    console.error('Error removing technician:', xhr.responseText);
+                                    Swal.fire('Error', 'Failed to remove technician from database.', 'error');
+
+                                    // Kembalikan ke dropdown jika gagal
+                                    const $select = $('#assigned_to');
+                                    const option = new Option(technician_name, technician_id, true, true);
+                                    $select.append(option).trigger('change');
+                                },
+                                complete: function () {
+                                    $(".page-loader").fadeOut();
+                                }
+                            });
+                        }, 800);
+                    } else {
+                        // Batal, tambahkan kembali teknisi ke select
+                        const $select = $('#assigned_to');
+                        const option = new Option(technician_name, technician_id, true, true);
+                        $select.append(option).trigger('change');
                     }
                 });
             });
         });
     </script>
-
-    {{-- Script Hapus Teknisi --}}
-    {{-- <script>
-    $(document).ready(function () {
-        const wo_no = "{{ $workOrder->WO_No }}";
-
-        $('select[name="assigned_to[]"]').on('select2:unselect', function (e) {
-            const technician_id = e.params.data.id;
-            const technician_name = e.params.data.text;
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `Do you want to remove "${technician_name}" from this Work Order?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Tampilkan loader
-                    $(".page-loader").fadeIn();
-
-                    // Delay 1 detik sebelum kirim AJAX
-                    setTimeout(function () {
-                        $.ajax({
-                            url: "{{ route('work-order.remove-technician') }}",
-                            method: "POST",
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                wo_no: wo_no,
-                                technician_id: technician_id
-                            },
-                            success: function(response) {
-                                Swal.fire('Removed!', 'Technician has been removed.', 'success');
-                            },
-                            error: function(xhr) {
-                                console.error('Error removing technician:', xhr.responseText);
-                                Swal.fire('Error', 'Failed to remove technician from database.', 'error');
-                            },
-                            complete: function () {
-                                $(".page-loader").fadeOut();
-                            }
-                        });
-                    }, 800);
-                } else {
-                    const $select = $('select[name="assigned_to[]"]');
-                    const option = new Option(technician_name, technician_id, true, true);
-                    $select.append(option).trigger('change');
-                }
-            });
-        });
-    });
-    </script> --}}
 
     {{-- Script validate dan save WOC --}}
     <script>

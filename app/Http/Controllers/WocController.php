@@ -32,7 +32,7 @@ class WocController extends Controller
             ->pluck('technician_id')
             ->toArray();
 
-        return view('content.woc.CreateWOC', compact('technicians', 'selectedTechnicians'));
+        return view('content.woc.CreateWOC', compact('technicians', 'selectedTechnicians', 'woNo'));
     }
 
     // Page List  WOC
@@ -263,7 +263,7 @@ class WocController extends Controller
 
             $wocNo = $workOrder->WOC_No;
 
-            if ($workOrder->WO_Status === 'REJECT') {
+            if ($workOrder->WO_Status === 'REJECT_COMPLETION') {
                 $workOrder->WO_Status = 'OPEN_COMPLETION';
                 $workOrder->save();
 
@@ -760,15 +760,17 @@ class WocController extends Controller
             ->get()
             ->groupBy('MR_No');
 
+        $wocNo = $workOrder->WOC_No;
+       
         $logs = DB::table('Logs')
             ->join('users', 'Logs.LOG_User', '=', 'users.id')
             ->select('Logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'WO') 
-            ->where('LOG_RefNo', $WO_No)
+            ->where('LOG_RefNo', $wocNo)
             ->orderBy('LOG_Date', 'desc')
             ->get();
     
-        $wocNo = $workOrder->WOC_No;
+        
 
         $wocImages = Imgs::where('IMG_RefNo', $wocNo)->get();
 
@@ -896,7 +898,7 @@ class WocController extends Controller
             
             // === HANDLE REJECT ===
             if ($wo->WO_APStep == 1) {
-                $wo->WO_Status = 'REJECT';
+                $wo->WO_Status = 'REJECT_COMPLETION';
                 $wo->WO_IsReject = 'Y';
                 $wo->WO_RejGroup = 'AP1';
                 $wo->WO_RejBy = $user->id;
@@ -925,7 +927,7 @@ class WocController extends Controller
                     'Notif_Type'    => 'WO',
                 ]);
             } elseif ($wo->WO_APStep == 2) {
-                $wo->WO_Status = 'REJECT';
+                $wo->WO_Status = 'REJECT_COMPLETION';
                 $wo->WO_IsReject = 'Y';
                 $wo->WO_RejGroup = 'AP2';
                 $wo->WO_RejBy = $user->id;

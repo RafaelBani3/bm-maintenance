@@ -244,6 +244,7 @@
                                 case "AP4":
                                     badgeClass = "badge-light-primary text-primary"; break;
                                 case "REJECT":
+                                case "REJECT_COMPLETION":
                                     badgeClass = "badge-light-danger text-danger"; break;
                                 case "DONE":
                                     badgeClass = "badge-light-success text-success"; break;
@@ -268,7 +269,7 @@
                             let buttons = '<div class="d-flex gap-2">';
 
                             // Tombol Edit
-                            if ((row.WO_Status === "OPEN_COMPLETION" || row.WO_Status === "REJECT") && typeof canEditCase !== 'undefined' && canEditCase) {
+                            if ((row.WO_Status === "OPEN_COMPLETION" || row.WO_Status === "REJECT_COMPLETION") && typeof canEditCase !== 'undefined' && canEditCase) {
                             // if (row.WO_Status === "OPEN_COMPLETION" || row.WO_Status === "REJECT") {
                                 buttons += `
                                     <a href="${editUrl}" 
