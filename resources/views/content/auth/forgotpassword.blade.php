@@ -81,62 +81,36 @@
 								<!--begin::Heading-->
 
 								<!--Start::Form-->
-								<form class="form w-100" novalidate="novalidate" method="POST" action="{{ route('Login.post') }}">
-									@csrf
-									@if ($errors->any())
-										<div class="alert alert-danger">
-											<ul class="mb-0">
-												@foreach ($errors->all() as $error)
-													<li>{{ $error }}</li>
-												@endforeach
-											</ul>
-										</div>
-									@endif
+                                 <form method="POST" action="{{ route('password.reset') }}">
+                                    @csrf
 
-									<!-- Username -->
-									<div class="fv-row mb-8">
-										<label class="form-label fw-bold fs-6 mb-2">Username</label>
-										<input type="text" placeholder="Input Username" name="Username" value="{{ old('Username') }}" autocomplete="off" class="form-control bg-transparent @error('Username') is-invalid @enderror" />
-										@error('Username')
-											<div class="fv-error text-danger mt-2">{{ $message }}</div>
-										@enderror
-									</div>
+                                    @if(session('error'))
+                                        <div class="alert alert-danger">{{ session('error') }}</div>
+                                    @endif
+                                    @if(session('success'))
+                                        <div class="alert alert-success">{{ session('success') }}</div>
+                                    @endif
 
-									<!-- Password -->
-									<div class="fv-row mb-3">
-										<label class="form-label fw-bold fs-6 mb-2">Password</label>
-										<input type="password" placeholder="Input Password" name="Password" autocomplete="off" class="form-control bg-transparent @error('Password') is-invalid @enderror" />
-										@error('Password')
-											<div class="fv-error text-danger mt-2">{{ $message }}</div>
-										@enderror
-									</div>
+                                    <div class="mb-3">
+                                        <label for="Username" class="form-label">Username</label>
+                                        <input type="text" name="Username" class="form-control" required value="{{ old('Username') }}">
+                                        @error('Username') <div class="text-danger">{{ $message }}</div> @enderror
+                                    </div>
 
-									<!--begin::Wrapper-->
-									<div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
-										<div></div>
-										<!--begin::Link-->
-										<a href="{{ route('password.request') }}" class="link-primary">Forgot Password?</a>
+                                    <div class="mb-3">
+                                        <label for="new_password" class="form-label">New Password</label>
+                                        <input type="password" name="new_password" class="form-control" required>
+                                        @error('new_password') <div class="text-danger">{{ $message }}</div> @enderror
+                                    </div>
 
-										<!--end::Link-->
-									</div>
-									<!--end::Wrapper-->
+                                    <div class="mb-3">
+                                        <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
+                                        <input type="password" name="new_password_confirmation" class="form-control" required>
+                                    </div>
 
-									<!--begin::Submit button-->
-									<div class="d-grid mb-10">
-										<button type="submit" class="btn btn-primary">
-											<!--begin::Indicator label-->
-											<span class="indicator-label">Login</span>
-											<!--end::Indicator label-->
-
-											<!--begin::Indicator progress-->
-											<span class="indicator-progress">Please wait... 
-											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-											<!--end::Indicator progress-->
-										</button>
-									</div>
-									<!--end::Submit button-->
-
-								</form>
+                                    <button type="submit" class="btn btn-primary">Update Password</button>
+                                </form>
+                               
 								<!--end::Form-->
 
 							</div>
@@ -171,71 +145,22 @@
 	<!--end::Body-->
 
 
-	<script>
-		document.querySelector('form').addEventListener('submit', function(e) {
-			let isValid = true;
+    {{-- Tambahkan SweetAlert2 CDN jika belum ada --}}
 
-			document.querySelectorAll('.fv-error').forEach(el => el.remove());
-
-			this.querySelectorAll('input[name="Username"], input[name="Password"]').forEach(function(input) {
-				if (input.value.trim() === '') {
-					isValid = false;
-
-					const error = document.createElement('div');
-					error.classList.add('fv-error', 'text-danger', 'mt-2');
-					error.innerText = input.name + ' is required';
-					input.parentNode.appendChild(error);
-				}
-			});
-
-			if (!isValid) {
-				e.preventDefault();
-			}
-		});
-	</script>
-
-	// <script>
-	// 	document.querySelector("form").addEventListener("submit", function () {
-	// 		const btn = this.querySelector("button[type=submit]");
-	// 		btn.querySelector(".indicator-label").style.display = "none";
-	// 		btn.querySelector(".indicator-progress").style.display = "inline-block";
-	// 		btn.setAttribute("disabled", "true");
-	// 	});
-	// </script>
-
-<script>
-	document.querySelector('form').addEventListener('submit', function (e) {
-		const form = this;
-		const username = form.querySelector('input[name="Username"]');
-		const password = form.querySelector('input[name="Password"]');
-		const button = form.querySelector('button[type="submit"]');
-		const indicatorLabel = button.querySelector('.indicator-label');
-		const indicatorProgress = button.querySelector('.indicator-progress');
-
-		// Validasi field kosong
-		if (!username.value.trim() || !password.value.trim()) {
-			e.preventDefault(); 
-
-			Swal.fire({
-				icon: 'warning',
-				title: 'Form Tidak Lengkap',
-				text: 'Username dan Password tidak boleh kosong.',
-				confirmButtonText: 'Oke',
-			});
-
-			button.disabled = false;
-			indicatorLabel.style.display = 'inline-block';
-			indicatorProgress.style.display = 'none';
-
-			return false;
-		}
-
-		// Aktifkan loading state
-		button.disabled = true;
-		indicatorLabel.style.display = 'none';
-		indicatorProgress.style.display = 'inline-block';
-	});
-</script>
+    @if(session('password_reset_success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Password Updated',
+            text: 'Your password has been successfully updated.',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
+        });
+    </script>
+    @endif
 
 
 </html>

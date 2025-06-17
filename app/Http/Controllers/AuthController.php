@@ -67,4 +67,26 @@ class AuthController extends Controller
 
         return redirect()->route('login')->with('success', 'Logout Berhasil!');
     }
+
+
+    public function showResetPasswordForm()
+    {
+        return view('content.auth.forgotpassword');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'Username' => 'required|string|exists:users,Username',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = User::where('Username', $request->Username)->first();
+        $user->Password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->route('password.request')->with('password_reset_success', true);
+    }
+
+
 }

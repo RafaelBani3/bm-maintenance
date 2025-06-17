@@ -23,8 +23,16 @@ use Illuminate\Support\Facades\Route;
     Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
 
 
-    // All can Access
+    // reset paswword
+    
+    // Tampilkan form ubah password
+    Route::get('/forgot-password', [AuthController::class, 'showResetPasswordForm'])->name('password.request');
 
+    // Proses ubah password
+    Route::post('/forgot-password', [AuthController::class, 'resetPassword'])->name('password.reset');
+
+
+    // All can Access
     Route::prefix('Dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
         Route::get('/ajax/case-summary', [DashboardController::class, 'caseSummary'])->name('case.summary');
