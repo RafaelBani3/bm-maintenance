@@ -15,7 +15,7 @@ class RolePermission extends Seeder
     public function run(): void
     {
         //Create Permission
-        $permission = Permission::create(['name' => 'view dashboard']);
+        $permission = Permission::firstOrCreate(['name' => 'view dashboard']);
         $permission = Permission::create(['name' => 'view cr']);
         $permission = Permission::create(['name' => 'edit cr']);
         $permission = Permission::create(['name' => 'delete cr']);
@@ -26,7 +26,7 @@ class RolePermission extends Seeder
         $permission = Permission::create(['name' => 'submit wo']);
         $permission = Permission::create(['name' => 'edit wo']);
 
-        $permission = Permission::create(['name' => 'view cr_ap']);
+        $permission = Permission::create(['name' => 'view cr_ap']); 
         $permission = Permission::create(['name' => 'approve cr_ap']);
 
         $permission = Permission::create(['name' => 'view mr']);

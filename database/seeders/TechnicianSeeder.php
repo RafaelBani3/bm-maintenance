@@ -34,7 +34,6 @@ class TechnicianSeeder extends Seeder
      public function run()
     {
      
-
         // Ambil semua posisi dan buat mapping nama posisi => ID    
         $positions = Position::all()->pluck('id', 'PS_Name');
 
