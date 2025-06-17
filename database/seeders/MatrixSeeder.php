@@ -22,10 +22,16 @@ class MatrixSeeder extends Seeder
                 ['Mat_No' => 6, 'Position' => 6, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1, 'AP2' => 11],
                 ['Mat_No' => 7, 'Position' => 7, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1, 'AP2' => 11],
                 ['Mat_No' => 8, 'Position' => 8, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 14, 'AP2' => 15],
+                
                 ['Mat_No' => 9, 'Position' => 5, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 10, 'Position' => 3, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 11, 'Position' => 8, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 12, 'Position' => 2, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                // Untuk Admin
+                ['Mat_No' => 13, 'Position' => 14, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 18, 'AP2' => 18],
+
+                ['Mat_No' => 14, 'Position' => 14, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 18, 'AP2' => 18, 'AP3' => 18, 'AP4' => 18],
+
             ];
     
             foreach ($matrices as $matrix) {

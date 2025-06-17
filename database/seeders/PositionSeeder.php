@@ -27,6 +27,8 @@ class PositionSeeder extends Seeder
             ['PS_Name' => 'Spv. Finance accounting', 'PS_Desc' => 'Spv. Finance accounting'],
             ['PS_Name' => 'Head Of Building Management', 'PS_Desc' => 'Head Of Building Management'],
             ['PS_Name' => 'COO', 'PS_Desc' => 'COO'],
+            ['PS_Name' => 'Creator', 'PS_Desc' => 'Creator'],
+            ['PS_Name' => 'Approver', 'PS_Desc' => 'Approver'],
 
             // Data tambahan dari gambar
             ['PS_Name' => 'Chief Engineering', 'PS_Desc' => 'Chief Engineering'],

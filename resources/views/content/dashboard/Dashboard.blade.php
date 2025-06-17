@@ -91,6 +91,19 @@
     
     {{-- Style Tracking --}}
     <style>
+
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #d1d1d1;
+        border-radius: 4px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
     .stepper-wrapper {
         position: relative;
         flex-wrap: nowrap;
@@ -390,7 +403,7 @@
 
                                 <!-- Status Breakdown Pills -->
                                 <div class="d-flex flex-column gap-3">
-                                    <a href="{{ route('ListMR', ['status' => 'APPROVED']) }}" 
+                                    <a href="{{ route('ListMR', ['status' => 'DONE']) }}" 
                                         class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale"
                                         data-bs-toggle="tooltip"
                                         title="Approved Material Requests are ready for processing.">
@@ -415,7 +428,7 @@
                                 @if ($TotalMRapproved > 0 || $TotalMRrejected > 0)
                                     <div class="mt-5 d-flex flex-column gap-3">
                                         @if ($TotalMRapproved > 0)
-                                            <a href="{{ route('CreateMR') }}"
+                                            <a href="{{ route('CreateWOC') }}"
                                                 class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
                                                 style="transition: 0.3s ease;">
                                                 <i class="ki-duotone ki-truck fs-2hx me-3">
@@ -423,7 +436,7 @@
                                                     <span class="path2"></span>
                                                 </i>
                                                 <span class="d-flex flex-column align-items-start">
-                                                    <span>Create Material Request</span>
+                                                    <span>Create WorkOrder Completion</span>
                                                     <small class="text-white-50">From {{ $TotalMRapproved }} Approved WO</small>
                                                 </span>
                                             </a>
@@ -563,39 +576,61 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT SIDE: Case & MR Approval Cards -->
+                    <!-- RIGHT SIDE: Case Tracking -->
                     <div class="col-md-6 col-xl-8">
                         <div class="card card-flush h-md-100">
-                            <div class="card-header">
-                                <h3 class="card-title fw-bold text-gray-800">Tracking Case</h3>
+                            <div class="card-header pb-4">
+                                <h3 class="card-title fw-bold text-gray-800">Tracking Case - {{ \Carbon\Carbon::now()->format('F Y') }}</h3>
+                                <div class="card-toolbar">
+                                    <span class="badge badge-light-primary">{{ count($cases) }} Case(s)</span>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <table class="table table-bordered">
-                                    <thead class="fw-bold text-center">
-                                        <tr>
-                                            <th>Case No</th>
-                                            <th>Case Name</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($cases as $case)
-                                        <tr>
-                                            <td>{{ $case->Case_No }}</td>
-                                            <td>{{ $case->Case_Name }}</td>
-                                            <td class="text-center">
-                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                    data-bs-target="#trackModal" onclick="showTracking('{{ $case->Case_No }}')">
-                                                    View Tracking
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+
+                            <div class="card-body py-0">
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table align-middle table-row-dashed table-bordered gy-4 text-gray-800">
+                                        <thead class="text-center fw-bold fs-6 text-gray-700 bg-light">
+                                            <tr>
+                                                <th style="width: 120px;">Case No</th>
+                                                <th>Case Name</th>
+                                                <th style="width: 150px;">Status</th>
+                                                <th style="width: 150px;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($cases as $case)
+                                                <tr>
+                                                    <td class="text-center">{{ $case->Case_No }}</td>
+                                                    <td>{{ $case->Case_Name }}</td>
+                                                    <td class="text-center">
+                                                        <span class="badge 
+                                                            @if($case->Case_Status === 'AP1' || $case->Case_Status === 'AP2') badge-success
+                                                            @elseif($case->Case_Status === 'REJECT') badge-danger
+                                                            @else badge-warning
+                                                            @endif">
+                                                            {{ $case->Case_Status }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                            data-bs-target="#trackModal" 
+                                                            onclick="showTracking('{{ $case->Case_No }}')">
+                                                            <i class="fas fa-search me-1"></i> View
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">No cases found for this month.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Row 3: Charts -->
@@ -736,49 +771,6 @@
                         </a>
                     </div>
 
-                </div>
-
-                <!--begin::Row: Latest Approval Activities-->
-                <div class="row gx-5 gx-xl-10">
-                    <div class="col-12">
-                        <div class="card card-flush">
-                            <div class="card-header">
-                                <h3 class="card-title">Latest Approval Activities</h3>
-                            </div>
-                            <div class="card-body">
-                                <table class="table align-middle table-row-dashed">
-                                    <thead>
-                                        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                                            <th>Type</th>
-                                            <th>Reference</th>
-                                            <th>Status</th>
-                                            <th>Approved On</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Material Request</td>
-                                            <td>#MR045</td>
-                                            <td><span class="badge badge-light-success">Approved</span></td>
-                                            <td>2025-05-26</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Work Order</td>
-                                            <td>#WO031</td>
-                                            <td><span class="badge badge-light-danger">Rejected</span></td>
-                                            <td>2025-05-24</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Case</td>
-                                            <td>#CASE008</td>
-                                            <td><span class="badge badge-light-warning">Pending</span></td>
-                                            <td>-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

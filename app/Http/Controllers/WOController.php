@@ -165,6 +165,9 @@ class WOController extends Controller
             case 'Storekeeper':
                 $users = User::where('Fullname', 'Rizqhan Fajar Pramudita')->get();
                 break;
+            case 'Creator':
+                $users = User::where('Fullname', 'SUPER ADMIN CREATOR')->get();
+                break;
     
             default:
                 $users = collect();
@@ -302,6 +305,10 @@ class WOController extends Controller
     
             'Storekeeper' =>
                 User::where('Fullname', 'Rizqhan Fajar Pramudita')->get(),
+            
+            'Creator' => 
+                User::where('Fullname', 'SUPER ADMIN CREATOR')->get(),
+
     
             default => collect()
         };

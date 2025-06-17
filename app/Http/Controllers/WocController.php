@@ -465,6 +465,8 @@ class WocController extends Controller
                 ['Mat_No' => 6, 'Position' => 6, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
                 ['Mat_No' => 7, 'Position' => 7, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
                 ['Mat_No' => 8, 'Position' => 8, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 14, 'AP2' => 15],
+                ['Mat_No' => 13, 'Position' => 14, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 18, 'AP2' => 18],
+
             ]);
 
             $userPosition = Auth::user()->Position->id;
@@ -542,7 +544,7 @@ class WocController extends Controller
                 'LOG_Status' => 'FAILED',
                 'LOG_User' => $user->id,
                 'LOG_Date' => now(),
-                'LOG_Desc' => Str::limit('FAILED TO SUBMITTED WORK ORDER COMPLITION. Error: ' . $e->getMessage(), 255),
+                'LOG_Desc' => Str::limit('FAILED TO SUBMITTED WORK ORDER COMPLITION. Error: ' . $e->getMessage(), 225),
             ]);
     
             return response()->json([

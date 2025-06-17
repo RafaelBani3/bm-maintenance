@@ -29,9 +29,13 @@ class DashboardController extends Controller
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
-        ->where('CR_BY', $userId)
-        ->get();
+        //  $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+        // ->where('CR_BY', $userId)
+        // ->get();
+        $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+            ->where('CR_BY', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) // ⬅️ Filter per bulan
+            ->get();
 
 
         $totalApproved = Cases::where('CR_BY', $userId)
@@ -51,7 +55,7 @@ class DashboardController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
-        $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
+        $TotalMRapproved = MatReq::where('MR_Status', 'DONE')
             ->where('CR_BY', $userId)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
@@ -297,7 +301,7 @@ class DashboardController extends Controller
             ->where('CR_BY', $userId)
             ->count();
 
-        $approved = MatReq::where('MR_Status', 'AP5')
+        $approved = MatReq::where('MR_Status', 'DONE')
             ->where('CR_BY', $userId)
             ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
             ->count();

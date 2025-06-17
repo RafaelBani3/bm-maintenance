@@ -387,7 +387,7 @@
                                                 </div>
                                             </div>
 
-                                            @if($step <= $workOrder->WO_APStep)
+                                            @if($step < $workOrder->WO_APStep)
                                                 <div class="border border-dashed border-primary dashed-2 rounded px-7 py-3 bg-light-primary">
                                                     <h5 class="text-gray-700 fw-bold mb-2">Remark:</h5>
                                                     <div class="text-gray-600">
@@ -396,9 +396,7 @@
                                                 </div>
                                             @elseif($step === $workOrder->WO_APStep && (
                                                 ($step === 1 && $userId === $workOrder->WO_AP1) ||
-                                                ($step === 2 && $userId === $workOrder->WO_AP2) ||
-                                                ($step === 3 && $userId === $workOrder->WO_AP3) ||
-                                                ($step === 4 && $userId === $workOrder->WO_AP4)
+                                                ($step === 2 && $userId === $workOrder->WO_AP2)
                                             ))
                                                 <div class="col-lg-12"> 
                                                     <form action="" method="POST">

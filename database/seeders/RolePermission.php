@@ -48,7 +48,7 @@ class RolePermission extends Seeder
         $wo = Role::create(['name' => 'wo']);
         $wo_ap = Role::create(['name' => 'wo_ap']);
 
-        $admin->givePermissionTo('view dashboard', 'view cr', 'edit cr', 'delete cr', 'submit cr','view mr','view wo','view mr_ap','view cr_ap');
+        // $admin->givePermissionTo('view dashboard', 'view cr', 'edit cr', 'delete cr', 'submit cr','view mr','view wo','view mr_ap','view cr_ap');
 
         $cr->givePermissionTo('view cr', 'edit cr', 'delete cr', 'submit cr');
         $cr_ap->givePermissionTo('view cr_ap', 'approve cr_ap');
@@ -57,5 +57,22 @@ class RolePermission extends Seeder
         $mr_ap->givePermissionTo('view mr_ap', 'approve mr_ap');
 
         $wo->givePermissionTo('view wo', 'edit wo', 'delete wo', 'submit wo');
+
+          // Custom roles
+        $superCreator = Role::firstOrCreate(['name' => 'SuperAdminCreator']);
+        $superApprover = Role::firstOrCreate(['name' => 'SuperAdminApprover']);
+
+        // Assign permissions to SuperAdminCreator
+        $superCreator->givePermissionTo([
+            'view cr', 'edit cr', 'delete cr', 'submit cr',
+            'view wo', 'edit wo', 'delete wo', 'submit wo',
+            'view mr', 'edit mr', 'delete mr', 'submit mr',
+        ]);
+
+        // Assign permissions to SuperAdminApprover
+        $superApprover->givePermissionTo([
+            'view cr_ap', 'approve cr_ap',
+            'view mr_ap', 'approve mr_ap',
+        ]);
     }
-}
+}   

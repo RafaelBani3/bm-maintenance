@@ -122,7 +122,7 @@ class UserSeeder extends Seeder
             'Username' => 'Agus',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '9',
+            'PS_ID' => '16',
             'CR_DT' => now(),
         ]);
         $user11->assignRole('cr_ap', 'mr_ap');
@@ -133,7 +133,7 @@ class UserSeeder extends Seeder
             'Username' => 'Ahmad',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '10',
+            'PS_ID' => '9',
             'CR_DT' => now(),
         ]);
         $user12->assignRole('cr_ap','mr_ap','wo_ap');
@@ -144,7 +144,7 @@ class UserSeeder extends Seeder
             'Username' => 'Herda',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '11', 
+            'PS_ID' => '10', 
             'CR_DT' => now(),
         ]);
         $user13->assignRole('cr_ap');
@@ -155,7 +155,7 @@ class UserSeeder extends Seeder
             'Username' => 'Valentina',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '12', 
+            'PS_ID' => '11', 
             'CR_DT' => now(),
         ]);
         $user14->assignRole('cr_ap');   
@@ -165,7 +165,7 @@ class UserSeeder extends Seeder
             'Username' => 'Meidiono',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '13  ', 
+            'PS_ID' => '12  ', 
             'CR_DT' => now(),
         ]);
         $user15->assignRole('cr_ap', 'mr_ap');  
@@ -176,20 +176,42 @@ class UserSeeder extends Seeder
             'Username' => 'Margiman',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '14  ', 
+            'PS_ID' => '13  ', 
             'CR_DT' => now(),
         ]);
-        $user16->assignRole('mr_ap');  
-
+        $user16->assignRole('mr_ap'); 
+        
+        // Super Admin Creator
         $user17 = User::create([
-            'Fullname' => 'Admin',
-            'Username' => 'Admin',
+            'Fullname' => 'Super Admin Creator',
+            'Username' => 'Admin Creator',
             'Password' => bcrypt('admin123'),
             'Remember_Token' => Str::random(60),
-            'PS_ID' => '14  ', 
+            'PS_ID' => '14',
             'CR_DT' => now(),
         ]);
-        $user17->assignRole('Admin');  
+        $user17->assignRole('SuperAdminCreator');
+
+        // Super Admin Approver
+        $user18 = User::create([
+            'Fullname' => 'Super Admin Approver',
+            'Username' => 'Admin Approver',
+            'Password' => bcrypt('admin123'),
+            'Remember_Token' => Str::random(60),
+            'PS_ID' => '15',
+            'CR_DT' => now(),
+        ]);
+        $user18->assignRole('SuperAdminApprover');
+
+        // $user19 = User::create([
+        //     'Fullname' => 'Admin',
+        //     'Username' => 'Admin',
+        //     'Password' => bcrypt('admin123'),
+        //     'Remember_Token' => Str::random(60),
+        //     'PS_ID' => '10  ', 
+        //     'CR_DT' => now(),
+        // ]);
+        // $user19->assignRole('Admin');  
 
     }
 }

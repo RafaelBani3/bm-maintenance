@@ -310,6 +310,8 @@ class MRController extends Controller
                 ['Mat_No' => 10, 'Position' => 3, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 11, 'Position' => 8, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
                 ['Mat_No' => 12, 'Position' => 2, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                ['Mat_No' => 14, 'Position' => 14, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 18, 'AP2' => 18, 'AP3' => 18, 'AP4' => 18],
+
             ]);
 
             $userPosition = Auth::user()->Position->id;
