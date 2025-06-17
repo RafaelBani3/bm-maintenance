@@ -387,7 +387,7 @@
                                                 </div>
                                             </div>
 
-                                            @if($step < $workOrder->WO_APStep)
+                                            @if($step <= $workOrder->WO_APStep)
                                                 <div class="border border-dashed border-primary dashed-2 rounded px-7 py-3 bg-light-primary">
                                                     <h5 class="text-gray-700 fw-bold mb-2">Remark:</h5>
                                                     <div class="text-gray-600">

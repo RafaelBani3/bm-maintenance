@@ -29,10 +29,10 @@ class DashboardController extends Controller
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        $cases = Cases::with([
-            'creator',
-            'workOrder.materialRequest'
-        ])->get();
+         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+        ->where('CR_BY', $userId)
+        ->get();
+
 
         $totalApproved = Cases::where('CR_BY', $userId)
             ->whereIn('Case_Status', ['AP2']) // tambahkan jika AP1 juga dianggap Approved
@@ -83,6 +83,63 @@ class DashboardController extends Controller
             'rejectedWoc',
             'doneWoc'
         ));
+    }
+
+    public function trackCase(Request $request)
+    {
+        $encodedCaseNo = $request->query('case');
+
+        if (!$encodedCaseNo) {
+            return response()->json(['error' => 'Case number not provided'], 400);
+        }
+
+        $caseNo = base64_decode($encodedCaseNo); // Decode back to original
+
+        $case = Cases::with([
+            'workOrder.materialRequest'
+        ])->where('Case_No', $caseNo)->first();
+
+        if (!$case) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+
+        // Logic untuk menentukan tracking step
+        $step = 1;
+        $skipMatReq = false;
+
+        if (in_array($case->Case_Status, ['AP2', 'INPROGRESS'])) {
+            $step = 2;
+        }
+
+        $wo = $case->workOrder;
+        if ($wo) {
+            $step = 3;
+            if ($wo->WO_NeedMat === 'Y') {
+                $step = 4;
+                if ($wo->materialRequest && in_array($wo->materialRequest->MR_Status, ['AP4', 'DONE', 'CLOSE'])) {
+                    $step = 5;
+                }
+            } else {
+                $skipMatReq = true;
+            }
+
+            if ($wo->WO_Status === 'SUBMIT_COMPLETION') {
+                $step = 6;
+            }
+
+            if ($wo->WO_Status === 'DONE') {
+                $step = 7;
+            }
+
+            if ($wo->WO_Status === 'DONE') {
+                $step = 8;
+            }
+        }
+
+        return response()->json([
+            'step' => $step,
+            'skip_mat_req' => $skipMatReq
+        ]);
     }
 
 

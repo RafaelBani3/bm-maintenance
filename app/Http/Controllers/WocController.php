@@ -881,7 +881,7 @@ class WocController extends Controller
 
                     Notification::create([
                         'Notif_No'      => Notification::generateNotificationNo(),
-                        'Notif_Title'   => 'Work Order Approved',
+                        'Notif_Title'   => 'Work Order Complition Approved',
                         'Reference_No'  => $wo->WO_No,
                         'Notif_Text'    => 'WOC ' . $wo->WOC_No . ' approved by ' . $user->Fullname,
                         'Notif_IsRead'  => 'N',

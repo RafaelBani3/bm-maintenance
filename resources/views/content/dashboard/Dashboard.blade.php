@@ -88,6 +88,54 @@
             color: white !important;
         }        
     </style>
+    
+    {{-- Style Tracking --}}
+    <style>
+    .stepper-wrapper {
+        position: relative;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0 10px;
+        gap: 0 !important;
+    }
+
+    .step-item {
+        position: relative;
+        z-index: 2;
+        min-width: 100px;
+    }
+
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #999;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .step-circle.active {
+        background-color: #0d6efd;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+    }
+
+    .step-circle.done {
+        background-color: #198754;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.2);
+    }
+
+    .step-line {
+        flex-grow: 1;
+        height: 2px;
+        background-color: #ccc;
+        margin: 0 4px;
+        z-index: 1;
+    }
+    </style>
              
     <!--begin::Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
@@ -515,50 +563,40 @@
                         </div>
                     </div>
 
-
                     <!-- RIGHT SIDE: Case & MR Approval Cards -->
                     <div class="col-md-6 col-xl-8">
-                        <div class="row gy-5">
-                            <!-- Cases Approved -->
-                            <div class="col-md-6">
-                                <div class="card card-flush h-md-100">
-                                    <a href="{{ route('CreateWO') }}">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <h4 class="text-gray-800 fw-bold mb-0">Cases Approved</h4>
-                                                <span class="badge badge-light">Need to Create WO</span>
-                                            </div>
-                                            <div class="d-flex align-items-center">
-                                                <span class="fs-2hx fw-bold text-dark me-2" id="total-case-ap2">0</span>
-                                                <span class="text-muted fs-6">ready for WO</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
+                        <div class="card card-flush h-md-100">
+                            <div class="card-header">
+                                <h3 class="card-title fw-bold text-gray-800">Tracking Case</h3>
                             </div>
-
-                            <!-- Material Requests Approved -->
-                            <div class="col-md-6">
-                                <div class="card card-flush h-md-100">
-                                    <a href="{{ route('CreateWOC') }}">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <h4 class="text-gray-800 fw-bold mb-0">Material Requests Approved</h4>
-                                                <span class="badge badge-light">MR Done</span>
-                                            </div>
-                                            <div class="d-flex align-items-center">
-                                                <span class="fs-2hx fw-bold text-dark me-2" id="total-mr-ap4">0</span>
-                                                <span class="text-muted fs-6">ready for WO-C</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <thead class="fw-bold text-center">
+                                        <tr>
+                                            <th>Case No</th>
+                                            <th>Case Name</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($cases as $case)
+                                        <tr>
+                                            <td>{{ $case->Case_No }}</td>
+                                            <td>{{ $case->Case_Name }}</td>
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#trackModal" onclick="showTracking('{{ $case->Case_No }}')">
+                                                    View Tracking
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
 
                 <!-- Row 3: Charts -->
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
@@ -594,42 +632,55 @@
         <!--end::Content-->
     @endif
 
-            <!-- Row 2: table -->
-            {{-- <div class="row gx-5 gx-xl-10 mb-xl-10">
-                <div class="col-md-12">
-                    <div class="card card-flush h-md-100">
-                        <div class="card-body">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Case No</th>
-                                        <th>Case Name</th>
-                                        <th>Status</th>
-                                        <th>Progress</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($cases as $case)
-                                    @php
-                                        $safeCaseNo = str_replace(['/', ' '], ['-', '_'], $case['Case_No']);
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $case['Case_No'] }}</td>
-                                        <td>{{ $case['Case_Name'] }}</td>
-                                        <td>{{ $case['Case_Status'] }}</td>
-                                        <td>
-                                            <button data-bs-toggle="modal" data-bs-target="#modalProgress{{ $safeCaseNo }}">
-                                                Lihat Progress
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+    <!-- Tracking Case Modal -->
+    <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content shadow">
+                
+                <!-- Header -->
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white fw-bold">Tracking Case Progress</h5>
+                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" aria-label="Close">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body p-5">
+                    <div class="stepper-wrapper d-flex justify-content-between align-items-center">
+
+                        @php
+                            $steps = [
+                                'CASE CREATED',
+                                'CASE APPROVED',
+                                'WORK ORDER CREATED',
+                                'MATERIAL REQUEST',
+                                'MR APPROVED',
+                                'WOC CREATED',
+                                'WOC APPROVED',
+                                'DONE'
+                            ];
+                        @endphp
+
+                        @foreach($steps as $index => $label)
+                            <div class="step-item d-flex flex-column align-items-center text-center flex-fill">
+                                <div class="step-circle mb-1" id="step-icon-{{ $index }}">
+                                    {{ $index + 1 }}
+                                </div>
+                                <div class="step-label text-muted fw-semibold small">{{ $label }}</div>
+                            </div>
+
+                            @if($index < count($steps) - 1)
+                                <div class="step-line"></div>
+                            @endif
+                        @endforeach
+
                     </div>
                 </div>
-            </div> --}}
+
+            </div>
+        </div>
+    </div>
 
     {{-- Dashboard APPROVAL --}}
     @if(auth()->user()->hasAnyPermission(['view cr_ap','view mr_ap']))
@@ -1040,7 +1091,79 @@
             });
         </script>
 
+        {{-- Tracking Case berdasarkan data --}}
+        <script>
+            function showTracking(caseNo) {
+                const encodedCaseNo = btoa(caseNo); // Encode base64
+                const fetchUrl = "{{ route('track.case') }}?case=" + encodeURIComponent(encodedCaseNo);
 
+                fetch(fetchUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error("Network response was not ok");
+                        return res.json();
+                    })
+                    .then(data => {
+                        const currentStep = data.step;
+                        const skipMR = data.skip_mat_req;
+
+                        for (let i = 0; i < 8; i++) {
+                            const icon = document.getElementById(`step-icon-${i}`);
+                            if (icon) {
+                                icon.style.backgroundColor = '#eee';
+                                icon.style.color = '#666';
+                                icon.style.display = '';
+                            }
+                        }
+
+                        for (let i = 0; i < currentStep; i++) {
+                            const icon = document.getElementById(`step-icon-${i}`);
+                            if (icon) {
+                                icon.style.backgroundColor = '#0d6efd';
+                                icon.style.color = '#fff';
+                            }
+                        }
+
+                        if (skipMR) {
+                            const icon3 = document.getElementById('step-icon-3');
+                            const icon4 = document.getElementById('step-icon-4');
+                            if (icon3) icon3.style.display = 'none';
+                            if (icon4) icon4.style.display = 'none';
+                        }
+                    })
+                    .catch(err => {
+                        alert('Error loading tracking data');
+                        console.error(err);
+                    });
+            }
+        </script>
+
+        {{-- Script Tracking untuk modal --}}
+        <script>
+            function highlightSteps(step, skipMatReq = false) {
+                const totalSteps = 8;
+                for (let i = 0; i < totalSteps; i++) {
+                    const icon = document.getElementById(`step-icon-${i}`);
+                    icon.classList.remove('active', 'done');
+                    icon.style.backgroundColor = '#e0e0e0';
+                    icon.style.color = '#999';
+
+                    if (i < step - 1) {
+                        icon.classList.add('done');
+                    } else if (i === step - 1) {
+                        icon.classList.add('active');
+                    }
+
+                    // Optional: hide MR step if skipped
+                    if (skipMatReq && i === 3) {
+                        icon.closest('.step-item').style.display = 'none';
+                    } else if (i === 3) {
+                        icon.closest('.step-item').style.display = '';
+                    }
+                }
+
+                new bootstrap.Modal(document.getElementById('trackModal')).show();
+            }
+        </script>
 
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -1266,5 +1389,7 @@
         </script>
 
     @endif
+
+
 @endsection
 

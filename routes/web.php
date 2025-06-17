@@ -31,6 +31,10 @@ use Illuminate\Support\Facades\Route;
         Route::post('/stor', [DashboardController::class, 'store'])->name('case.store');
     });
 
+    // Route::get('/cases/tracking/{caseNo}', [DashboardController::class, 'TrackingCase'])->name('TrackingCase');
+    Route::get('/track-case', [DashboardController::class, 'trackCase'])->name('track.case');
+
+
     // Dashboard
     // Route::get('/Dashboard', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
 
