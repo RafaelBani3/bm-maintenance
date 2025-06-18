@@ -433,39 +433,37 @@
                                 </div>
 
                                 <!-- Button Section -->
-                                @if ($TotalMRapproved > 0 || $TotalMRrejected > 0)
-                                    <div class="mt-5 d-flex flex-column gap-3">
-                                        @if ($TotalMRapproved > 0)
-                                            <a href="{{ route('CreateWOC') }}"
-                                                class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                                style="transition: 0.3s ease;">
-                                                <i class="ki-duotone ki-truck fs-2hx me-3">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <span class="d-flex flex-column align-items-start">
-                                                    <span>Create WorkOrder Completion</span>
-                                                    <small class="text-white-50">From {{ $TotalMRapproved }} Approved WO</small>
-                                                </span>
-                                            </a>
-                                        @endif
+                                <div class="mt-5 d-flex flex-column gap-3">
+                                    @if ($TotalMRapproved > 0)
+                                        <a href="{{ route('CreateWOC') }}"
+                                            class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                            style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-truck fs-2hx me-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Create WorkOrder Completion</span>
+                                                <small class="text-white-50">From {{ $TotalMRapproved }} Approved WO</small>
+                                            </span>
+                                        </a>
+                                    @endif
 
-                                        @if ($TotalMRrejected > 0)
-                                            <a href="{{ route('ListMR') }}"
-                                                class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                                style="transition: 0.3s ease;">
-                                                <i class="ki-duotone ki-cross-square fs-2hx me-3">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <span class="d-flex flex-column align-items-start">
-                                                    <span>Review Rejected MR</span>
-                                                    <small class="text-white-50">{{ $TotalMRrejected }} Rejected MR(s)</small>
-                                                </span>
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endif
+                                    @if ($TotalMRrejected > 0)
+                                        <a href="{{ route('ListMR') }}"
+                                            class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                            style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-cross-square fs-2hx me-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Review Rejected MR</span>
+                                                <small class="text-white-50">{{ $TotalMRrejected }} Rejected MR(s)</small>
+                                            </span>
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
