@@ -412,8 +412,8 @@
                                         data-bs-toggle="tooltip"
                                         title="Approved Material Requests are ready for processing.">
                                         <div class="d-flex align-items-center">
-                                            <i class="ki-duotone ki-check-circle fs-2 text-success me-2"></i>
-                                            <span class="fw-semibold text-success">Approved</span>
+                                            <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
+                                            <span class="fw-semibold text-success">Approved/Done</span>
                                         </div>
                                         <span class="fw-bold text-success" id="mr-approved">0</span>
                                     </a>

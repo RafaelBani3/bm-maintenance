@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cases;
 use App\Models\Imgs;
 use App\Models\Logs;
+use App\Models\MatReq;
 use App\Models\Notification;
 use App\Models\technician;
 use App\Models\User;
@@ -55,7 +56,7 @@ class WocController extends Controller
                     ->orWhereIn('WO_No', function ($subquery) {
                         $subquery->select('WO_No')
                             ->from('Mat_Req')
-                            ->whereIn('MR_Status', ['DONE', 'CLOSE']); 
+                            ->whereIn('MR_Status', ['DONE', 'CLOSE','AP4','AP5']); 
                     });
             })
             ->get(['WO_No']);
@@ -530,6 +531,33 @@ class WocController extends Controller
                 'Notif_Type'    => 'WO',
             ]);
 
+               // Tambahan: Update status MR ke DONE
+            $relatedMRs = MatReq::where('WO_No', $wo->WO_No)
+                ->where('MR_Status', 'AP4')
+                ->get();
+
+            if ($relatedMRs->count() > 0) {
+                foreach ($relatedMRs as $mr) {
+                    $mr->MR_Status = 'DONE';
+                    $mr->Update_Date = now();
+                    $mr->save();
+
+                    Logs::create([
+                        'LOG_Type'   => 'MR',
+                        'LOG_RefNo'  => $mr->MR_No,
+                        'LOG_Status' => 'DONE',
+                        'LOG_User'   => $user->id,
+                        'LOG_Date'   => now(),
+                        'LOG_Desc'   => 'MR status updated to DONE automatically after WO completion.',
+                    ]);
+                }
+            } else {
+                Log::warning('MR not updated to DONE. Either no MR found for this WO or status is not AP4.', [
+                    'WO_No' => $wo->WO_No
+                ]);
+            }
+
+
             return response()->json([
                 'success' => true,
                 'message' => 'Work Order successfully updated!'
@@ -553,6 +581,7 @@ class WocController extends Controller
             ], 500);
         }
     }
+
 
 // Page List WOC
     // Ambil Data WOC untuk ditampilkan pada table list WOC

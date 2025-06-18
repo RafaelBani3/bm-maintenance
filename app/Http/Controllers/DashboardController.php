@@ -55,7 +55,7 @@ class DashboardController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
-        $TotalMRapproved = MatReq::where('MR_Status', 'DONE')
+        $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
             ->where('CR_BY', $userId)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();

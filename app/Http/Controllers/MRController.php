@@ -890,7 +890,7 @@ class MRController extends Controller
                     'Notif_Type'    => 'MR',
                 ]);
             } elseif ($mr->MR_APStep == 4) {
-                $mr->MR_Status = 'DONE'; 
+                $mr->MR_Status = 'AP2'; 
                 $mr->MR_RMK4 = $notes;
                 $mr->MR_APStep = 4;
     
