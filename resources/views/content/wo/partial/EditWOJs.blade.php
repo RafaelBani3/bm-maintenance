@@ -59,9 +59,6 @@
             }).addClass('checkbox-readonly');
         });
 
-
-        
-        
         btnSave.addClass('d-none');
         btnEdit.removeClass('d-none');
         btnSubmit.removeClass('d-none');

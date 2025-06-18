@@ -283,133 +283,242 @@ class ExportController extends Controller
     }
 
     // EXPORT MR
+    // public function exportMR(Request $request)
+    // {
+    //     try{
+
+    //         $query = MatReq::query();
+
+    //         $title_status = 'ALL';
+    //         $title_search = 'ALL';
+
+    //         if ($request->has('status') && $request->status !== 'all') {
+    //             $query->where('MR_Status', $request->status);
+    //             $title_status = strtoupper($request->status);
+    //         }
+
+    //         if ($request->has('search') && $request->search != '') {
+    //             $query->where(function ($q) use ($request) {
+    //                 $q->where('MR_No', 'like', '%' . $request->search . '%')
+    //                     ->orWhere('Case_No', 'like', '%' . $request->search . '%')
+    //                     ->orWhere('WO_No', 'like', '%' . $request->search . '%');
+    //             });
+    //             $title_search = $request->search;
+    //         }
+
+    //         $MatReq = $query->with(['createdBy','children'])->orderBy('CR_DT', 'desc')->get();
+
+    //         // Spreadsheet SETUP
+    //         $title = 'Work Order Export List';
+    //         $spreadsheet = new Spreadsheet();
+    //         $sheet = $spreadsheet->getActiveSheet();
+    //         $sheet->setTitle($title);
+    //         $sheet->setShowGridlines(false);
+    //         $sheet->getSheetView()->setZoomScale(90);
+
+    //         // Title Atas
+    //         $sheet->setCellValue('B1', "Filter Status : " . $title_status);
+    //         $sheet->setCellValue('B2', "Search Keyword : " . $title_search);
+    //         $sheet->setCellValue('B3', "Data List - Material Request Report");
+    //         $sheet->mergeCells('B1:H1');
+    //         $sheet->mergeCells('B2:H2');
+    //         $sheet->mergeCells('B3:H3');
+    //         $sheet->getStyle('B1:B3')->getFont()->setBold(true);
+            
+    //         // Header Table
+    //         $headers = ['MR_No','WO No', 'Case No','Created Date', 'Status', 'Item Code',
+    //                     'Item Name','Qty','Description','Timestamp'];
+
+    //         $colStart = 'B';
+    //         $rowStart = 5;
+    //         $col = $colStart;
+            
+    //         foreach ($headers as $header) {
+    //             $sheet->setCellValue($col . $rowStart, $header);
+    //             $col++;
+    //         }
+
+    //         $sheet->getRowDimension($rowStart)->setRowHeight(25);
+    //         $sheet->freezePane('B6');
+    //         $cell_header = 'B5:M5';
+    //         $sheet->getStyle($cell_header)->getAlignment()->setWrapText(true);
+    //         $sheet->getStyle($cell_header)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    //         $sheet->getStyle($cell_header)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+    //         $sheet->setAutoFilter($cell_header);
+    //         $sheet->getStyle($cell_header)->getFont()->setBold(true);
+    //         $sheet->getStyle($cell_header)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+    //         // Styling header fill
+    //         $styleHeader = [
+    //             'fill' => [
+    //                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+    //                 'color' => ['rgb' => 'E1E5EC']
+    //             ]
+    //         ];
+    //         $sheet->getStyle($cell_header)->applyFromArray($styleHeader);
+
+    //         $row = $rowStart + 1;
+
+    //         foreach ($MatReq as $mr) {
+    //             $childCount = $mr->children->count();
+    //             $startRow = $row;
+    //             $endRow = $row + $childCount - 1;
+
+    //             foreach ($mr->children as $child) {
+    //                 $sheet->setCellValue('G' . $row, $child->Item_Code);
+    //                 $sheet->setCellValue('H' . $row, $child->Item_Name);
+    //                 $sheet->setCellValue('I' . $row, $child->Item_Oty);
+    //                 $sheet->setCellValue('J' . $row, $child->Remark);
+    //                 $sheet->setCellValue('K' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($mr->CR_DT));
+    //                 $sheet->getStyle('K' . $row)->getNumberFormat()
+    //                     ->setFormatCode('yyyy-mm-dd hh:mm:ss');
+
+    //                 $row++;
+    //             }
+
+    //             $sheet->mergeCells("B{$startRow}:B{$endRow}");
+    //             $sheet->mergeCells("C{$startRow}:C{$endRow}");
+    //             $sheet->mergeCells("D{$startRow}:D{$endRow}");
+    //             $sheet->mergeCells("E{$startRow}:E{$endRow}");
+    //             $sheet->mergeCells("F{$startRow}:F{$endRow}");
+
+    //             $sheet->setCellValue("B{$startRow}", $mr->MR_No);
+    //             $sheet->setCellValue("C{$startRow}", $mr->WO_No);
+    //             $sheet->setCellValue("D{$startRow}", $mr->Case_No);
+    //             $sheet->setCellValue("E{$startRow}", \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($mr->MR_Date));
+    //             $sheet->getStyle("E{$startRow}")->getNumberFormat()
+    //                 ->setFormatCode('yyyy-mm-dd hh:mm:ss');
+    //             $sheet->setCellValue("F{$startRow}", $mr->MR_Status);
+    //         }
+
+    //         foreach (range('B', 'K') as $col) {
+    //             $sheet->getColumnDimension($col)->setAutoSize(true);
+    //         }
+
+    //         $filename = 'MaterialRequest_Export_' . now()->format('Ymd_His') . '.xlsx';
+    //         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+    //         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    //         header('Content-Disposition: attachment;filename="' . $filename . '"');
+    //         header('Cache-Control: max-age=0');
+
+    //         ob_end_clean();
+    //         $writer->save('php://output');
+    //         exit;
+
+    //     } catch (\Exception $e) {
+    //         exit("Export failed: " . $e->getMessage());
+    //     }
+    // }
+
     public function exportMR(Request $request)
-    {
-        try{
+{
+    try {
+        $query = MatReq::query();
 
-            $query = MatReq::query();
+        $title_status = 'ALL';
+        $title_search = 'ALL';
 
-            $title_status = 'ALL';
-            $title_search = 'ALL';
-
-            if ($request->has('status') && $request->status !== 'all') {
-                $query->where('MR_Status', $request->status);
-                $title_status = strtoupper($request->status);
-            }
-
-            if ($request->has('search') && $request->search != '') {
-                $query->where(function ($q) use ($request) {
-                    $q->where('MR_No', 'like', '%' . $request->search . '%')
-                        ->orWhere('Case_No', 'like', '%' . $request->search . '%')
-                        ->orWhere('WO_No', 'like', '%' . $request->search . '%');
-                });
-                $title_search = $request->search;
-            }
-
-            $MatReq = $query->with(['createdBy','children'])->orderBy('CR_DT', 'desc')->get();
-
-            // Spreadsheet SETUP
-            $title = 'Work Order Export List';
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-            $sheet->setTitle($title);
-            $sheet->setShowGridlines(false);
-            $sheet->getSheetView()->setZoomScale(90);
-
-            // Title Atas
-            $sheet->setCellValue('B1', "Filter Status : " . $title_status);
-            $sheet->setCellValue('B2', "Search Keyword : " . $title_search);
-            $sheet->setCellValue('B3', "Data List - Material Request Report");
-            $sheet->mergeCells('B1:H1');
-            $sheet->mergeCells('B2:H2');
-            $sheet->mergeCells('B3:H3');
-            $sheet->getStyle('B1:B3')->getFont()->setBold(true);
-            
-            // Header Table
-            $headers = ['MR_No','WO No', 'Case No','Created Date', 'Status', 'Item Code',
-                        'Item Name','Qty','Description','Timestamp'];
-
-            $colStart = 'B';
-            $rowStart = 5;
-            $col = $colStart;
-            
-            foreach ($headers as $header) {
-                $sheet->setCellValue($col . $rowStart, $header);
-                $col++;
-            }
-
-            $sheet->getRowDimension($rowStart)->setRowHeight(25);
-            $sheet->freezePane('B6');
-            $cell_header = 'B5:M5';
-            $sheet->getStyle($cell_header)->getAlignment()->setWrapText(true);
-            $sheet->getStyle($cell_header)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle($cell_header)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-            $sheet->setAutoFilter($cell_header);
-            $sheet->getStyle($cell_header)->getFont()->setBold(true);
-            $sheet->getStyle($cell_header)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-
-            // Styling header fill
-            $styleHeader = [
-                'fill' => [
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'color' => ['rgb' => 'E1E5EC']
-                ]
-            ];
-            $sheet->getStyle($cell_header)->applyFromArray($styleHeader);
-
-            $row = $rowStart + 1;
-
-            foreach ($MatReq as $mr) {
-                $childCount = $mr->children->count();
-                $startRow = $row;
-                $endRow = $row + $childCount - 1;
-
-                foreach ($mr->children as $child) {
-                    $sheet->setCellValue('G' . $row, $child->Item_Code);
-                    $sheet->setCellValue('H' . $row, $child->Item_Name);
-                    $sheet->setCellValue('I' . $row, $child->Item_Oty);
-                    $sheet->setCellValue('J' . $row, $child->Remark);
-                    $sheet->setCellValue('K' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($mr->CR_DT));
-                    $sheet->getStyle('K' . $row)->getNumberFormat()
-                        ->setFormatCode('yyyy-mm-dd hh:mm:ss');
-
-                    $row++;
-                }
-
-                $sheet->mergeCells("B{$startRow}:B{$endRow}");
-                $sheet->mergeCells("C{$startRow}:C{$endRow}");
-                $sheet->mergeCells("D{$startRow}:D{$endRow}");
-                $sheet->mergeCells("E{$startRow}:E{$endRow}");
-                $sheet->mergeCells("F{$startRow}:F{$endRow}");
-
-                $sheet->setCellValue("B{$startRow}", $mr->MR_No);
-                $sheet->setCellValue("C{$startRow}", $mr->WO_No);
-                $sheet->setCellValue("D{$startRow}", $mr->Case_No);
-                $sheet->setCellValue("E{$startRow}", \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($mr->MR_Date));
-                $sheet->getStyle("E{$startRow}")->getNumberFormat()
-                    ->setFormatCode('yyyy-mm-dd hh:mm:ss');
-                $sheet->setCellValue("F{$startRow}", $mr->MR_Status);
-            }
-
-            foreach (range('B', 'K') as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
-            }
-
-            $filename = 'MaterialRequest_Export_' . now()->format('Ymd_His') . '.xlsx';
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="' . $filename . '"');
-            header('Cache-Control: max-age=0');
-
-            ob_end_clean();
-            $writer->save('php://output');
-            exit;
-
-        } catch (\Exception $e) {
-            exit("Export failed: " . $e->getMessage());
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('MR_Status', $request->status);
+            $title_status = strtoupper($request->status);
         }
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function ($q) use ($request) {
+                $q->where('MR_No', 'like', '%' . $request->search . '%')
+                    ->orWhere('Case_No', 'like', '%' . $request->search . '%')
+                    ->orWhere('WO_No', 'like', '%' . $request->search . '%');
+            });
+            $title_search = $request->search;
+        }
+
+        $MatReq = $query->with(['createdBy', 'children'])->orderBy('CR_DT', 'desc')->get();
+
+        // Setup Spreadsheet
+        $title = 'Material Request Export';
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle($title);
+        $sheet->setShowGridlines(false);
+        $sheet->getSheetView()->setZoomScale(90);
+
+        // Filter info
+        $sheet->setCellValue('A1', "Filter Status : " . $title_status);
+        $sheet->setCellValue('A2', "Search Keyword : " . $title_search);
+        $sheet->setCellValue('A3', "Data List - Material Request Report");
+        $sheet->getStyle('A1:A3')->getFont()->setBold(true);
+
+        // Header
+        $headers = ['MR_No', 'WO No', 'Case No', 'Created Date', 'Status', 'Item Code',
+            'Item Name', 'Qty', 'Description', 'Timestamp'];
+        $rowStart = 5;
+        $col = 'A';
+
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . $rowStart, $header);
+            $col++;
+        }
+
+        $sheet->getRowDimension($rowStart)->setRowHeight(25);
+        $sheet->freezePane('A6');
+        $cellHeaderRange = 'A5:J5';
+        $sheet->getStyle($cellHeaderRange)->getAlignment()->setWrapText(true);
+        $sheet->getStyle($cellHeaderRange)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle($cellHeaderRange)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+        $sheet->setAutoFilter($cellHeaderRange);
+        $sheet->getStyle($cellHeaderRange)->getFont()->setBold(true);
+        $sheet->getStyle($cellHeaderRange)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        $styleHeader = [
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'color' => ['rgb' => 'E1E5EC']
+            ]
+        ];
+        $sheet->getStyle($cellHeaderRange)->applyFromArray($styleHeader);
+
+        // Data Rows
+        $row = $rowStart + 1;
+
+        foreach ($MatReq as $mr) {
+            foreach ($mr->children as $child) {
+                $sheet->setCellValue('A' . $row, $mr->MR_No);
+                $sheet->setCellValue('B' . $row, $mr->WO_No);
+                $sheet->setCellValue('C' . $row, $mr->Case_No);
+                $sheet->setCellValue('D' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($mr->MR_Date));
+                $sheet->getStyle('D' . $row)->getNumberFormat()->setFormatCode('yyyy-mm-dd hh:mm:ss');
+                $sheet->setCellValue('E' . $row, $mr->MR_Status);
+                $sheet->setCellValue('F' . $row, $child->Item_Code);
+                $sheet->setCellValue('G' . $row, $child->Item_Name);
+                $sheet->setCellValue('H' . $row, $child->Item_Oty);
+                $sheet->setCellValue('I' . $row, $child->Remark);
+                $sheet->setCellValue('J' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($mr->CR_DT));
+                $sheet->getStyle('J' . $row)->getNumberFormat()->setFormatCode('yyyy-mm-dd hh:mm:ss');
+
+                $row++;
+            }
+        }
+
+        foreach (range('A', 'J') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $filename = 'MaterialRequest_Export_' . now()->format('Ymd_His') . '.xlsx';
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        ob_end_clean();
+        $writer->save('php://output');
+        exit;
+    } catch (\Exception $e) {
+        exit("Export failed: " . $e->getMessage());
     }
+}
+
 
 
     public function exportWOC(Request $request)

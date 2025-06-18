@@ -49,7 +49,7 @@ class WocController extends Controller
             ->where('WO_IsComplete', 'N')
             ->whereNull('WO_CompDate')
             ->whereNull('WO_IsReject')
-            ->where('CR_BY', $userId)
+            ->where('CR_BY', $userId)   
             ->where(function ($query) {
                 $query->where('WO_NeedMat', 'N')
                     ->orWhereIn('WO_No', function ($subquery) {
@@ -770,9 +770,29 @@ class WocController extends Controller
             ->where('LOG_Type', 'WO') 
             ->where('LOG_RefNo', $wocNo)
             ->orderBy('LOG_Date', 'desc')
+            ->get();  
+            
+            // Ambil waktu terakhir REVISION atau SUBMITTED
+        $lastCycleLog = DB::table('Logs')
+            ->where('LOG_Type', 'WO')
+            ->where('LOG_RefNo', $wocNo)
+            ->whereIn('LOG_Status', ['REVISION', 'SUBMITTED'])
+            ->orderBy('LOG_Date', 'desc')
+            ->first();
+
+        $cycleStartDate = $lastCycleLog ? $lastCycleLog->LOG_Date : null;
+
+        // Ambil semua log setelah tanggal REVISION atau SUBMITTED terakhir
+        $logs = DB::table('Logs')
+            ->join('users', 'Logs.LOG_User', '=', 'users.id')
+            ->select('Logs.*', 'users.Fullname as user_name')
+            ->where('LOG_Type', 'WO')
+            ->where('LOG_RefNo', $wocNo)
+            ->when($cycleStartDate, function ($query, $cycleStartDate) {
+                return $query->where('LOG_Date', '>=', $cycleStartDate);
+            })
+            ->orderBy('LOG_Date', 'desc')
             ->get();
-    
-        
 
         $wocImages = Imgs::where('IMG_RefNo', $wocNo)->get();
 
@@ -828,27 +848,16 @@ class WocController extends Controller
                         'Case_Status' => 'DONE'
                     ]);
 
-                    // logs update CASE STATUS
-                    Logs::create([
-                        'Logs_No' => Logs::generateLogsNo(),
-                        'LOG_Type'   => 'BA',
-                        'LOG_RefNo'  => $wo->Case_No,
-                        'LOG_Status' => 'DONE',
-                        'LOG_User'   => $user->id,
-                        'LOG_Date'   => Carbon::now(),
-                        'LOG_Desc'   => 'Case completed successfully',
-                    ]);
-
                     Logs::create([
                         'Logs_No'    => Logs::generateLogsNo(),
                         'LOG_Type'   => 'WO',
-                        'LOG_RefNo'  => $wo->WOC_No,
+                        'LOG_RefNo'  => $wo->WO_No,
                         'LOG_Status' => 'APPROVED 2',
                         'LOG_User'   => $user->id,
                         'LOG_Date'   => Carbon::now(),
                         'LOG_Desc'   => $user->Fullname . ' APPROVED WOC',
                     ]);
-
+                    
                     // LOGS UPDATE WOC STATUS
                     Logs::create([
                         'Logs_No'    => Logs::generateLogsNo(),
@@ -858,6 +867,17 @@ class WocController extends Controller
                         'LOG_User'   => $user->id,
                         'LOG_Date'   => Carbon::now(),
                         'LOG_Desc'   => 'Work Order Complition completed successfully',
+                    ]);
+
+                    // logs update CASE STATUS
+                    Logs::create([
+                        'Logs_No' => Logs::generateLogsNo(),
+                        'LOG_Type'   => 'BA',
+                        'LOG_RefNo'  => $wo->Case_No,
+                        'LOG_Status' => 'DONE',
+                        'LOG_User'   => $user->id,
+                        'LOG_Date'   => Carbon::now(),
+                        'LOG_Desc'   => 'Case completed successfully',
                     ]);
 
                     // LOGS UPDATE WO STATUS

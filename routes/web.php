@@ -44,14 +44,9 @@ use Illuminate\Support\Facades\Route;
 
 
     // Dashboard
-    // Route::get('/Dashboard', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
-
     // Ambil Data Case
-    // Route::get('/dashboard/case-summary', [DashboardController::class, 'caseSummary'])->name('dashboard.case-summary');
-    
     Route::get('/dashboard/wo-summary', [DashboardController::class, 'GetWOSummary'])->name('dashboard.wo-summary');
 
-    // Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary']);
     Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary'])
     ->name('Dashboard.MR.Summary');
 

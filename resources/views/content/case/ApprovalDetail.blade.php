@@ -385,7 +385,7 @@
                                     $logAp1 = $logs
                                     ->where('LOG_Status', 'APPROVED 1')
                                     ->where('LOG_Type', 'BA')
-                                    ->sortByDesc('LOG_Date')  // Sort by latest
+                                    ->sortByDesc('LOG_Date') 
                                     ->first(function($log) use ($case) {
                                         return \Carbon\Carbon::parse($log->LOG_Date)->greaterThanOrEqualTo($case->Update_Date); 
                                     });

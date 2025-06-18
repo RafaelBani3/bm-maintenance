@@ -97,8 +97,7 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Case number not provided'], 400);
         }
 
-        $caseNo = base64_decode($encodedCaseNo); // Decode back to original
-
+        $caseNo = base64_decode($encodedCaseNo); 
         $case = Cases::with([
             'workOrder.materialRequest'
         ])->where('Case_No', $caseNo)->first();
@@ -158,7 +157,7 @@ class DashboardController extends Controller
             ->count();
 
         // Hitung total material request dengan status AP4 atau DONE milik user yang login
-        $total_mr_ap4 = DB::table('mat_req')
+        $total_mr_ap4 = DB::table('Mat_Req')
             ->whereIn('MR_Status', ['AP4', 'DONE'])
             ->where('CR_BY', $userId)
             ->count();

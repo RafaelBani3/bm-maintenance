@@ -143,271 +143,7 @@
         const BASE_URL = "{{ url('/') }}";
     </script>
 
-    {{-- Ambil Data MR ke Table --}}
-    {{-- <script>
-        $(document).ready(function () {
-            const baseUrl = "{{ url('/') }}";
-
-            const table = $("#matreq_table").DataTable({
-                ajax: {
-                    url: "{{ route('GetDataMR') }}",
-                    method: "GET",
-                    dataSrc: "",
-                    error: function (xhr, status, error) {
-                        console.error("AJAX Load Error:", {
-                            status: xhr.status,
-                            response: xhr.responseText,
-                            error: error
-                        });
-
-                        alert("Terjadi kesalahan saat memuat data. Silakan cek console atau hubungi admin.");
-                    }
-                },
-
-                columns: [
-                    {
-                        data: "MR_No",
-                        className: "text-center align-middle",
-                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
-                    },
-                    {
-                        data: "WO_No",
-                        className: "text-center align-middle",
-                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
-                    },
-                    {
-                        data: "Case_No",
-                        className: "text-center align-middle",
-                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
-                    },
-                    {
-                        data: "MR_Date",
-                        className: "text-center align-middle",
-                        render: data => data ? new Date(data).toLocaleDateString('en-CA') : 'N/A'
-                    },
-                    {
-                        data: "MR_Status",
-                        className: "text-center align-middle",
-                        render: function (status) {
-                            let badgeClass = "badge-light-secondary text-gray-800";
-                            switch (status) {
-                                case "OPEN": badgeClass = "badge-light-warning text-warning"; break;
-                                case "SUBMIT":
-                                case "AP1":
-                                case "AP2":
-                                case "AP3":
-                                case "AP4":
-                                case "AP5": badgeClass = "badge-light-primary text-primary"; break;
-                                case "INPROGRESS": badgeClass = "badge-light-info text-info"; break;
-                                case "CLOSE":
-                                case "DONE": badgeClass = "badge-light-success text-success"; break;
-                                case "REJECT": badgeClass = "badge-light-danger text-danger"; break;
-                            }
-                            return `<span class="badge ${badgeClass} fw-semibold">${status}</span>`;
-                        }
-                    },
-                    {
-                        data: "MR_IsUrgent",
-                        className: "text-center align-middle",
-                        render: val => val === 'Y'
-                            ? '<span class="badge bg-danger fs-7">Yes</span>'
-                            : '<span class="badge bg-secondary fs-7">No</span>'
-                    },
-                    {
-                        data: "CreatedBy",
-                        className: "text-center align-middle",
-                        render: data => data ?? '-'
-                    },
-                    {
-                        data: "MR_No",
-                        className: "text-center align-middle",
-                        render: function (data) {
-                            if (!data) return '-';
-                            try {
-                                const encoded = btoa(data);
-                                return `
-                                    <a href="${baseUrl}/Material-Request/Detail/${encoded}" class="btn btn-sm btn-secondary hover-scale">
-                                        <i class="ki-duotone ki-eye">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> View
-                                    </a>`;
-                            } catch (err) {
-                                console.error("Encoding error:", err);
-                                return '-';
-                            }
-                        }
-                    }
-                ],
-                destroy: true,
-                scrollY: "300px",
-                scrollX: true,
-                scrollCollapse: true,    
-            });
-
-            setInterval(() => {
-                table.ajax.reload(null, false);
-            }, 10000);
-
-            function showPageLoading() {
-                $('.page-loader').removeClass('d-none').fadeIn(200);
-            }
-
-            function hidePageLoading() {
-                setTimeout(() => {
-                    $('.page-loader').fadeOut(200, function () {
-                        $(this).addClass('d-none');
-                    });
-                }, 800);
-            }
-
-            $('#applyFilter').on('click', function () {
-                const keyword = $('#searchReport').val().toLowerCase();
-                const status = $('#statusFilter').val();
-
-                showPageLoading();
-
-                setTimeout(() => {
-                    table.search(keyword).draw();
-                    table.column(4).search(status === 'all' ? '' : status).draw(); 
-                    hidePageLoading();
-                }, 300);
-            });
-        });
-    </script> --}}
-    {{-- Versi 26 May --}}
-    {{-- <script>
-        $(document).ready(function () {
-            const baseUrl = "{{ url('/') }}";
-
-            const table = $("#matreq_table").DataTable({
-                ajax: {
-                    url: "{{ route('GetDataMR') }}",
-                    method: "GET",
-                    dataSrc: "",
-                    error: function (xhr, status, error) {
-                        console.error("AJAX Error:", {
-                            status: xhr.status,
-                            response: xhr.responseText,
-                            error: error
-                        });
-                        alert("Terjadi kesalahan saat memuat data. Silakan cek console.");
-                    }
-                },
-                columns: [
-                    {
-                        data: "MR_No",
-                        className: "text-center align-middle",
-                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
-                    },
-                    {
-                        data: "WO_No",
-                        className: "text-center align-middle",
-                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
-                    },
-                    {
-                        data: "Case_No",
-                        className: "text-center align-middle",
-                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
-                    },
-                    {
-                        data: "MR_Date",
-                        className: "text-center align-middle",
-                        render: data => data ? new Date(data).toLocaleDateString('en-CA') : 'N/A'
-                    },
-                    {
-                        data: "MR_Status",
-                        className: "text-center align-middle",
-                        render: function (status) {
-                            let badgeClass = "badge-light-secondary text-gray-800";
-                            switch (status) {
-                                case "OPEN": badgeClass = "badge-light-warning text-warning"; break;
-                                case "SUBMIT":
-                                case "AP1":
-                                case "AP2":
-                                case "AP3":
-                                case "AP4":
-                                case "AP5": badgeClass = "badge-light-primary text-primary"; break;
-                                case "INPROGRESS": badgeClass = "badge-light-info text-info"; break;
-                                case "CLOSE":
-                                case "DONE": badgeClass = "badge-light-success text-success"; break;
-                                case "REJECT": badgeClass = "badge-light-danger text-danger"; break;
-                            }
-                            return `<span class="badge ${badgeClass} fw-semibold">${status}</span>`;
-                        }
-                    },
-                    {
-                        data: "MR_IsUrgent",
-                        className: "text-center align-middle",
-                        render: val => val === 'Y'
-                            ? '<span class="badge bg-danger fs-7">Yes</span>'
-                            : '<span class="badge bg-secondary fs-7">No</span>'
-                    },
-                    {
-                        data: "CreatedBy",
-                        className: "text-center align-middle",
-                        render: data => data ?? '-'
-                    },
-                    {
-                        data: "MR_No",
-                        className: "text-center align-middle",
-                        render: function (data) {
-                            if (!data) return '-';
-                            try {
-                                const encoded = btoa(unescape(encodeURIComponent(data)));
-                                return `
-                                    <a href="${baseUrl}/Material-Request/Detail/${encoded}" class="btn btn-sm btn-secondary hover-scale">
-                                        <i class="ki-duotone ki-eye">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> View
-                                    </a>`;
-                            } catch (err) {
-                                console.error("Encoding error:", err);
-                                return '-';
-                            }
-                        }
-                    }
-                ],
-                destroy: true,
-                scrollY: "300px",
-                scrollX: true,
-                scrollCollapse: true
-            });
-
-            setInterval(() => {
-                table.ajax.reload(null, false);
-            }, 10000);
-
-            function showPageLoading() {
-                $('.page-loader').removeClass('d-none').fadeIn(200);
-            }
-
-            function hidePageLoading() {
-                setTimeout(() => {
-                    $('.page-loader').fadeOut(200, function () {
-                        $(this).addClass('d-none');
-                    });
-                }, 800);
-            }
-
-            $('#applyFilter').on('click', function () {
-                const keyword = $('#searchReport').val().toLowerCase();
-                const status = $('#statusFilter').val();
-
-                showPageLoading();
-
-                setTimeout(() => {
-                    table.search(keyword).draw();
-                    table.column(4).search(status === 'all' ? '' : status).draw();
-                    hidePageLoading();
-                }, 300);
-            });
-        });
-    </script> --}}
-
+    {{-- GET DAT MR to Table --}}
     <script>
         // Declare Script untuk Menuju Page Detail MR
         // const mrDetailRoute = @json(route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']));
@@ -511,44 +247,7 @@
                         render: data => data ?? '-'
                     },
                     {
-                        // data: "MR_No",
-                        // className: "",
-                        // render: function (data,type, row) {
-                        //     const encoded = btoa(data); 
-                        //     const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded); 
-
-                        //     let buttons = '<div class="d-flex gap-2">';
-
-                        //     // Tombol Edit hanya muncul jika Case_Status = "OPEN"
-                        //     if (row.MR_Status === "OPEN" || row.MR_Status === "REJECT") {
-                        //         buttons += `
-                        //             <a href="${baseUrl}/Material-Request/Edit/${encoded}" 
-                        //             class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
-                        //             style="width: 40px; height: 40px;" 
-                        //             data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Case">
-                        //                 <i class="ki-duotone ki-pencil fs-3 text-warning">
-                        //                     <span class="path1"></span>
-                        //                     <span class="path2"></span>
-                        //                 </i>
-                        //             </a>
-                        //         `;
-                        //     }
-
-                        //     // Tombol View
-                        //     buttons += `
-                        //         <a href="${baseUrl}/Material-Request/Detail/${encoded}" 
-                        //         class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
-                        //         style="width: 40px; height: 40px;" 
-                        //         data-bs-toggle="tooltip" data-bs-placement="top" title="View Case">
-                        //             <i class="ki-duotone ki-eye fs-3 text-primary">
-                        //                 <span class="path1"></span>
-                        //                 <span class="path2"></span>
-                        //                 <span class="path3"></span>
-                        //             </i>
-                        //         </a>
-                        //     </div>`;
-                        //     return buttons;
-                        // }
+                        
                         data: "MR_No",
                         className: "",
                         render: function (data, type, row) {
@@ -558,7 +257,6 @@
 
                             let buttons = '<div class="d-flex gap-2">';
 
-                            // Tombol Edit hanya jika MR_Status = "OPEN" atau "REJECT"
                             if (row.MR_Status === "OPEN" || row.MR_Status === "REJECT" && typeof canEditMR !== 'undefined' && canEditMR) {
                                 buttons += `
                                     <a href="${editUrl}" 
@@ -605,10 +303,9 @@
                 }
             });
 
-            // Reload setiap 10 detik
-            setInterval(() => {
-                table.ajax.reload(null, false);
-            }, 10000);
+            // setInterval(() => {
+            //     table.ajax.reload(null, false);
+            // }, 10000);
 
             function showPageLoading() {
                 $('.page-loader').removeClass('d-none').fadeIn(200);
@@ -630,7 +327,7 @@
 
                 setTimeout(() => {
                     table.search(keyword).draw();
-                    table.column(4).search(status === 'all' ? '' : status).draw(); // Kolom ke-4 = MR_Status
+                    table.column(4).search(status === 'all' ? '' : status).draw();
                     hidePageLoading();
                 }, 300);
             });

@@ -174,7 +174,7 @@
                             </div>
                             <!--end::Input Work Description-->
 
-                            <!--begin::Input Work Description-->
+                            <!--begin::Input checkbox MR-->
                             <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -195,9 +195,9 @@
                                     </label>
                                 </div>
                             </div>
-                            <!--end::Input Work Description-->
+                            <!--end::Input checkbox MR-->
 
-                            <!--begin::Input Work Description-->
+                            <!--begin::Input intended for-->
                             <div id="intended_for_section" class="fv-row row mb-10 d-none">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -217,7 +217,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <!--end::Input Work Description-->
+                            <!--end::Input intended for-->
                         </div>
                         <!--end::Card body-->
                 

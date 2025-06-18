@@ -213,7 +213,7 @@
                                                                 {{ $tech->technician_id }} - {{ $tech->technician_Name }}
                                                             </option>
                                                         @endforeach
-                                                    </select></select>
+                                                    </select>
                                                     </div>
                                                 </div>
                                                 <!--end::Input assingned to-->
@@ -231,7 +231,7 @@
                                                 </div>
                                                 <!--end::Input Work Description-->
 
-                                                <!--begin::Input Work Description-->
+                                                <!--begin::Input CHECKBOX MR-->
                                                 <div class="fv-row row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
@@ -254,7 +254,7 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <!--end::Input Work Description-->
+                                                <!--end::Input checkbox mr-->
 
                                                 <!--begin::Input Itended For-->
                                                 <div id="intended_for_section" class="fv-row row mb-10 {{ $wo->WO_NeedMat == 'Y' ? '' : 'd-none' }} readonly-select">
@@ -434,5 +434,25 @@
 
     @include('content.wo.partial.EditWOJs')
 
-
+        <script>
+        $(document).ready(function () {
+             $('#assigned_to').select2({
+            ajax: {
+                url: "{{ route('GetTechnician') }}",
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data 
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Select technician(s)',
+            minimumInputLength: 0,
+            allowClear: true
+        });
+            
+        });
+    </script>
 @endsection

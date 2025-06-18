@@ -288,18 +288,7 @@ class MRController extends Controller
 
                 Log::info('Update MR: Reset status REJECT karena user melakukan revisi', [
                     'MR_No' => $mr->Case_No
-                ]);
-
-                DB::table('Logs')->insert([
-                    'Logs_No' => Logs::generateLogsNo(),
-                    'LOG_Type' => 'MR',
-                    'LOG_RefNo' => $mr->MR_No,
-                    'LOG_Status' => 'REVISION',
-                    'LOG_User' => Auth::id(),
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => 'MR status and reject fields reset due to revision.',
-                ]);
-                
+                ]);       
             }
 
             $mr->MR_Date = $request->date;
@@ -475,6 +464,9 @@ class MRController extends Controller
         return response()->json($matReqs);
     }
 
+
+
+    
     
 // PAGE Details MR 
     public function detail($encodedMRNo)
@@ -755,13 +747,28 @@ class MRController extends Controller
 
         $materialRequestDetails = MatReqChild::where('MR_No', $mrNo)->get();
 
+        // Ambil waktu terakhir REVISION atau SUBMITTED
+        $lastCycleLog = DB::table('Logs')
+            ->where('LOG_Type', 'MR')
+            ->where('LOG_RefNo', $materialRequest->MR_No)
+            ->whereIn('LOG_Status', ['REVISION', 'SUBMITTED'])
+            ->orderBy('LOG_Date', 'desc')
+            ->first();
+
+        $cycleStartDate = $lastCycleLog ? $lastCycleLog->LOG_Date : null;
+
+        // Ambil semua log setelah tanggal REVISION atau SUBMITTED terakhir
         $logs = DB::table('Logs')
             ->join('users', 'Logs.LOG_User', '=', 'users.id')
             ->select('Logs.*', 'users.Fullname as user_name')
-            ->where('LOG_Type', 'MR') 
+            ->where('LOG_Type', 'MR')
             ->where('LOG_RefNo', $materialRequest->MR_No)
+            ->when($cycleStartDate, function ($query, $cycleStartDate) {
+                return $query->where('LOG_Date', '>=', $cycleStartDate);
+            })
             ->orderBy('LOG_Date', 'desc')
             ->get();
+
 
         return view('content.mr.ApprovalDetailMR', [
             'materialRequest' => $materialRequest,
@@ -895,6 +902,16 @@ class MRController extends Controller
                     'LOG_User'   => $user->id,
                     'LOG_Date'   => Carbon::now(),
                     'LOG_Desc'   => $user->Fullname . ' APPROVED MR',
+                ]);
+
+                Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
+                    'LOG_Type'   => 'MR',
+                    'LOG_RefNo'  => $mr_no,
+                    'LOG_Status' => 'DONE',
+                    'LOG_User'   => $user->id,
+                    'LOG_Date'   => Carbon::now(),
+                    'LOG_Desc'   => 'Material Request Successfuly Done',
                 ]);
     
                 Notification::create([
@@ -1082,8 +1099,7 @@ class MRController extends Controller
         }
     }
 
-
-      
+    
 
 
 }

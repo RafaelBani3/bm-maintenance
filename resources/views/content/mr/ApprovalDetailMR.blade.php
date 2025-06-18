@@ -286,14 +286,14 @@
                                                     <td class="text-center">{{ $detail->MR_Line }}</td>
                                                     <td>
                                                         <input type="hidden" name="items[{{ $index }}][mr_line]" value="{{ $detail->MR_Line }}">
-                                                        <input style="width: 100px" type="number" name="items[{{ $index }}][qty]" class="form-control" value="{{ $detail->Item_Oty }}" readonly>
+                                                        <input style="width: 80px" type="number" name="items[{{ $index }}][qty]" class="form-control" value="{{ $detail->Item_Oty }}" readonly>
                                                     </td>
-                                                    <td style="width: 140px"><input type="text" name="items[{{ $index }}][unit]" class="form-control uom-name" placeholder="Input Unit" readonly></td>
-                                                    <td style="width: 190px">
+                                                    <td style="width: 130px"><input type="text" name="items[{{ $index }}][unit]" class="form-control uom-name" placeholder="Input Unit" readonly></td>
+                                                    <td style="width: 230px">
                                                         <select name="items[{{ $index }}][code]" class="form-control item-code"></select>
                                                     </td>
                                                     <td style="width: 230px"><input type="text" name="items[{{ $index }}][name]" class="form-control item-name" placeholder="Material's Name" readonly></td>
-                                                    <td><input type="text" name="items[{{ $index }}][stock]" class="form-control item-stock" placeholder="Material's Stock"></td>
+                                                    <td style="width: 120px"><input type="text" name="items[{{ $index }}][stock]" class="form-control item-stock" placeholder="Material's Stock"></td>
                                                     <td><input type="text" name="items[{{ $index }}][desc]" class="form-control item-desc" placeholder="Material's Description" value=""></td>
                                                 </tr>
                                                 @endforeach
@@ -321,12 +321,14 @@
                                     ];
                                     
                                     $userId = Auth::id();
+                                
+
                                 @endphp
 
                                 @foreach($approvalSteps as $step => $info)
                                     @php
-                                        $log = $logs->first(fn($log) => $log->LOG_Status === $info['status'] && $log->LOG_Type === 'MR');
-                                        // $log = $logs->first(fn($log) => $log->LOG_Status === $info['status'] && $log->LOG_Type === 'MR' && $log->LOG_User == $materialRequest->{'MR_AP' . $step});
+                                        // $log = $approvalLogs->first(fn($log) => $log->LOG_Status === $info['status']);
+                                           $log = $logs->first(fn($log) => $log->LOG_Status === $info['status'] && $log->LOG_Type === 'MR');
                                     @endphp
                                     
                                     <div class="timeline-item">
@@ -355,8 +357,9 @@
                                                         @if($log)
                                                             Approved at {{ \Carbon\Carbon::parse($log->LOG_Date)->format('d/m/Y H:i') }}
                                                         @elseif($step < $materialRequest->MR_APStep)
-                                                            Log not found.
+                                                            Waiting for Approval
                                                         @endif
+
                                                     </div>
                                                 </div>
                                             </div>
