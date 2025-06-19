@@ -55,6 +55,15 @@ class DashboardController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
+        $totalWOtoWOC = WorkOrder::whereNull('WO_MR')
+            ->where('WO_NeedMat', 'N')
+            ->where('WO_IsComplete', 'N')
+            ->whereNull('WO_CompDate') 
+            ->whereIn('WO_Status', ['INPROGRESS'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
         $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
             ->where('CR_BY', $userId)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
@@ -85,7 +94,8 @@ class DashboardController extends Controller
             'TotalMRapproved',
             'TotalMRrejected',
             'rejectedWoc',
-            'doneWoc'
+            'doneWoc',
+            'totalWOtoWOC'
         ));
     }
 
@@ -254,7 +264,7 @@ class DashboardController extends Controller
             ->count();
 
         $inprogress = WorkOrder::where('CR_BY', $userId)
-            ->where('WO_Status', 'SUBMIT')
+            ->where('WO_Status', ['SUBMIT','INPROGRESS'])
             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
             ->count();
 
@@ -272,23 +282,6 @@ class DashboardController extends Controller
 
     
     // Controller MR
-    // Controller MR untuk Tampil data MR 
-    // public function getMRSummary(Request $request)
-    // {
-    //     $userId = Auth::id();
-
-    //     $thisMonthStart = now()->startOfMonth();
-    //     $thisMonthEnd = now()->endOfMonth();
-
-    //     $total = MatReq::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
-    //         ->where('CR_BY', $userId)
-    //         ->count();
-
-    //     return response()->json([
-    //         'total' => $total,
-    //     ]);
-    // }
-
     public function getMRSummary(Request $request)
     {
         $userId = Auth::id();
@@ -300,7 +293,7 @@ class DashboardController extends Controller
             ->where('CR_BY', $userId)
             ->count();
 
-        $approved = MatReq::where('MR_Status', 'DONE')
+        $approved = MatReq::where('MR_Status', 'AP4')
             ->where('CR_BY', $userId)
             ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
             ->count();
@@ -472,7 +465,7 @@ class DashboardController extends Controller
                     $q->where('MR_APStep', 5)->where('MR_AP5', $userId);
                 });
             })
-            ->whereNotIn('MR_Status', ['DONE', 'CLOSE', 'REJECT'])
+            ->whereNotIn('MR_Status', ['DONE', 'CLOSE', 'REJECT','AP4'])
             ->count();
 
         return response()->json(['count' => $totalPendingMR]);

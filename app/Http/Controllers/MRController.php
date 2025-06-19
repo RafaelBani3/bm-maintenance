@@ -120,6 +120,10 @@ class MRController extends Controller
                 ]);
             }
 
+            // Update Work Order status to OnProgress
+            $wo_no = $request->reference_number;
+            WorkOrder::where('WO_No', $wo_no)->update(['WO_Status' => 'INPROGRESS']);
+            
             DB::commit();
 
             Log::info("Material Request $newMRNo saved successfully by user ID " . Auth::id());
@@ -319,9 +323,6 @@ class MRController extends Controller
             $mr->Update_Date = now();
             $mr->MR_Status = 'SUBMIT';
             $mr->save();
-
-            // Update Work Order status to OnProgress
-            WorkOrder::where('WO_No', $wo_no)->update(['WO_Status' => 'INPROGRESS']);
 
             MatReqChild::where('MR_No', $mr->MR_No)->delete();
 
@@ -890,7 +891,7 @@ class MRController extends Controller
                     'Notif_Type'    => 'MR',
                 ]);
             } elseif ($mr->MR_APStep == 4) {
-                $mr->MR_Status = 'AP2'; 
+                $mr->MR_Status = 'AP4'; 
                 $mr->MR_RMK4 = $notes;
                 $mr->MR_APStep = 4;
     

@@ -8,7 +8,7 @@
     <!--begin::Logo-->
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <!--begin::Logo image-->
-        <a href="index.html">
+        <a href="{{ route('Dashboard') }}">
             <img alt="Logo" src="{{ asset('assets/media/logos/kpn-corp.png') }}" class="h-25px app-sidebar-logo-default" />
             <img alt="Logo" src="{{ asset('assets/media/logos/kpn-corp-logo.svg') }}" class="h-20px app-sidebar-logo-minimize" />            
         </a>
@@ -121,7 +121,7 @@
                     {{-- Page WO --}}
                     @if(auth()->user()->hasAnyPermission(['view wo']))
                         <!--begin:Menu item-->
-                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWO') ? 'show' : '' }}">
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWO', 'ListWO') ? 'show' : '' }}">
                             <span class="menu-link">
                                 <span class="menu-icon">
                                     <i class="ki-duotone ki-briefcase fs-2">
@@ -160,7 +160,7 @@
                     {{-- Page MR --}}
                     @if(auth()->user()->hasAnyPermission(['view mr', 'view mr_ap']))
                         <!--begin:Menu item-->
-                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWO') ? 'show' : '' }}">
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateMR', 'ListMR', 'ApprovalListMR' ) ? 'show' : '' }}">
                             <span class="menu-link">
                                 <span class="menu-icon">
                                     <i class="ki-duotone ki-parcel-tracking fs-2">
@@ -214,7 +214,7 @@
 
                     {{-- WOC --}}
                     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo','view cr_ap']))
-                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWOC', 'ListWOCPage') ? 'show' : '' }}">
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateWOC', 'ListWOCPage', 'ApprovalListWOC') ? 'show' : '' }}">
                             <span class="menu-link">
                                 <span class="menu-icon">
                                     <i class="ki-duotone ki-folder-added fs-2">

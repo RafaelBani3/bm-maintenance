@@ -326,7 +326,7 @@
                                             </i>
                                             <span class="fw-semibold text-info">Submitted</span>
                                         </div>
-                                        <span class="fw-bold text-info" id="wo-inprogress">0</span> {{-- Tambah ID --}}
+                                        <span class="fw-bold text-info" id="wo-inprogress">0</span>
                                     </a>
 
                                     <a href="{{ route('ListWO', ['status' => 'DONE']) }}"
@@ -352,6 +352,23 @@
                                             <span class="d-flex flex-column align-items-start">
                                                 <span>Create Material Request</span>
                                                 <small class="text-white-50">Based on {{ $totalWOtoMR }} Work Order{{ $totalWOtoMR > 1 ? 's' : '' }}</small>
+                                            </span>
+                                        </a>
+                                    </div>
+                                @endif
+
+                                @if ($totalWOtoWOC > 0)
+                                    <div class="mt-5">
+                                        <a href="{{ route('CreateWOC') }}"
+                                        class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                        style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-notepad fs-2hx me-3">   
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Create Work Order Completion</span>
+                                                <small class="text-white-50">Based on {{ $totalWOtoWOC }} Work Order {{ $totalWOtoWOC > 1 ? 's' : '' }}</small>
                                             </span>
                                         </a>
                                     </div>

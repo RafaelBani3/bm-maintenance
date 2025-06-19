@@ -162,7 +162,7 @@
                             <!--begin::Row Need Material-->
                             <div class="row mb-7 pb-4">
                                 <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Need Material?</label>
+                                <label class="col-lg-2 fw-semibold text-muted fs-5">Work Order Description?</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
@@ -171,32 +171,19 @@
                                 <!--end::Col-->
                             </div>
                             <!--end::Row Need Material-->
-
-                                <!--begin::Row WO Completed-->
-                                <div class="row mb-7 pb-4">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted fs-5">Completed By</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-10">
-                                        <span class="fw-bold fs-5 text-dark">{{ $workOrder->WO_IsComplete }}</span>
-                                    </div>
-                                    <!--end::Col-->
+                            
+                            <!--begin::Row WO Completed Date-->
+                            <div class="row mb-7 pb-4">
+                                <!--begin::Label-->
+                                <label class="col-lg-2 fw-semibold text-muted fs-5">Completion Date</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-10">
+                                    <span class="fw-bold fs-5 text-dark">{{ $workOrder->WO_CompDate }}</span>
                                 </div>
-                                <!--end::Row WO Completed-->
-
-                                <!--begin::Row WO Completed Date-->
-                                <div class="row mb-7 pb-4">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted fs-5">Completion Date</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-10">
-                                        <span class="fw-bold fs-5 text-dark">{{ $workOrder->WO_CompDate }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Row WO Completed-->
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Row WO Completed-->
                         </div>
                         {{-- End Detail Work Order  --}}
                     </div>

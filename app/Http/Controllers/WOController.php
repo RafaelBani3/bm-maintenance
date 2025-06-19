@@ -213,35 +213,53 @@ class WOController extends Controller
         $workOrder->Update_Date = now();
         $workOrder->save();
 
-            Session::put('latest_wo_no', $woNumber);
+        $case = Cases::where('Case_No', $request->reference_number)->first();
+            if ($case) {
+                $case->Case_Status = 'INPROGRESS';
+                $case->save();
+                Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
+            
+                Logs::create([
+                    'Logs_No' => Logs::generateLogsNo(),
+                    'LOG_Type' => 'BA',
+                    'LOG_RefNo' => $request->reference_number,
+                    'LOG_Status' => 'INPROGRESS',
+                    'LOG_User' => $user->id,
+                    'LOG_Date' => now(),
+                    'LOG_Desc' => 'Sent and Case Inprogress.',
+                ]);
+        
+            }
 
-            if ($request->has('assigned_to') && is_array($request->assigned_to)) {
-                foreach ($request->assigned_to as $technicianId) {
-                    $exists = DB::table('WO_DoneBy')
-                        ->where('WO_No', $woNumber)
-                        ->where('technician_id', $technicianId)
-                        ->exists();
-                
-                    if (!$exists) {
-                        DB::table('WO_DoneBy')->insert([
-                            'WO_No' => $woNumber,
-                            'technician_id' => $technicianId,
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ]);
-                
-                        Logs::create([
-                            'Logs_No' => Logs::generateLogsNo(),
-                            'LOG_Type' => 'WO',
-                            'LOG_RefNo' => $woNumber,
-                            'LOG_Status' => 'TECH_ASSIGNED',
-                            'LOG_User' => $user->id,
-                            'LOG_Date' => now(),
-                            'LOG_Desc' => "Technician ID $technicianId was assigned to Work Order.",
-                        ]);
-                    }
+        Session::put('latest_wo_no', $woNumber);
+
+        if ($request->has('assigned_to') && is_array($request->assigned_to)) {
+            foreach ($request->assigned_to as $technicianId) {
+                $exists = DB::table('WO_DoneBy')
+                    ->where('WO_No', $woNumber)
+                    ->where('technician_id', $technicianId)
+                    ->exists();
+            
+                if (!$exists) {
+                    DB::table('WO_DoneBy')->insert([
+                        'WO_No' => $woNumber,
+                        'technician_id' => $technicianId,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+            
+                    Logs::create([
+                        'Logs_No' => Logs::generateLogsNo(),
+                        'LOG_Type' => 'WO',
+                        'LOG_RefNo' => $woNumber,
+                        'LOG_Status' => 'TECH_ASSIGNED',
+                        'LOG_User' => $user->id,
+                        'LOG_Date' => now(),
+                        'LOG_Desc' => "Technician ID $technicianId was assigned to Work Order.",
+                    ]);
                 }
             }
+        }
 
             Logs::create([
                 'Logs_No' => Logs::generateLogsNo(),                
@@ -385,6 +403,9 @@ class WOController extends Controller
 
             $wo->save();
 
+
+            
+
             // Handle Teknisi
             if ($request->has('assigned_to')) {
                 $existingTechnicians = DB::table('WO_DoneBy')
@@ -465,23 +486,23 @@ class WOController extends Controller
             
             $wo->save();
     
-            $case = Cases::where('Case_No', $request->reference_number)->first();
-            if ($case) {
-                $case->Case_Status = 'INPROGRESS';
-                $case->save();
-                Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
+            // $case = Cases::where('Case_No', $request->reference_number)->first();
+            // if ($case) {
+            //     $case->Case_Status = 'INPROGRESS';
+            //     $case->save();
+            //     Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
             
-                Logs::create([
-                    'Logs_No' => Logs::generateLogsNo(),
-                    'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $request->reference_number,
-                    'LOG_Status' => 'INPROGRESS',
-                    'LOG_User' => $user->id,
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => 'Sent and Case Inprogress.',
-                ]);
+            //     Logs::create([
+            //         'Logs_No' => Logs::generateLogsNo(),
+            //         'LOG_Type' => 'BA',
+            //         'LOG_RefNo' => $request->reference_number,
+            //         'LOG_Status' => 'INPROGRESS',
+            //         'LOG_User' => $user->id,
+            //         'LOG_Date' => now(),
+            //         'LOG_Desc' => 'Sent and Case Inprogress.',
+            //     ]);
         
-            }
+            // }
 
             // if ($request->has('assigned_to')) {
             //     $existingTechnicians = DB::table('WO_DoneBy')

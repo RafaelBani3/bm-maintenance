@@ -23,13 +23,9 @@ use Illuminate\Support\Facades\Route;
     Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
 
 
-    // reset paswword
-    
-    // Tampilkan form ubah password
-    Route::get('/forgot-password', [AuthController::class, 'showResetPasswordForm'])->name('password.request');
-
-    // Proses ubah password
-    Route::post('/forgot-password', [AuthController::class, 'resetPassword'])->name('password.reset');
+    // Change paswword
+    Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('changepasswordpage');
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
 
 
     // All can Access

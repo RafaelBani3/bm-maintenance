@@ -8,7 +8,7 @@
                     <a href="" target="_blank" class="text-gray-800 text-hover-primary">KPN Corp</a>
                 </div>
                 <!--end::Copyright-->
-                <!--begin::Menu-->
+                {{-- <!--begin::Menu-->
                 <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
                     <li class="menu-item">
                         <a href="" target="_blank" class="menu-link px-2">About</a>
@@ -20,7 +20,7 @@
                         <a href="" target="_blank" class="menu-link px-2">Purchase</a>
                     </li>
                 </ul>
-                <!--end::Menu-->
+                <!--end::Menu--> --}}
             </div>
             <!--end::Footer container-->
         </div>
