@@ -811,7 +811,7 @@
 
                 function fetchWaitingCounts() {
                     $.ajax({
-                        url: "{{ route('dashboard.waitingCounts') }}", // Buat route ini di web.php
+                        url: "{{ route('dashboard.waitingCounts') }}", 
                         method: "GET",
                         success: function (res) {
                             $("#total-case-ap2").text(res.total_case_ap2);
@@ -921,82 +921,7 @@
 
 
     <!--begin::Row: Latest Approval Activities-->
-        {{-- Script WO yang Change(Persenan) dan Grafik ada  --}}
-            {{-- <script type="text/javascript">
-                document.addEventListener("DOMContentLoaded", function () {
-                    google.charts.load("current", { packages: ["corechart"] });
-                    google.charts.setOnLoadCallback(fetchAndDrawChart);
-
-                    function fetchAndDrawChart() {
-                        fetch("{{ route('dashboard.wo-summary') }}")
-                            .then(response => response.json())
-                            .then(data => {
-                                const total = data.total || 0;
-                                const lastMonthTotal = data.lastMonthTotal || 0;
-
-                                const change = total - lastMonthTotal;
-                                const percentChange = lastMonthTotal > 0
-                                    ? (change / lastMonthTotal) * 100
-                                    : 100;
-
-                                const totalEl = document.getElementById("wo-total");
-                                if (totalEl) totalEl.textContent = total;
-
-                                const changeEl = document.getElementById("wo-change");
-                                const changeIcon = change >= 0
-                                    ? `<i class="ki-outline ki-arrow-up fs-3 text-success me-1"></i>`
-                                    : `<i class="ki-outline ki-arrow-down fs-3 text-danger me-1"></i>`;
-                                const changeClass = change >= 0 ? 'text-success' : 'text-danger';
-
-                                if (changeEl) {
-                                    changeEl.innerHTML = `${changeIcon}${percentChange.toFixed(1)}%`;
-                                    changeEl.className = `fs-4 fw-bold d-flex align-items-center ${changeClass}`;
-                                }
-
-                                const chartData = google.visualization.arrayToDataTable([
-                                    ['Status', 'Jumlah', { role: 'style' }],
-                                    ['INPROGRESS', data.inprogressCount, '#ffc107'], 
-                                    ['REJECT', data.submitCount, '#dc3545'],         
-                                    ['DONE', data.completedCount, '#28a745']     
-                                ]);
-
-                                const options = {
-                                    title: '',
-                                    chartArea: { width: '80%', height: '70%' },
-                                    legend: { position: 'none' },
-                                    
-                                    vAxis: {
-                                        title: 'Jumlah WO',
-                                        minValue: 0,
-                                    },
-                                    hAxis: {
-                                        title: 'Status',
-                                    },
-                                    bar: { groupWidth: "20%" },
-                                };
-
-                                const chart = new google.visualization.ColumnChart(document.getElementById('kt_docs_google_chart_bar'));
-                                chart.draw(chartData, options);
-                            })
-                            .catch(error => console.error("Gagal ambil data WO:", error));
-                    }
-                });
-            </script> --}}
-
         {{-- Script WO hanya Tampil total data WO --}}
-        {{-- <script type="text/javascript">
-            document.addEventListener("DOMContentLoaded", function () {
-                fetch("{{ route('dashboard.wo-summary') }}")
-                    .then(response => response.json())
-                    .then(data => {
-                        const total = data.total || 0;
-                        const totalEl = document.getElementById("wo-total");
-                        if (totalEl) totalEl.textContent = total;
-                    })
-                    .catch(error => console.error("Gagal ambil data WO:", error));
-            });
-        </script> --}}
-
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {
                 fetch("{{ route('dashboard.wo-summary') }}")
@@ -1011,48 +936,6 @@
         </script>
 
         {{-- SCRIPT MR --}}
-        {{-- Script MR tampil total data + Persen Perbandingan + Grafik --}}
-            {{-- <script>
-                $(document).ready(function () {
-                    $.ajax({
-                        url: "{{ url('/dashboard/material-request-summary') }}",
-                        type: "GET",
-                        success: function (data) {
-                            const total = data.total || 0;
-                            const lastMonth = data.totalLastMonth || 0;
-                            const submitted = data.submitted;
-                            const inProgress = data.inProgress;
-                            const done = data.done;
-
-                            const diff = total - lastMonth;
-                            const percentChange = lastMonth > 0 ? (diff / lastMonth) * 100 : 100;
-
-                            // Format angka
-                            const percentDone = total > 0 ? (done / total) * 100 : 0;
-                            const formatPercent = (val) => `${val.toFixed(1)}%`;
-
-                            $("#mr-total").text(total);
-
-                            $("#mr-to-goal")?.text(`${done} of ${total} Material Requests Have Been Completed/Done`);
-                            $("#mr-percent")?.text(formatPercent(percentDone));
-                            $("#mr-progress-done")?.css("width", percentDone + "%");
-                            $("#mr-progress-done")?.attr("title", `Done: ${formatPercent(percentDone)} (${done} MR)`);
-
-                            const icon = percentChange >= 0
-                                ? '<i class="ki-outline ki-arrow-up fs-3 text-success me-1"></i>'
-                                : '<i class="ki-outline ki-arrow-down fs-3 text-danger me-1"></i>';
-                            const textClass = percentChange >= 0 ? 'text-success' : 'text-danger';
-                            const formattedChange = `${icon}${Math.abs(percentChange).toFixed(1)}%`;
-
-                            $("#mr-change").html(`<span class="${textClass} fs-4 fw-bold d-flex align-items-center">${formattedChange}</span>`);
-                        },
-                        error: function (xhr) {
-                            console.error("Gagal mengambil data Material Request", xhr);
-                        }
-                    });
-                });
-            </script> --}}
-
         {{-- Script Tampila total data MR sj--}}
         {{-- <script>
             $(document).ready(function () {
