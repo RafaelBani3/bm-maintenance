@@ -146,7 +146,7 @@ class WOController extends Controller
         $users = [];
     
         switch ($position) {
-            case 'Spv. Engineering':
+            case 'Spv Engineering':
             case 'IT Leader':
             case 'Adm Engineering':
             case 'Security & Parking':
@@ -312,7 +312,7 @@ class WOController extends Controller
         Log::info('Fetching intended users for position: ' . $position . ' by user: ' . $user->Fullname);
     
         $users = match ($position) {
-            'Spv. Engineering', 'IT Leader', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator' =>
+            'Spv Engineering', 'IT Leader', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator' =>
                 User::where('Fullname', 'Istifar Adi Saputra')->get(),
     
             'HR Admin' =>

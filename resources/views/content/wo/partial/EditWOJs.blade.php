@@ -24,6 +24,17 @@
         });
     </script>
 
+    @php
+        $currentUserId = auth()->user()->id;
+        $userPermissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
+    @endphp
+
+    <script>
+        const currentUserId = {{ $currentUserId }};
+        const userPermissions = @json($userPermissions);
+        const woMRUserId = {{ $wo->WO_MR ?? 'null' }}; 
+    </script>
+
     {{-- Script Validation dan Update WO --}}
     <script>
     $(document).ready(function () {
@@ -40,18 +51,16 @@
         ];
 
         // Initial State
-        // Disable all normal fields
         form.find('input, textarea, select').not('.exclude-disable, [type="hidden"], .readonly-select, .readonly-checkbox').prop('disabled', true);
 
         // Simulasikan readonly untuk select
         form.find('.readonly-select').each(function () {
             $(this).on('mousedown', function (e) {
-                e.preventDefault(); // cegah dropdown
-                this.blur();        // hilangkan fokus
+                e.preventDefault(); 
+                this.blur();       
             }).addClass('select-readonly');
         });
 
-        // Simulate readonly for checkbox
         form.find('.readonly-checkbox').each(function () {
             $(this).on('click.readonly', function (e) {
                 e.preventDefault();
@@ -67,7 +76,6 @@
         btnEdit.on('click', function () {
             let isEmpty = false;
 
-            // Clear previous messages
             form.find('.invalid-feedback').remove();
             form.find('.is-invalid').removeClass('is-invalid');
 
@@ -93,7 +101,6 @@
                 return;
             }
 
-            // Show loader before enabling form
             const loadingEl = document.createElement("div");
             loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
             loadingEl.innerHTML = `
@@ -270,11 +277,29 @@
                                 title: 'Success!',
                                 text: response.message
                             }).then(() => {
-                                const redirectUrl = $('#require_material_checkbox').is(':checked')
-                                    ? "{{ route('CreateMR') }}"
-                                    : "{{ route('ListWO') }}";
+                                const isChecked = $('#require_material_checkbox').is(':checked');
+
+                                const hasMRPermission = userPermissions.includes('view mr') && userPermissions.includes('create mr');
+
+                                let redirectUrl;
+
+                                if (isChecked) {
+                                    if (!hasMRPermission) {
+                                        redirectUrl = "{{ route('ListWO') }}";
+                                    } else {
+                                        if (woMRUserId === currentUserId) {
+                                            redirectUrl = "{{ route('CreateMR') }}";
+                                        } else {
+                                            redirectUrl = "{{ route('ListWO') }}";
+                                        }
+                                    }
+                                } else {
+                                    redirectUrl = "{{ route('ListWO') }}";
+                                }
+
                                 window.location.href = redirectUrl;
                             });
+
                         } else {
                             Swal.fire({
                                 icon: 'error',

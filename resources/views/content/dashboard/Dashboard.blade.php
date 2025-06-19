@@ -159,22 +159,6 @@
 
                 <!-- Row 1: Summary Cards -->
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
-                    <!-- Total Cases -->
-                    {{-- <div class="col-md-4">
-                        <div class="card card-flush h-md-100">
-                            <a href="{{ route('ViewCase') }}">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h4 class="text-gray-800 fw-bold mb-0">Total Cases</h4>
-                                        <span class="badge badge-light-primary">This Month</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="fs-2hx fw-bold text-dark me-2" id="total-case">0</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div> --}}
 
                     <!-- Total Case Summary - Baru -->
                     <div class="col-md-6 col-xl-4">
@@ -270,23 +254,6 @@
                         </div>
                     </div>
 
-                    <!-- Total Work Orders -->
-                    {{-- <div class="col-md-4">
-                        <div class="card card-flush h-md-100">
-                            <a href="{{ route('ListWO') }}">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h4 class="text-gray-800 fw-bold mb-0">Total Work Orders</h4>
-                                        <span class="badge badge-light-info">This Month</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="fs-2hx fw-bold text-dark me-2" id="wo-total">0</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div> --}}
-
                     <!-- Total Work Orders - Baru -->
                     <div class="col-md-6 col-xl-4">
                         <div class="card card-flush shadow-sm h-md-100 border-0">
@@ -379,22 +346,7 @@
                     </div>
 
                     <!-- Total Material Requests -->
-                    {{-- <div class="col-md-4">
-                        <div class="card card-flush h-md-100">
-                            <a href="{{ route('ListMR') }}">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h4 class="text-gray-800 fw-bold mb-0">Total Material Requests</h4>
-                                        <span class="badge badge-light-danger">This Month</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="fs-2hx fw-bold text-dark me-2" id="mr-total">0</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div> --}}
-
+                    @if(auth()->user()->hasAnyPermission(['view mr']))
                     <!-- Total Material Requests - Baru -->
                     <div class="col-md-6 col-xl-4">
                         <div class="card card-flush shadow-sm h-md-100 border-0">
@@ -484,47 +436,10 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
 
-                <!-- Row 2: Waitting Cards -->
-                {{-- <div class="row gx-5 gx-xl-10 mb-xl-10">
-                    <!-- Cases Approved (Need to Create WO) -->
-                    <div class="col-md-6">
-                        <div class="card card-flush h-md-100">
-                            <a href="{{ route('CreateWO') }}">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h4 class="text-gray-800 fw-bold mb-0">Cases Approved</h4>
-                                        <span class="badge badge-light">Need to Create WO</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="fs-2hx fw-bold text-dark me-2" id="total-case-ap2">0</span>
-                                        <span class="text-muted fs-6">ready for WO</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Material Requests Approved (Need to Create WO-C) -->
-                    <div class="col-md-6">
-                        <div class="card card-flush h-md-100">
-                            <a href="{{ route('CreateWOC') }}">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h4 class="text-gray-800 fw-bold mb-0">Material Requests Approved</h4>
-                                        <span class="badge badge-light">MR Done</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="fs-2hx fw-bold text-dark me-2" id="total-mr-ap4">0</span>
-                                        <span class="text-muted fs-6">ready for WO-C</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div> --}}
-                
+                <!-- Row 2: Waitting Cards -->                
                 <div class="row gx-5 gx-xl-10 mb-xl-10">
                     <!-- LEFT SIDE: Work Order Completion Summary -->
                     <div class="col-md-6 col-xl-4">

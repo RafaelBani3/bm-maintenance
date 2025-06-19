@@ -34,12 +34,12 @@ class DashboardController extends Controller
         // ->get();
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
             ->where('CR_BY', $userId)
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) // ⬅️ Filter per bulan
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) 
             ->get();
 
 
         $totalApproved = Cases::where('CR_BY', $userId)
-            ->whereIn('Case_Status', ['AP2']) // tambahkan jika AP1 juga dianggap Approved
+            ->whereIn('Case_Status', ['AP2'])
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
@@ -56,6 +56,7 @@ class DashboardController extends Controller
             ->count();
 
         $totalWOtoWOC = WorkOrder::whereNull('WO_MR')
+            ->where('CR_BY', $userId)
             ->where('WO_NeedMat', 'N')
             ->where('WO_IsComplete', 'N')
             ->whereNull('WO_CompDate') 
@@ -64,8 +65,15 @@ class DashboardController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
+        // $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
+        //     ->where('CR_BY', $userId)
+        //     ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+        //     ->count();
+
         $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
-            ->where('CR_BY', $userId)
+            ->whereHas('workOrder', function ($q) use ($userId) {
+                $q->where('CR_BY', $userId);
+            })
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
@@ -263,10 +271,18 @@ class DashboardController extends Controller
             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
             ->count();
 
-        $inprogress = WorkOrder::where('CR_BY', $userId)
-            ->where('WO_Status', ['SUBMIT','INPROGRESS'])
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
-            ->count();
+        // $inprogress = WorkOrder::where('CR_BY', $userId)
+        //     ->where('WO_Status', ['SUBMIT','INPROGRESS'])
+        //     ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+        //     ->count();
+
+        $inprogress = WorkOrder::where(function ($query) use ($userId) {
+        $query->where('CR_BY', $userId)
+                ->orWhere('WO_MR', $userId);
+        })
+        ->whereIn('WO_Status', ['SUBMIT', 'INPROGRESS'])
+        ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+        ->count();
 
         $done = WorkOrder::where('CR_BY', $userId)
             ->where('WO_Status', 'DONE')
