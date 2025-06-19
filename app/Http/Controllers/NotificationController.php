@@ -41,6 +41,21 @@ class NotificationController extends Controller
         return response()->json(['success' => false], 404);
     }
 
+    public function ButtonMarkAsRead($notifNo)
+    {
+        $notif = Notification::where('Notif_No', $notifNo)->first();
+
+        if (!$notif) {
+            return response()->json(['error' => 'Notification not found'], 404);
+        }
+
+        $notif->Notif_IsRead = 'Y';
+        $notif->save();
+
+        return response()->json(['message' => 'Notification marked as read']);
+    }
+
+
 
 
 

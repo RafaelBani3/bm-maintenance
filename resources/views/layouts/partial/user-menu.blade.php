@@ -2,7 +2,7 @@
     <div class="cursor-pointer symbol symbol-40px"
          data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
          data-kt-menu-placement="bottom-end">
-        <img src="{{ asset('assets/media/avatars/profile.jpeg') }}" class="rounded-circle shadow-sm" alt="user" style="object-fit: cover; width: 40px; height: 40px;" />
+        <img src="{{ asset('assets/media/avatars/blank.png') }}" class="rounded-circle shadow-sm" alt="user" style="object-fit: cover; width: 40px; height: 40px;" />
     </div>
 
     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded shadow-lg border-0 menu-gray-800 menu-state-bg menu-state-color fw-semibold py-5 px-4 fs-6 w-300px"
@@ -11,7 +11,7 @@
         {{-- Header Profile --}}
         <div class="d-flex align-items-center mb-4">
             <div class="symbol symbol-50px me-4">
-                <img src="{{ asset('assets/media/avatars/profile.jpeg') }}" class="rounded-circle shadow" alt="user" />
+                <img src="{{ asset('assets/media/avatars/blank.png') }}" class="rounded-circle shadow" alt="user" />
             </div>
             <div class="d-flex flex-column">
                 <span class="fw-bold text-gray-900 fs-5">

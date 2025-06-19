@@ -341,21 +341,7 @@ use Illuminate\Support\Facades\Route;
     }); 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Notifikasi
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications'])->name('Notifications');
     Route::post('/notification/read/{id}', [NotificationController::class, 'markAsRead']);
+    Route::post('/notification/mark-as-read/{notifNo}', [NotificationController::class, 'ButtonMarkAsRead']);
