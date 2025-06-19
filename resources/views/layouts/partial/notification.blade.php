@@ -20,7 +20,7 @@
         id="kt_menu_notifications" style="position: relative;">
 
         <!-- Header -->
-        <div class="d-flex flex-column rounded-top" style="background: linear-gradient(135deg, #f5af19, #f12711);">
+        <div class="d-flex flex-column rounded-top" style="background-color:maroon;">
             <h3 class="text-white fw-bold px-9 pt-9 pb-5">
                 Notifications 
                 <span class="fs-8 opacity-75 ps-3" id="notification-count">0 reports</span>
