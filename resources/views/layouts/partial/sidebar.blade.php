@@ -30,17 +30,18 @@
 
             <!--begin::Scroll wrapper-->
             <div id="kt_app_sidebar_menu_scroll" class="scroll-y my-5 mx-3" 
-            data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" 
-            data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer" 
-            data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px" 
-            data-kt-scroll-save-state="true">
+                data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" 
+                data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer" 
+                data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px" 
+                data-kt-scroll-save-state="true">
 
                 <!--begin::Menu-->
                 <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" 
                     id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
-                    <!--begin:Menu item-->
+                    
+                    <!--begin:Menu Dashboard-->
                     <div data-kt-menu-trigger="click" class="menu-item {{ request()->routeIs('Dashboard') ? 'show' : '' }}">
-                        <!--begin:Menu link-->
+                        <!--begin:Menu Dashboard-->
                         <a class="{{ request()->routeIs('Dashboard') ? 'active' : '' }}" href="{{ route('Dashboard') }}">
                             <span class="menu-link">
                                 <span class="menu-icon">
@@ -67,7 +68,8 @@
                         <!--end:Menu content-->
                     </div>
                     <!--end:Menu item-->
-                    
+
+                    {{-- Page Case --}}
                     @if(auth()->user()->hasAnyPermission(['view cr', 'view cr_ap']))
                         <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateCase', 'ViewCase', 'ApprovalCase') ? 'show' : '' }}">
                             <span class="menu-link">
@@ -262,9 +264,43 @@
                         </div>
                     @endif
 
+                    @if(auth()->user()->hasAnyRole(['SuperAdminCreator','SuperAdminApprover']))
+                        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateNewUser' ) ? 'show' : '' }}">
+                            <span class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="ki-duotone ki-user-edit fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    </i>                                
+                                </span>
+                                <span class="menu-title">User's</span>
+                                <span class="menu-arrow"></span>
+                            </span>
+                        
+                            <div class="menu-sub menu-sub-accordion">
+                                <div class="menu-item">
+                                    <a class="menu-link {{ request()->routeIs('CreateNewUser') ? 'active' : '' }}" href="{{ route('CreateNewUser') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Create New User</span>
+                                    </a>
+                                </div>
+                            </div>
 
-
-
+                            <div class="menu-sub menu-sub-accordion">
+                                <div class="menu-item">
+                                    <a class="menu-link {{ request()->routeIs('CreateNewMatrix') ? 'active' : '' }}" href="{{ route('CreateNewMatrix') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Create New Matrix</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <!--end::Menu-->
                

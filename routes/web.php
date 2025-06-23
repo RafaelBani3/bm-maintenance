@@ -22,10 +22,32 @@ use Illuminate\Support\Facades\Route;
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
 
-
     // Change paswword
     Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('changepasswordpage');
     Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
+
+    // Route Untuk BUAT USER BARU
+    Route::middleware(['auth', 'role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
+        Route::get('/Auth/Create-User', [AuthController::class, 'CreateUser'])->name('CreateNewUser');
+        Route::post('/Auth/Save-New-User', [AuthController::class, 'SaveNewUser'])->name('SaveNewUser');
+        
+        Route::get('/Auth/Users/{id}/Edit', [AuthController::class, 'EditUser'])->name('EditUser');
+        Route::put('/Auth/Users/{id}/Update', [AuthController::class, 'UpdateUser'])->name('UpdateUser');
+
+    });
+
+    Route::middleware(['auth','role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
+        Route::get('/Auth/Create-Matrix', [AuthController::class, 'CreateNewMatrix'])->name('CreateNewMatrix');
+        Route::post('/Auth/Save-Matrix', [AuthController::class, 'SaveMatrix'])->name('SaveMatrix');
+       
+        Route::get('/Auth/Matrix/{id}/Edit', [AuthController::class, 'EditMatrix'])->name('EditMatrix');
+        Route::post('/Auth/Matrix/{id}/Update', [AuthController::class, 'UpdateMatrix'])->name('UpdateMatrix');
+    });
+
+
+
+
+
 
 
     // All can Access

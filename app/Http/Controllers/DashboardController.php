@@ -35,8 +35,7 @@ class DashboardController extends Controller
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
             ->where('CR_BY', $userId)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) 
-            ->get();
-
+            ->paginate(5);
 
         $totalApproved = Cases::where('CR_BY', $userId)
             ->whereIn('Case_Status', ['AP2'])
@@ -358,9 +357,7 @@ class DashboardController extends Controller
             'doneWoc' => $doneWoc,
         ]);
     }
-
-
-
+    
     public function getCaseWOSummary()
     {
         $userId = Auth::id();

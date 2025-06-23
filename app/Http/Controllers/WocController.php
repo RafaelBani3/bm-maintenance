@@ -6,6 +6,7 @@ use App\Models\Cases;
 use App\Models\Imgs;
 use App\Models\Logs;
 use App\Models\MatReq;
+use App\Models\Matrix;
 use App\Models\Notification;
 use App\Models\technician;
 use App\Models\User;
@@ -457,29 +458,41 @@ class WocController extends Controller
                 ], 404);
             }
             // Matriks Approval
-            $matrix = collect([
-                ['Mat_No' => 1, 'Position' => 1, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 11, 'AP2' => 15],
-                ['Mat_No' => 2, 'Position' => 2, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 12, 'AP2' => 15],
-                ['Mat_No' => 3, 'Position' => 3, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 13, 'AP2' => 15],
-                ['Mat_No' => 4, 'Position' => 4, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
-                ['Mat_No' => 5, 'Position' => 5, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
-                ['Mat_No' => 6, 'Position' => 6, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
-                ['Mat_No' => 7, 'Position' => 7, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
-                ['Mat_No' => 8, 'Position' => 8, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 14, 'AP2' => 15],
-                ['Mat_No' => 13, 'Position' => 14, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 18, 'AP2' => 18],
-
-            ]);
+            // $matrix = collect([
+            //     ['Mat_No' => 1, 'Position' => 1, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 11, 'AP2' => 15],
+            //     ['Mat_No' => 2, 'Position' => 2, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 12, 'AP2' => 15],
+            //     ['Mat_No' => 3, 'Position' => 3, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 13, 'AP2' => 15],
+            //     ['Mat_No' => 4, 'Position' => 4, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
+            //     ['Mat_No' => 5, 'Position' => 5, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
+            //     ['Mat_No' => 6, 'Position' => 6, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
+            //     ['Mat_No' => 7, 'Position' => 7, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 1,  'AP2' => 11],
+            //     ['Mat_No' => 8, 'Position' => 8, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 14, 'AP2' => 15],
+            //     ['Mat_No' => 13, 'Position' => 14, 'Mat_Type' => 'CR', 'Mat_Max' => 2 ,'AP1' => 18, 'AP2' => 18],
+            // ]);
 
             $userPosition = Auth::user()->Position->id;
-            $matrixRow = $matrix->firstWhere('Position', $userPosition);
-            
-            if ($matrixRow) {
-                $wo->WO_AP1 = $matrixRow['AP1'] ?? null;
-                $wo->WO_AP2 = $matrixRow['AP2'] ?? null;
+            // $matrixRow = $matrix->firstWhere('Position', $userPosition);
 
+            $matrixRow = Matrix::where('Mat_Type', 'CR')
+                ->where('Position', $userPosition)
+                ->first(); 
+                
+            // if ($matrixRow) {
+            //     $wo->WO_AP1 = $matrixRow['AP1'] ?? null;
+            //     $wo->WO_AP2 = $matrixRow['AP2'] ?? null;
+
+            //     $wo->WO_APStep = 1;
+            //     $wo->WO_APMaxStep = $matrixRow['Mat_Max'];
+            // }
+
+            if ($matrixRow) {
+                $wo->WO_AP1 = $matrixRow->AP1 ?? null;
+                $wo->WO_AP2 = $matrixRow->AP2 ?? null;
+        
                 $wo->WO_APStep = 1;
-                $wo->WO_APMaxStep = $matrixRow['Mat_Max'];
+                $wo->WO_APMaxStep = $matrixRow->Mat_Max;
             }
+
 
             $wo->WO_Start = $request->start_date;
             $wo->WO_Compdate = Carbon::createFromFormat('Y-m-d H:i', $request->end_date)->format('Y-m-d H:i:s');

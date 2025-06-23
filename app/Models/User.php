@@ -27,6 +27,7 @@ class User extends Authenticatable
         'Username',
         'Password',
         'rememberToken',
+        'CR_DT',
         'PS_ID',
     ];
 

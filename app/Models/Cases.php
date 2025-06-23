@@ -23,7 +23,7 @@ class Cases extends Model
         'CR_DT',
         'Cat_No', //Foreign Key
         'Scat_No', //Foreign Key
-        
+
         'Case_Chronology',
         'Case_Outcome',
         'Case_Suggest',

@@ -517,19 +517,20 @@
                         </div>
 
                         <!-- RIGHT SIDE: Case Tracking -->
-                        <div class="col-md-6 col-xl-8">
-                            <div class="card card-flush h-md-100">
-                                <div class="card-header pb-4">
-                                    <h3 class="card-title fw-bold text-gray-800">Tracking Case - {{ \Carbon\Carbon::now()->format('F Y') }}</h3>
-                                    <div class="card-toolbar">
-                                        <span class="badge badge-light-primary">{{ count($cases) }} Case(s)</span>
-                                    </div>
+                        <div class="col-md-12 col-xl-8">
+                            <div class="card card-flush h-md-100 shadow-sm">
+                                <div class="card-header pb-4 d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title fw-bold text-gray-800">
+                                        <i class="ki-duotone ki-briefcase me-2 text-primary fs-2"></i>
+                                        Tracking Case - {{ \Carbon\Carbon::now()->format('F Y') }}
+                                    </h3>
+                                    <span class="badge badge-light-primary">{{ $cases->total() }} Case(s)</span>
                                 </div>
 
                                 <div class="card-body py-0">
-                                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                        <table class="table align-middle table-row-dashed table-bordered gy-4 text-gray-800">
-                                            <thead class="text-center fw-bold fs-6 text-gray-700 bg-light">
+                                    <div class="table-responsive" style="max-height: 400px;">
+                                        <table class="table align-middle table-row-dashed gy-4 text-gray-800 border table-bordered">
+                                            <thead class="text-center fw-bold fs-6 text-gray-700 bg-light-primary">
                                                 <tr>
                                                     <th style="width: 120px;">Case No</th>
                                                     <th>Case Name</th>
@@ -540,11 +541,11 @@
                                             <tbody>
                                                 @forelse($cases as $case)
                                                     <tr>
-                                                        <td class="text-center">{{ $case->Case_No }}</td>
-                                                        <td>{{ $case->Case_Name }}</td>
+                                                        <td class="text-center fw-semibold text-primary">{{ $case->Case_No }}</td>
+                                                        <td class="fw-semibold">{{ $case->Case_Name }}</td>
                                                         <td class="text-center">
                                                             <span class="badge 
-                                                                @if($case->Case_Status === 'AP1' || $case->Case_Status === 'AP2') badge-success
+                                                                @if($case->Case_Status === 'AP1' || $case->Case_Status === 'AP2'|| $case->Case_Status === 'DONE' ) badge-success
                                                                 @elseif($case->Case_Status === 'REJECT') badge-danger
                                                                 @else badge-warning
                                                                 @endif">
@@ -552,8 +553,8 @@
                                                             </span>
                                                         </td>
                                                         <td class="text-center">
-                                                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                                data-bs-target="#trackModal" 
+                                                            <button class="btn btn-sm btn-light-primary px-3 py-2" data-bs-toggle="modal"
+                                                                data-bs-target="#trackModal"
                                                                 onclick="showTracking('{{ $case->Case_No }}')">
                                                                 <i class="fas fa-search me-1"></i> View
                                                             </button>
@@ -567,11 +568,15 @@
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {{-- Pagination --}}
+                                    <div class="d-flex justify-content-center my-4">
+                                        {{ $cases->links('pagination::bootstrap-5') }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                 
                     </div>
-
                     <!-- Row 3: Charts -->
                     <div class="row gx-5 gx-xl-10 mb-xl-10">
                         <!-- Case by Category Chart -->
@@ -671,7 +676,6 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-gray-600 fw-bold fs-4">Approval Cases</span>
-                                    {{-- <span class="badge badge-light-primary fs-8">Pending Approval</span> --}}
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-primary me-2" id="total-case-to-approve">0</span>
@@ -686,7 +690,6 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-gray-600 fw-bold fs-4">Approval Material Requests</span>
-                                    {{-- <span class="badge badge-light-info fs-8">Pending Approval</span> --}}
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-info me-2" id="pending-mr-count">0</span>
@@ -701,7 +704,6 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-gray-600 fw-bold fs-4">Approval WO's Complition</span>
-                                    {{-- <span class="badge badge-light-success fs-8">Pending Approval</span> --}}
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-3hx fw-bold text-success me-2" id="pending-woc-count">0</span>
@@ -716,6 +718,7 @@
 
 
     @endif
+
 
     <!--Script: Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))

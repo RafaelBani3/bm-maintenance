@@ -6,6 +6,7 @@ use App\Models\Logs;
 use App\Models\material;
 use App\Models\MatReq;
 use App\Models\MatReqChild;
+use App\Models\Matrix;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\WorkOrder;
@@ -317,27 +318,44 @@ class MRController extends Controller
             $mr->MR_Date = $request->date;
             $mr->MR_Allotment = $request->Designation;
 
-            $matrix = collect([
-                ['Mat_No' => 9, 'Position' => 5, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
-                ['Mat_No' => 10, 'Position' => 3, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
-                ['Mat_No' => 11, 'Position' => 8, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
-                ['Mat_No' => 12, 'Position' => 2, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
-                ['Mat_No' => 14, 'Position' => 14, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 18, 'AP2' => 18, 'AP3' => 18, 'AP4' => 18],
+                // $matrix = collect([
+                //     ['Mat_No' => 9, 'Position' => 5, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                //     ['Mat_No' => 10, 'Position' => 3, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                //     ['Mat_No' => 11, 'Position' => 8, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                //     ['Mat_No' => 12, 'Position' => 2, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 10, 'AP2' => 12, 'AP3' => 15, 'AP4' => 16],
+                //     ['Mat_No' => 14, 'Position' => 14, 'Mat_Type' => 'MR', 'Mat_Max' => 4 ,'AP1' => 18, 'AP2' => 18, 'AP3' => 18, 'AP4' => 18],
 
-            ]);
+                // ]);
 
             $userPosition = Auth::user()->Position->id;
-            $matrixRow = $matrix->firstWhere('Position', $userPosition);
+
+            $matrixRow = Matrix::where('Mat_Type', 'MR')
+                ->where('Position', $userPosition)
+                ->first();
+
+            // $userPosition = Auth::user()->Position->id;
+            // $matrixRow = $matrix->firstWhere('Position', $userPosition);
+
+            // if ($matrixRow) {
+            //     $mr->MR_AP1 = $matrixRow['AP1'] ?? null;
+            //     $mr->MR_AP2 = $matrixRow['AP2'] ?? null;
+            //     $mr->MR_AP3 = $matrixRow['AP3'] ?? null;
+            //     $mr->MR_AP4 = $matrixRow['AP4'] ?? null;
+            //     $mr->MR_AP5 = $matrixRow['AP5'] ?? null;
+            //     $mr->MR_APStep = 1;
+            //     $mr->MR_APMaxStep = $matrixRow['Mat_Max'];
+            // }
 
             if ($matrixRow) {
-                $mr->MR_AP1 = $matrixRow['AP1'] ?? null;
-                $mr->MR_AP2 = $matrixRow['AP2'] ?? null;
-                $mr->MR_AP3 = $matrixRow['AP3'] ?? null;
-                $mr->MR_AP4 = $matrixRow['AP4'] ?? null;
-                $mr->MR_AP5 = $matrixRow['AP5'] ?? null;
+                $mr->MR_AP1 = $matrixRow->AP1 ?? null;
+                $mr->MR_AP2 = $matrixRow->AP2 ?? null;
+                $mr->MR_AP3 = $matrixRow->AP3 ?? null;
+                $mr->MR_AP4 = $matrixRow->AP4 ?? null;
+                $mr->MR_AP5 = $matrixRow->AP5 ?? null;
                 $mr->MR_APStep = 1;
-                $mr->MR_APMaxStep = $matrixRow['Mat_Max'];
+                $mr->MR_APMaxStep = $matrixRow->Mat_Max;
             }
+
 
             $mr->Update_Date = now();
             $mr->MR_Status = 'SUBMIT';
