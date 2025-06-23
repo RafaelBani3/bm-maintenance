@@ -120,7 +120,7 @@ class AuthController extends Controller
             'Password' => 'nullable|string|min:6',
             'roles' => 'required|array|min:1',
             'roles.*' => 'string|exists:roles,name',
-            'PS_ID' => 'required|exists:positions,id',
+            'PS_ID' => 'required|exists:Positions,id',
         ]);
 
         $user = User::create([
