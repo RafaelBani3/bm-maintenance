@@ -37,6 +37,7 @@
                                             <th class="min-w-300px">Approver 2</th>
                                             <th class="min-w-300px">Approver 3</th>
                                             <th class="min-w-300px">Approver 4</th>
+                                            <th class="min-w-300px">Approver 5</th>
                                             <th class="min-w-150px">Created At</th>
                                             <th class="min-w-150px text-center">Action</th>
                                         </tr>
@@ -77,9 +78,9 @@
                                                 <td>
                                                     {{ $matrix->approver4?->Fullname ?? '-' }}
                                                 </td>
-                                                {{-- <td>
+                                                <td>
                                                     {{ $matrix->approver5?->Fullname ?? '-' }}
-                                                </td> --}}
+                                                </td>
 
                                                 <td>{{ $matrix->created_at->format('d M Y') }}</td>
                                                 <td class="text-center">
@@ -133,7 +134,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <label class="form-label">Maximum Approval</label>
                             <input type="number" name="Mat_Max" id="maxApproval" class="form-control" required />
                         </div>
@@ -153,7 +154,29 @@
                                 @endfor
 
                             </div>
+                        </div> --}}
+
+                        <div class="mb-3">
+                            <label class="form-label">Maximum Approval <small class="text-muted">You Can Custom Maximum Approval</small></label>
+                            <input type="number" name="Mat_Max" id="maxApproval" class="form-control" min="1" max="5" required />
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Approvers</label>
+                            <div class="row g-2" id="approversContainer">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <div class="col-md-6 approver-select" id="approver{{ $i }}">
+                                        <select name="AP{{ $i }}" class="form-select" data-control="select2">
+                                            <option value="">-- Select Approver {{ $i }} --</option>
+                                            @foreach ($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->Fullname }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="modal-footer">
@@ -195,40 +218,31 @@
         document.addEventListener("DOMContentLoaded", function () {
             const matrixType = document.getElementById('matrixType');
             const maxApprovalInput = document.getElementById('maxApproval');
+            const approverContainer = document.getElementById('approversContainer');
 
-            function updateApproverFields() {
-                const type = matrixType.value;
-
+            function updateApproverFieldsFromMax() {
+                const maxVal = parseInt(maxApprovalInput.value) || 0;
                 for (let i = 1; i <= 5; i++) {
                     const approverDiv = document.getElementById(`approver${i}`);
-                    if (approverDiv) {
-                        approverDiv.style.display = 'none';
-                    }
-                }
-
-                if (type === 'CR') {
-                    document.getElementById('approver1').style.display = 'block';
-                    document.getElementById('approver2').style.display = 'block';
-                    maxApprovalInput.value = 2;
-                    maxApprovalInput.readOnly = true;
-                } else if (type === 'MR') {
-                    for (let i = 1; i <= 4; i++) {
-                        document.getElementById(`approver${i}`).style.display = 'block';
-                    }
-                    maxApprovalInput.value = 4;
-                    maxApprovalInput.readOnly = true;
-                } else {
-                    for (let i = 1; i <= 5; i++) {
-                        const approverDiv = document.getElementById(`approver${i}`);
-                        if (approverDiv) approverDiv.style.display = 'block';
-                    }
-                    maxApprovalInput.value = '';
-                    maxApprovalInput.readOnly = false;
+                    approverDiv.style.display = i <= maxVal ? 'block' : 'none';
                 }
             }
 
-            matrixType.addEventListener('change', updateApproverFields);
-            updateApproverFields(); 
+            function handleMatrixTypeChange() {
+                const type = matrixType.value;
+                if (type === 'CR') {
+                    maxApprovalInput.value = 2;
+                } else if (type === 'MR') {
+                    maxApprovalInput.value = 4;
+                } else {
+                    maxApprovalInput.value = '';
+                }
+                maxApprovalInput.readOnly = false;
+                updateApproverFieldsFromMax();
+            }
+
+            matrixType.addEventListener('change', handleMatrixTypeChange);
+            maxApprovalInput.addEventListener('input', updateApproverFieldsFromMax);
 
             // Init Select2
             if (typeof $ !== 'undefined') {
@@ -237,9 +251,40 @@
                     width: '100%'
                 });
             }
+
+            // Initial Setup
+            handleMatrixTypeChange();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const maxApprovalInput = document.getElementById('maxApproval');
+
+            function updateApproverFieldsFromMax() {
+                const maxVal = parseInt(maxApprovalInput.value) || 0;
+                for (let i = 1; i <= 5; i++) {
+                    const approverDiv = document.getElementById(`approver${i}`);
+                    if (approverDiv) {
+                        approverDiv.style.display = i <= maxVal ? 'block' : 'none';
+                    }
+                }
+            }
+
+            maxApprovalInput.addEventListener('input', updateApproverFieldsFromMax);
+
+            $('#modalCreateMatrix').on('shown.bs.modal', function () {
+                $('[data-control="select2"]').select2({
+                    dropdownParent: $('#modalCreateMatrix'),
+                    width: '100%'
+                });
+
+                updateApproverFieldsFromMax(); 
+            });
         });
     </script>
 
 
 
 @endsection
+

@@ -153,7 +153,32 @@
 
         const canEditCase = @json(auth()->user()->can('view cr'));
 
+         // Global variables for date range
+        let startDate = null;
+        let endDate = null;
+        
         $(document).ready(function () {
+
+            $('#dateFilter').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+                startDate = picker.startDate.format('YYYY-MM-DD');
+                endDate = picker.endDate.format('YYYY-MM-DD');
+                $(this).val(startDate + ' - ' + endDate);
+            });
+
+            $('#dateFilter').on('cancel.daterangepicker', function () {
+                $(this).val('');
+                startDate = null;
+                endDate = null;
+            });
+            
             const baseUrl = "{{ url('/') }}";
 
             const table = $("#WOCTable").DataTable({
@@ -322,14 +347,29 @@
             }
 
             $('#applyFilter').on('click', function () {
-                const keyword = $('#searchReport').val().toLowerCase();
+                const keyword = $('#searchReport').val().trim().toLowerCase();
                 const status = $('#statusFilter').val();
 
                 showPageLoading();
 
                 setTimeout(() => {
                     table.search(keyword).draw();
-                    table.column(7).search(status === 'all' ? '' : status).draw();
+                    table.column(4).search(status === 'all' ? '' : status).draw();
+
+                    // Filter berdasarkan date range
+                    if (startDate && endDate) {
+                        table.rows().every(function () {
+                            const rowData = this.data();
+                            const mrDate = new Date(rowData.MR_Date).toISOString().split('T')[0];
+                            const inRange = mrDate >= startDate && mrDate <= endDate;
+                            $(this.node()).toggle(inRange);
+                        });
+                    } else {
+                        table.rows().every(function () {
+                            $(this.node()).show();
+                        });
+                    }
+
                     hidePageLoading();
                 }, 300);
             });

@@ -151,275 +151,90 @@
     </style>
              
     <!--begin::Dashboard Creator-->
-        @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
-            
-            <!-- Main Content -->       
-            <div id="kt_app_content" class="app-content flex-column-fluid">
-                <div id="kt_app_content_container" class="app-container container-xxl">
+    @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
+        
+        <!-- Main Content -->       
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-xxl">
 
-                    <!-- Row 1: Summary Cards -->
-                    <div class="d-flex flex-wrap gap-5 mb-xl-10">
+                <!-- Row 1: Summary Cards -->
+                <div class="d-flex flex-wrap gap-5 mb-xl-10">
 
-                        <!-- Total Case Summary - Baru -->
-                        <div class="flex-grow-1" style="min-width: 300px; max-width: 100%">
-                            <div class="card card-flush shadow-sm h-md-100 border-0">
-                                <div class="card-body d-flex flex-column">
-                                    <!-- Header -->
-                                    <div class="mb-6">
-                                        <h3 class="text-dark fw-bold mb-1">Your Case Summary</h3>
-                                        <span class="text-muted">This month</span>
-                                    </div>
-
-                                    <!-- Total Cases -->
-                                    <div class="d-flex align-items-center mb-5">
-                                        <div class="symbol symbol-60px me-4">
-                                            <div class="symbol-label bg-primary">
-                                                <i class="ki-duotone ki-note-2 fs-3hx text-white">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                    <span class="path4"></span>
-                                                </i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="fs-1 fw-bolder text-dark" id="total-case">0</div>
-                                            <div class="text-muted">Total Cases Created</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Status Breakdown Pills -->
-                                    <div class="d-flex flex-column gap-3">
-                                        <a href="{{ route('ViewCase', ['status' => 'APPROVED']) }}" 
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale"
-                                            data-bs-toggle="tooltip" 
-                                            title="Cases in Approved status are ready for Work Order creation.">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
-                                                <span class="fw-semibold text-success">Approved</span>
-                                            </div>
-                                            <span class="fw-bold text-success" id="total-approved">0</span>
-                                        </a>
-
-                                        <a href="{{ route('ViewCase', ['status' => 'REJECT']) }}" 
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-information-3 fs-2 text-danger me-2"">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                                <span class="fw-semibold text-danger">Rejected</span>
-                                            </div>
-                                            <span class="fw-bold text-danger" id="total-rejected">0</span>
-                                        </a>
-                                    </div>
-
-                                    <!-- Button Section -->
-                                    @if ($totalApproved > 0 || $totalRejected > 0)
-                                        <div class="mt-5 d-flex flex-column gap-3">
-                                            @if ($totalApproved > 0)
-                                                <a href="{{ route('CreateWO') }}"
-                                                    class="btn btn-flex btn-info w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                                    style="transition: 0.3s ease;">
-                                                    <i class="ki-duotone ki-notepad-edit fs-2hx me-3">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <span class="d-flex flex-column align-items-start">
-                                                        <span>Create Work Order</span>
-                                                        <small class="text-white-50">From {{ $totalApproved }} Approved Case(s)</small>
-                                                    </span>
-                                                </a>
-                                            @endif
-
-                                            @if ($totalRejected > 0)
-                                                <a href="{{ route('ViewCase') }}?from=rejected"
-                                                    class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                                    style="transition: 0.3s ease;">
-                                                    <i class="ki-duotone ki-cross-square fs-2hx me-3">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <span class="d-flex flex-column align-items-start">
-                                                        <span>Review Rejected Cases</span>
-                                                        <small class="text-white-50">{{ $totalRejected }} Case(s) Rejected</small>
-                                                    </span>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    @endif
-
+                    <!-- Total Case Summary - Baru -->
+                    <div class="flex-grow-1" style="min-width: 300px; max-width: 600px">
+                        <div class="card card-flush shadow-sm h-md-100 border-0">
+                            <div class="card-body d-flex flex-column">
+                                <!-- Header -->
+                                <div class="mb-6">
+                                    <h3 class="text-dark fw-bold mb-1">Your Case Summary</h3>
+                                    <span class="text-muted">This month</span>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Total Work Orders - Baru -->
-                        <div class="flex-grow-1" style="min-width: 300px; max-width: 100%">
-                            <div class="card card-flush shadow-sm h-md-100 border-0">
-                                <div class="card-body d-flex flex-column">
-                                    <!-- Header -->
-                                    <div class="mb-6">
-                                        <h3 class="text-dark fw-bold mb-1">Your Work Order Summary</h3>
-                                        <span class="text-muted">This month</span>
-                                    </div>
-
-                                    <!-- Total Work Orders -->
-                                    <div class="d-flex align-items-center mb-5">
-                                        <div class="symbol symbol-60px me-4">
-                                            <div class="symbol-label bg-info">
-                                                <i class="ki-duotone ki-briefcase fs-3hx text-white">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                    <span class="path4"></span>
-                                                </i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="fs-1 fw-bolder text-dark" id="wo-total">0</div>
-                                            <div class="text-muted">Total Work Orders Created</div>
+                                <!-- Total Cases -->
+                                <div class="d-flex align-items-center mb-5">
+                                    <div class="symbol symbol-60px me-4">
+                                        <div class="symbol-label bg-primary">
+                                            <i class="ki-duotone ki-note-2 fs-3hx text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                            </i>
                                         </div>
                                     </div>
-
-                                    <!-- Status Breakdown Pills -->
-                                    <div class="d-flex flex-column gap-3">
-                                        <a href="{{ route('ListWO', ['status' => 'INPROGRESS']) }}"
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-info hover-scale">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-watch fs-2 text-info me-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <span class="fw-semibold text-info">Submitted</span>
-                                            </div>
-                                            <span class="fw-bold text-info" id="wo-inprogress">0</span>
-                                        </a>
-
-                                        <a href="{{ route('ListWO', ['status' => 'DONE']) }}"
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
-                                                <span class="fw-semibold text-success">Completed</span>
-                                            </div>
-                                            <span class="fw-bold text-success" id="wo-done">0</span> 
-                                        </a>
+                                    <div>
+                                        <div class="fs-1 fw-bolder text-dark" id="total-case">0</div>
+                                        <div class="text-muted">Total Cases Created</div>
                                     </div>
-
-                                    <!-- Optional Button: Create Material Request -->
-                                    @if ($totalWOtoMR > 0)
-                                        <div class="mt-5">
-                                            <a href="{{ route('CreateMR') }}"
-                                            class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                            style="transition: 0.3s ease;">
-                                                <i class="ki-duotone ki-notepad fs-2hx me-3">   
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <span class="d-flex flex-column align-items-start">
-                                                    <span>Create Material Request</span>
-                                                    <small class="text-white-50">Based on {{ $totalWOtoMR }} Work Order{{ $totalWOtoMR > 1 ? 's' : '' }}</small>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    @endif
-
-                                    @if ($totalWOtoWOC > 0)
-                                        <div class="mt-5">
-                                            <a href="{{ route('CreateWOC') }}"
-                                            class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                            style="transition: 0.3s ease;">
-                                                <i class="ki-duotone ki-notepad fs-2hx me-3">   
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <span class="d-flex flex-column align-items-start">
-                                                    <span>Create Work Order Completion</span>
-                                                    <small class="text-white-50">Based on {{ $totalWOtoWOC }} Work Order {{ $totalWOtoWOC > 1 ? 's' : '' }}</small>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    @endif
-
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Total Material Requests -->
-                        @if(auth()->user()->hasAnyPermission(['view mr']))
-                        <!-- Total Material Requests - Baru -->
-                        <div class="flex-grow-1" style="min-width: 300px; max-width: 100%">
-                            <div class="card card-flush shadow-sm h-md-100 border-0">
-                                <div class="card-body d-flex flex-column">
-                                    <!-- Header -->
-                                    <div class="mb-6">
-                                        <h3 class="text-dark fw-bold mb-1">Your Material Request Summary</h3>
-                                        <span class="text-muted">This month</span>
-                                    </div>
-
-                                    <!-- Total MR -->
-                                    <div class="d-flex align-items-center mb-5">
-                                        <div class="symbol symbol-60px me-4">
-                                            <div class="symbol-label bg-danger">
-                                                <i class="ki-duotone ki-parcel-tracking fs-3hx text-white">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                            </div>
+                                <!-- Status Breakdown Pills -->
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ route('ViewCase', ['status' => 'INPROGRESS']) }}" 
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale"
+                                        data-bs-toggle="tooltip" 
+                                        title="Cases in Approved status are ready for Work Order creation.">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
+                                            <span class="fw-semibold text-success">Approved</span>
                                         </div>
-                                        <div>
-                                            <div class="fs-1 fw-bolder text-dark" id="mr-total">0</div>
-                                            <div class="text-muted">Total Material Requests</div>
+                                        <span class="fw-bold text-success" id="total-approved">0</span>
+                                    </a>
+
+                                    <a href="{{ route('ViewCase', ['status' => 'REJECT']) }}" 
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-information-3 fs-2 text-danger me-2"">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                            <span class="fw-semibold text-danger">Rejected</span>
                                         </div>
-                                    </div>
+                                        <span class="fw-bold text-danger" id="total-rejected">0</span>
+                                    </a>
+                                </div>
 
-                                    <!-- Status Breakdown Pills -->
-                                    <div class="d-flex flex-column gap-3">
-                                        <a href="{{ route('ListMR', ['status' => 'DONE']) }}" 
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale"
-                                            data-bs-toggle="tooltip"
-                                            title="Approved Material Requests are ready for processing.">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
-                                                <span class="fw-semibold text-success">Approved/Done</span>
-                                            </div>
-                                            <span class="fw-bold text-success" id="mr-approved">0</span>
-                                        </a>
-
-                                        <a href="{{ route('ListMR', ['status' => 'REJECTED']) }}" 
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-information-3 fs-2 text-danger me-2"">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                                <span class="fw-semibold text-danger">Rejected</span>
-                                            </div>
-                                            <span class="fw-bold text-danger" id="mr-rejected">0</span>
-                                        </a>
-                                    </div>
-
-                                    <!-- Button Section -->
+                                <!-- Button Section -->
+                                @if ($totalApproved > 0 || $totalRejected > 0)
                                     <div class="mt-5 d-flex flex-column gap-3">
-                                        @if ($TotalMRapproved > 0)
-                                            <a href="{{ route('CreateWOC') }}"
-                                                class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                        @if ($totalApproved > 0)
+                                            <a href="{{ route('CreateWO') }}"
+                                                class="btn btn-flex btn-info w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
                                                 style="transition: 0.3s ease;">
-                                                <i class="ki-duotone ki-truck fs-2hx me-3">
+                                                <i class="ki-duotone ki-notepad-edit fs-2hx me-3">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
                                                 <span class="d-flex flex-column align-items-start">
-                                                    <span>Create WorkOrder Completion</span>
-                                                    <small class="text-white-50">From {{ $TotalMRapproved }} Approved WO</small>
+                                                    <span>Create Work Order</span>
+                                                    <small class="text-white-50">From {{ $totalApproved }} Approved Case(s)</small>
                                                 </span>
                                             </a>
                                         @endif
 
-                                        @if ($TotalMRrejected > 0)
-                                            <a href="{{ route('ListMR') }}"
+                                        @if ($totalRejected > 0)
+                                            <a href="{{ route('ViewCase') }}?from=rejected"
                                                 class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
                                                 style="transition: 0.3s ease;">
                                                 <i class="ki-duotone ki-cross-square fs-2hx me-3">
@@ -427,191 +242,378 @@
                                                     <span class="path2"></span>
                                                 </i>
                                                 <span class="d-flex flex-column align-items-start">
-                                                    <span>Review Rejected MR</span>
-                                                    <small class="text-white-50">{{ $TotalMRrejected }} Rejected MR(s)</small>
+                                                    <span>Review Rejected Cases</span>
+                                                    <small class="text-white-50">{{ $totalRejected }} Case(s) Rejected</small>
                                                 </span>
                                             </a>
                                         @endif
                                     </div>
-                                </div>
+                                @endif
+
                             </div>
                         </div>
-                        @endif
                     </div>
 
-                    <!-- Row 2: Waitting Cards -->                
-                    <div class="row gx-5 gx-xl-10 mb-xl-10">
-                        <!-- LEFT SIDE: Work Order Completion Summary -->
-                        <div class="col-md-6 col-xl-4">
-                            <div class="card card-flush shadow-sm h-md-100 border-0">
-                                <div class="card-body d-flex flex-column">
-                                    <!-- Header -->
-                                    <div class="mb-6">
-                                        <h3 class="text-dark fw-bold mb-1">Your Work Order Completion Summary</h3>
-                                        <span class="text-muted">This month</span>
-                                    </div>
+                    <!-- Total Work Orders - Baru -->
+                    <div class="flex-grow-1" style="min-width: 300px; max-width: 100%">
+                        <div class="card card-flush shadow-sm h-md-100 border-0">
+                            <div class="card-body d-flex flex-column">
+                                <!-- Header -->
+                                <div class="mb-6">
+                                    <h3 class="text-dark fw-bold mb-1">Your Work Order Summary</h3>
+                                    <span class="text-muted">This month</span>
+                                </div>
 
-                                    <!-- Total WO-C -->
-                                    <div class="d-flex align-items-center mb-5">
-                                        <div class="symbol symbol-60px me-4">
-                                            <div class="symbol-label bg-info">
-                                                <i class="ki-duotone ki-briefcase fs-3hx text-white">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                    <span class="path4"></span>
-                                                </i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="fs-1 fw-bolder text-dark" id="woc-total"></div>
-                                            <div class="text-muted">Total WO Completion</div>
+                                <!-- Total Work Orders -->
+                                <div class="d-flex align-items-center mb-5">
+                                    <div class="symbol symbol-60px me-4">
+                                        <div class="symbol-label bg-info">
+                                            <i class="ki-duotone ki-briefcase fs-3hx text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                            </i>
                                         </div>
                                     </div>
+                                    <div>
+                                        <div class="fs-1 fw-bolder text-dark" id="wo-total">0</div>
+                                        <div class="text-muted">Total Work Orders Created</div>
+                                    </div>
+                                </div>
 
-                                    <!-- Status Breakdown Pills -->
-                                    <div class="d-flex flex-column gap-3">
-                                        <a href="{{ route('ListWOCPage', ['status' => 'REJECT_COMPLETION']) }}"
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-information-3 fs-2 text-danger me-2"">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                                <span class="fw-semibold text-danger">Rejected</span>
-                                            </div>
-                                            <span class="fw-bold text-danger" id="woc-reject">{{ $rejectedWoc }}</span>
+                                <!-- Status Breakdown Pills -->
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ route('ListWO', ['status' => 'INPROGRESS']) }}"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-info hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-watch fs-2 text-info me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="fw-semibold text-info">Submitted</span>
+                                        </div>
+                                        <span class="fw-bold text-info" id="wo-inprogress">0</span>
+                                    </a>
+
+                                    <a href="{{ route('ListWO', ['status' => 'DONE']) }}"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
+                                            <span class="fw-semibold text-success">Completed</span>
+                                        </div>
+                                        <span class="fw-bold text-success" id="wo-done">0</span> 
+                                    </a>
+                                </div>
+
+                                <!-- Optional Button: Create Material Request -->
+                                @if ($totalWOtoMR > 0)
+                                    <div class="mt-5">
+                                        <a href="{{ route('CreateMR') }}"
+                                        class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                        style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-notepad fs-2hx me-3">   
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Create Material Request</span>
+                                                <small class="text-white-50">Based on {{ $totalWOtoMR }} Work Order{{ $totalWOtoMR > 1 ? 's' : '' }}</small>
+                                            </span>
                                         </a>
+                                    </div>
+                                @endif
 
-                                        <a href="{{ route('ListWOCPage', ['status' => 'DONE']) }}"
-                                            class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale">
-                                            <div class="d-flex align-items-center">
-                                                <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
-                                                <span class="fw-semibold text-success">Completed</span>
-                                            </div>
-                                            <span class="fw-bold text-success" id="woc-done">{{ $doneWoc }}</span>
+                                @if ($totalWOtoWOC > 0)
+                                    <div class="mt-5">
+                                        <a href="{{ route('CreateWOC') }}"
+                                        class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                        style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-notepad fs-2hx me-3">   
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Create Work Order Completion</span>
+                                                <small class="text-white-50">Based on {{ $totalWOtoWOC }} Work Order {{ $totalWOtoWOC > 1 ? 's' : '' }}</small>
+                                            </span>
                                         </a>
                                     </div>
+                                @endif
 
-                                    <!-- Button Section -->
-                                    @if ($rejectedWoc > 0)
-                                        <div class="mt-5">
-                                            <a href="{{ route('ListWOCPage', ['status' => 'REJECT_COMPLETION']) }}"
-                                                class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
-                                                style="transition: 0.3s ease;">
-                                                <i class="ki-duotone ki-cross-square fs-2hx me-3">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <span class="d-flex flex-column align-items-start">
-                                                    <span>Review Rejected WO-C</span>
-                                                    <small class="text-white-50">{{ $rejectedWoc }} Rejected</small>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    @endif
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- RIGHT SIDE: Case Tracking -->
-                        <div class="col-md-12 col-xl-8">
-                            <div class="card card-flush h-md-100 shadow-sm">
-                                <div class="card-header pb-4 d-flex justify-content-between align-items-center">
-                                    <h3 class="card-title fw-bold text-gray-800">
-                                        <i class="ki-duotone ki-briefcase me-2 text-primary fs-2"></i>
-                                        Tracking Case - {{ \Carbon\Carbon::now()->format('F Y') }}
-                                    </h3>
-                                    <span class="badge badge-light-primary">{{ $cases->total() }} Case(s)</span>
-                                </div>
-
-                                <div class="card-body py-0">
-                                    <div class="table-responsive" style="max-height: 400px;">
-                                        <table class="table align-middle table-row-dashed gy-4 text-gray-800 border table-bordered">
-                                            <thead class="text-center fw-bold fs-6 text-gray-700 bg-light-primary">
-                                                <tr>
-                                                    <th style="width: 120px;">Case No</th>
-                                                    <th>Case Name</th>
-                                                    <th style="width: 150px;">Status</th>
-                                                    <th style="width: 150px;">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse($cases as $case)
-                                                    <tr>
-                                                        <td class="text-center fw-semibold text-primary">{{ $case->Case_No }}</td>
-                                                        <td class="fw-semibold">{{ $case->Case_Name }}</td>
-                                                        <td class="text-center">
-                                                            <span class="badge 
-                                                                @if($case->Case_Status === 'AP1' || $case->Case_Status === 'AP2'|| $case->Case_Status === 'DONE' ) badge-success
-                                                                @elseif($case->Case_Status === 'REJECT') badge-danger
-                                                                @else badge-warning
-                                                                @endif">
-                                                                {{ $case->Case_Status }}
-                                                            </span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <button class="btn btn-sm btn-light-primary px-3 py-2" data-bs-toggle="modal"
-                                                                data-bs-target="#trackModal"
-                                                                onclick="showTracking('{{ $case->Case_No }}')">
-                                                                <i class="fas fa-search me-1"></i> View
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="4" class="text-center text-muted">No cases found for this month.</td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    {{-- Pagination --}}
-                                    <div class="d-flex justify-content-center my-4">
-                                        {{ $cases->links('pagination::bootstrap-5') }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                 
-                    </div>
-                    <!-- Row 3: Charts -->
-                    <div class="row gx-5 gx-xl-10 mb-xl-10">
-                        <!-- Case by Category Chart -->
-                        <div class="col-md-4">
-                            <div class="card card-flush h-md-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h5 class="text-muted fw-semibold mb-0">Cases by Category (Monthly)</h5>
-                                        <div id="case-change"></div>
-                                    </div>
-                                    <div id="kt_docs_google_chart_column" style="height: 200px;"></div>
-                                    <div class="mt-4" id="category-list"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Case vs Work Order Chart -->
-                        <div class="col-md-8">
-                            <div class="card card-flush h-md-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h5 class="text-muted fw-semibold mb-0">Monthly Case vs Work Order</h5>
-                                    </div>
-                                    <div id="kt_apexcharts_1" style="height: 350px;"></div>
-                                </div>
                             </div>
                         </div>
                     </div>
 
                 </div>
-            </div>
-            <!--end::Content-->
-        @endif
 
-    <!-- Tracking Case Modal -->
+                <div class="d-flex flex-wrap gap-5 mb-xl-10">
+                    
+                    <!-- Total WOC -->
+                    <div class="flex-grow-1" style="min-width: 300px; max-width: 600px">
+                        <div class="card card-flush shadow-sm h-md-100 border-0">
+                            <div class="card-body d-flex flex-column">
+                                <!-- Header -->
+                                <div class="mb-6">
+                                    <h3 class="text-dark fw-bold mb-1">Your Work Order Completion Summary</h3>
+                                    <span class="text-muted">This month</span>
+                                </div>
+
+                                <!-- Total WO-C -->
+                                <div class="d-flex align-items-center mb-5">
+                                    <div class="symbol symbol-60px me-4">
+                                        <div class="symbol-label bg-info">
+                                            <i class="ki-duotone ki-briefcase fs-3hx text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                            </i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fs-1 fw-bolder text-dark" id="woc-total"></div>
+                                        <div class="text-muted">Total WO Completion</div>
+                                    </div>
+                                </div>
+
+                                <!-- Status Breakdown Pills -->
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ route('ListWOCPage', ['status' => 'REJECT_COMPLETION']) }}"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-information-3 fs-2 text-danger me-2"">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                            <span class="fw-semibold text-danger">Rejected</span>
+                                        </div>
+                                        <span class="fw-bold text-danger" id="woc-reject">{{ $rejectedWoc }}</span>
+                                    </a>
+
+                                    <a href="{{ route('ListWOCPage', ['status' => 'DONE']) }}"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
+                                            <span class="fw-semibold text-success">Completed</span>
+                                        </div>
+                                        <span class="fw-bold text-success" id="woc-done">{{ $doneWoc }}</span>
+                                    </a>
+                                </div>
+
+                                <!-- Button Section -->
+                                @if ($rejectedWoc > 0)
+                                    <div class="mt-5">
+                                        <a href="{{ route('ListWOCPage', ['status' => 'REJECT_COMPLETION']) }}"
+                                            class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                            style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-cross-square fs-2hx me-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Review Rejected WO-C</span>
+                                                <small class="text-white-50">{{ $rejectedWoc }} Rejected</small>
+                                            </span>
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Total Material Requests -->
+                    @if(auth()->user()->hasAnyPermission(['view mr']))
+                    <!-- Total Material Requests - Baru -->
+                    <div class="flex-grow-1" style="min-width: 300px; max-width: 100%">
+                        <div class="card card-flush shadow-sm h-md-100 border-0">
+                            <div class="card-body d-flex flex-column">
+                                <!-- Header -->
+                                <div class="mb-6">
+                                    <h3 class="text-dark fw-bold mb-1">Your Material Request Summary</h3>
+                                    <span class="text-muted">This month</span>
+                                </div>
+
+                                <!-- Total MR -->
+                                <div class="d-flex align-items-center mb-5">
+                                    <div class="symbol symbol-60px me-4">
+                                        <div class="symbol-label bg-danger">
+                                            <i class="ki-duotone ki-parcel-tracking fs-3hx text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fs-1 fw-bolder text-dark" id="mr-total">0</div>
+                                        <div class="text-muted">Total Material Requests</div>
+                                    </div>
+                                </div>
+
+                                <!-- Status Breakdown Pills -->
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ route('ListMR', ['status' => 'DONE']) }}" 
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-success hover-scale"
+                                        data-bs-toggle="tooltip"
+                                        title="Approved Material Requests are ready for processing.">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
+                                            <span class="fw-semibold text-success">Approved/Done</span>
+                                        </div>
+                                        <span class="fw-bold text-success" id="mr-approved">0</span>
+                                    </a>
+
+                                    <a href="{{ route('ListMR', ['status' => 'REJECTED']) }}" 
+                                        class="d-flex align-items-center justify-content-between p-3 rounded bg-light-danger hover-scale">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ki-duotone ki-information-3 fs-2 text-danger me-2"">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                            <span class="fw-semibold text-danger">Rejected</span>
+                                        </div>
+                                        <span class="fw-bold text-danger" id="mr-rejected">0</span>
+                                    </a>
+                                </div>
+
+                                <!-- Button Section -->
+                                <div class="mt-5 d-flex flex-column gap-3">
+                                    @if ($TotalMRapproved > 0)
+                                        <a href="{{ route('CreateWOC') }}"
+                                            class="btn btn-flex btn-primary w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                            style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-truck fs-2hx me-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Create WorkOrder Completion</span>
+                                                <small class="text-white-50">From {{ $TotalMRapproved }} Approved WO</small>
+                                            </span>
+                                        </a>
+                                    @endif
+
+                                    @if ($TotalMRrejected > 0)
+                                        <a href="{{ route('ListMR') }}"
+                                            class="btn btn-flex btn-danger w-100 py-4 px-5 shadow-sm fw-bold fs-6 text-white hover-scale"
+                                            style="transition: 0.3s ease;">
+                                            <i class="ki-duotone ki-cross-square fs-2hx me-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <span class="d-flex flex-column align-items-start">
+                                                <span>Review Rejected MR</span>
+                                                <small class="text-white-50">{{ $TotalMRrejected }} Rejected MR(s)</small>
+                                            </span>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                </div>
+
+                <!-- Row 3: Case Tracking -->
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                    <div class="col-md-12 col-xl-12">
+                        <div class="card h-md-100 shadow-sm">
+                            <div class="card-header p=5 d-flex justify-content-between align-items-center">
+                                <h3 class="card-title fw-bold text-gray-800">
+                                    <i class="ki-duotone ki-briefcase me-2 text-primary fs-2"></i>
+                                    Tracking Case - {{ \Carbon\Carbon::now()->format('F Y') }}
+                                </h3>
+                                <span class="badge badge-light-primary">{{ $cases->total() }} Case(s)</span>
+                            </div>
+
+                            <div class="card-body py-0">
+                                <div class="table-responsive">
+                                    <table id="kt_datatable_both_scrolls" class="table table-striped table-row-bordered gy-5 gs-7">
+                                        <thead>
+                                            <tr class="fw-semibold fs-6 text-gray-800 text-start">
+                                                <th class="min-w-150px">Case No</th>
+                                                <th class="min-w-250px">Case Name</th>
+                                                <th class="min-w-150px">Status</th>
+                                                <th class="min-w-150px">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($cases as $case)
+                                                <tr>
+                                                    <td class="text-start text-primary fw-semibold">{{ $case->Case_No }}</td>
+                                                    <td class="fw-semibold">{{ $case->Case_Name }}</td>
+                                                    <td class="text-start">
+                                                        <span class="badge 
+                                                            @if(in_array($case->Case_Status, ['AP1', 'AP2', 'DONE'])) badge-success
+                                                            @elseif($case->Case_Status === 'REJECT') badge-danger
+                                                            @else badge-warning
+                                                            @endif">
+                                                            {{ $case->Case_Status }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-start">
+                                                        <button class="btn btn-sm btn-light-primary px-3 py-2" data-bs-toggle="modal"
+                                                            data-bs-target="#trackModal"
+                                                            onclick="showTracking('{{ $case->Case_No }}')">
+                                                            <i class="fas fa-search me-1"></i> View
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">No cases found for this month.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="d-flex justify-content-center my-4">
+                                    {{ $cases->links('pagination::bootstrap-5') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Charts -->
+                <div class="row gx-5 gx-xl-10 mb-xl-10">
+                    <!-- Case by Category Chart -->
+                    <div class="col-md-4">
+                        <div class="card card-flush h-md-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="text-muted fw-semibold mb-0">Cases by Category (Monthly)</h5>
+                                    <div id="case-change"></div>
+                                </div>
+                                <div id="kt_docs_google_chart_column" style="height: 200px;"></div>
+                                <div class="mt-4" id="category-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case vs Work Order Chart -->
+                    <div class="col-md-8">
+                        <div class="card card-flush h-md-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="text-muted fw-semibold mb-0">Monthly Case vs Work Order</h5>
+                                </div>
+                                <div id="kt_apexcharts_1" style="height: 350px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end::Content-->
+    @endif
+
+    <!-- Tracking Case Modal -->    
     <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow">
@@ -743,7 +745,7 @@
             });
         </script>
 
-    <!--Script Case Chart & Total Case-->
+        <!--Script Case Chart & Total Case-->
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {
                 fetch("{{ route('case.summary') }}")
@@ -837,8 +839,6 @@
             });
         </script>
 
-
-    <!--begin::Row: Latest Approval Activities-->
         {{-- Script WO hanya Tampil total data WO --}}
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {
@@ -854,25 +854,6 @@
         </script>
 
         {{-- SCRIPT MR --}}
-        {{-- Script Tampila total data MR sj--}}
-        {{-- <script>
-            $(document).ready(function () {
-                $.ajax({
-                    // url: "{{ url('/dashboard/material-request-summary') }}",
-                    url: "{{ route('Dashboard.MR.Summary') }}",
-                    type: "GET",
-
-                    success: function (data) {
-                        const total = data.total || 0;
-                        $("#mr-total").text(total);
-                    },
-                    error: function (xhr) {
-                        console.error("Gagal mengambil data Material Request", xhr);
-                    }
-                });
-            });
-        </script> --}}
-
         <script>
             $(document).ready(function () {
                 $.ajax({
@@ -981,6 +962,17 @@
                 new bootstrap.Modal(document.getElementById('trackModal')).show();
             }
         </script>
+
+        {{-- Tabel Tracking --}}
+        <script>
+            $(document).ready(function() {
+                $("#kt_datatable_both_scrolls").DataTable({
+                    "scrollY": 200,
+                    "scrollX": true
+                });
+            });
+        </script>
+
 
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>

@@ -38,7 +38,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-5">
+                            {{-- <div class="mb-5">
                                 <label class="form-label">Maximum Approval</label>
                                 <input type="number" name="Mat_Max" id="matMax" class="form-control" value="{{ $matrix->Mat_Max }}" readonly />
                             </div>
@@ -57,7 +57,29 @@
                                         </select>
                                     </div>
                                 @endfor
+                            </div> --}}
+
+                            <div class="mb-5">
+                                <label class="form-label">Maximum Approval</label>
+                                <input type="number" name="Mat_Max" id="matMax" class="form-control" value="{{ $matrix->Mat_Max }}" min="1" max="5" />
                             </div>
+
+                            <div class="row g-4 mb-5" id="approverContainer">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <div class="col-md-6 approver-field" id="approver{{ $i }}" style="display: none;">
+                                        <label class="form-label">Approver {{ $i }}</label>
+                                        <select name="AP{{ $i }}" class="form-select" data-control="select2">
+                                            <option value="">-- Select --</option>
+                                            @foreach ($users as $user)
+                                                <option value="{{ $user->id }}" {{ $matrix->{'AP' . $i} == $user->id ? 'selected' : '' }}>
+                                                    {{ $user->Fullname }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endfor
+                            </div>
+
 
                             <div class="text-end">
                                 <a href="{{ route('CreateNewMatrix') }}" class="btn btn-light me-2">Cancel</a>
@@ -73,7 +95,7 @@
         </div>
     </div>
 </div>
-
+{{-- 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const typeSelect = document.getElementById("matrixType");
@@ -106,5 +128,49 @@
                 });
             }
         });
-    </script>
+    </script> --}}
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const maxInput = document.getElementById("matMax");
+    const approverContainer = document.getElementById("approverContainer");
+
+    function updateApproverVisibility() {
+        let val = parseInt(maxInput.value) || 0;
+
+        if (val > 5) {
+            alert("Maximum Approval cannot be more than 5.");
+            maxInput.value = 5;
+            val = 5;
+        }
+
+        for (let i = 1; i <= 5; i++) {
+            const field = document.getElementById(`approver${i}`);
+            if (field) {
+                field.style.display = i <= val ? 'block' : 'none';
+            }
+        }
+    }
+
+    maxInput.addEventListener('input', updateApproverVisibility);
+
+    // Initialize Select2 on modal shown
+    $('#kt_app_main').on('shown.bs.modal', function () {
+        $('[data-control="select2"]').select2({
+            width: '100%',
+            dropdownParent: $('#kt_app_main')
+        });
+    });
+
+    // Init Select2 for non-modal context too
+    $('[data-control="select2"]').select2({
+        width: '100%',
+        dropdownParent: $('#kt_app_main')
+    });
+
+    // Initial setup
+    updateApproverVisibility();
+});
+</script>
+
 @endsection

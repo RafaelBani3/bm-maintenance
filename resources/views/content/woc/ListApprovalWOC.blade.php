@@ -126,120 +126,36 @@
         const BASE_URL = "{{ url('/') }}";
     </script>
 
-    {{-- <script>
-    $(document).ready(function () {
-        $('#statusFilter').select2({
-            placeholder: "Pilih Status",
-            allowClear: true,
-            width: 'resolve'
-        });
-
-        let table = $("#woc_table").DataTable({
-            ajax: {
-                url: '/WorkOrder-Complition/getApprovalWOC',
-                dataSrc: "",
-                error: function (xhr, error, thrown) {
-                    console.log("AJAX Error:", xhr.responseText);
-                    alert("Gagal mengambil data Work Order Completion. Silakan cek console untuk detail.");
-                }
-            },
-            columns: [
-                { data: "WOC_No", className: "text-primary fw-semibold text-start align-middle" },
-                { data: "WO_No", className: "text-primary fw-semibold text-start align-middle" },
-                { 
-                    data: "case.Case_Name", 
-                    className: "fw-semibold text-start align-middle",
-                    render: function (data) {
-                        return data ?? '-';
-                    }
-                },
-                { 
-                    data: "created_by.Fullname", 
-                    className: "fw-semibold text-start align-middle",
-                    render: function (data) {
-                        return data ?? '-';
-                    }
-                },
-                { 
-                    data: "created_by.position.Position_Name", 
-                    className: "fw-semibold text-start align-middle",
-                    render: function (data) {
-                        return data ?? '-';
-                    }
-                },
-                {
-                    data: "WO_Compdate",
-                    className: "fw-semibold text-start align-middle",
-                    render: function (data) {
-                        if (!data) return '-';
-                        const date = new Date(data);
-                        const day = date.getDate().toString().padStart(2, '0');
-                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                        const year = date.getFullYear();
-                        return `${day}/${month}/${year}`;
-                    }
-                },
-                {
-                    data: "WO_CompBy",
-                    className: "fw-semibold text-start align-middle",
-                    render: function (data) {
-                        return data ?? '-';
-                    }
-                },
-                {
-                    data: "WO_Status",
-                    className: "fw-semibold text-start align-middle",
-                    render: function (data) {
-                        return `<span class="badge badge-light-primary">${data}</span>`;
-                    }
-                },
-                {
-                    data: "WOC_No",
-                    className: "text-start align-middle",
-                    render: function (data) {
-                        const baseUrl = window.location.origin + "/BmMaintenance/public";
-                        const encoded = btoa(data);
-                        return `
-                            <a href="${baseUrl}/WorkOrder-Complition/Approval-Detail/${encoded}" class="btn btn-secondary hover-scale">
-                                <i class="ki-duotone ki-eye">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i>
-                                View
-                            </a>`;
-                    }
-                }
-            ],
-            scrollY: "300px",
-            scrollX: true,
-            scrollCollapse: true,
-            fixedColumns: {
-                left: 2,
-                right: 1
-            }
-        });
-
-        $('#applyFilter').on('click', function () {
-            $('#page_loader').css('display', 'flex');
-
-            setTimeout(function () {
-                let statusFilter = $('#statusFilter').val();
-                table.column(7).search(statusFilter === 'all' || statusFilter === null ? '' : statusFilter).draw();
-
-                $('#page_loader').css('display', 'none');
-            }, 500);
-        });
-    });
-</script> --}}
-
-    
     <script>
         // Declare Route
         const getApprovalWOCUrl = "{{ route('getdatawoc') }}";
         const detailApprovalWOCBase = "{{ route('woc.detail.approval', ['encodedWO' => '__REPLACE__']) }}";
+        
+        // Global variables for date range
+        let startDate = null;
+        let endDate = null;
 
         $(document).ready(function () {
+            $('#dateFilter').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+                startDate = picker.startDate.format('YYYY-MM-DD');
+                endDate = picker.endDate.format('YYYY-MM-DD');
+                $(this).val(startDate + ' - ' + endDate);
+            });
+
+            $('#dateFilter').on('cancel.daterangepicker', function () {
+                $(this).val('');
+                startDate = null;
+                endDate = null;
+            });
+
             $('#WOCTable').DataTable({
                 destroy: true,
                 scrollY: "300px",
@@ -372,10 +288,39 @@
                         }
 
                     }
-                ]
+                ],
+                $('#applyFilter').on('click', function () {
+                    const keyword = $('#searchReport').val().trim().toLowerCase();
+                    const status = $('#statusFilter').val();
+
+                    showPageLoading();
+
+                    setTimeout(() => {
+                        table.search(keyword).draw();
+                        table.column(4).search(status === 'all' ? '' : status).draw();
+
+                        // Filter berdasarkan date range
+                        if (startDate && endDate) {
+                            table.rows().every(function () {
+                                const rowData = this.data();
+                                const mrDate = new Date(rowData.MR_Date).toISOString().split('T')[0];
+                                const inRange = mrDate >= startDate && mrDate <= endDate;
+                                $(this.node()).toggle(inRange);
+                            });
+                        } else {
+                            table.rows().every(function () {
+                                $(this.node()).show();
+                            });
+                        }
+
+                        hidePageLoading();
+                    }, 300);
+                });
             });
         });
     </script>
+
+
 @endsection
 
 

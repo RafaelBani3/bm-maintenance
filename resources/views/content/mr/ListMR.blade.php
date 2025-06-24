@@ -144,6 +144,7 @@
     </script>
 
     {{-- GET DAT MR to Table --}}
+    {{-- versi 24 juni
     <script>
         // Declare Script untuk Menuju Page Detail MR
         // const mrDetailRoute = @json(route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']));
@@ -303,10 +304,6 @@
                 }
             });
 
-            // setInterval(() => {
-            //     table.ajax.reload(null, false);
-            // }, 10000);
-
             function showPageLoading() {
                 $('.page-loader').removeClass('d-none').fadeIn(200);
             }
@@ -332,6 +329,203 @@
                 }, 300);
             });
         });
+    </script> --}}
+
+    {{-- versi ada data range --}}
+    <script>
+        const mrDetailRoute = "{{ route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']) }}";
+        const mrEditRoute = "{{ route('EditMR', ['mr_no' => 'PLACEHOLDER']) }}";
+        const canEditMR = @json(auth()->user()->can('view mr'));
+
+        // Global variables for date range
+        let startDate = null;
+        let endDate = null;
+
+        $(document).ready(function () {
+            // Init Date Range Picker
+            $('#dateFilter').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+                startDate = picker.startDate.format('YYYY-MM-DD');
+                endDate = picker.endDate.format('YYYY-MM-DD');
+                $(this).val(startDate + ' - ' + endDate);
+            });
+
+            $('#dateFilter').on('cancel.daterangepicker', function () {
+                $(this).val('');
+                startDate = null;
+                endDate = null;
+            });
+
+            const table = $("#matreq_table").DataTable({
+                ajax: {
+                    url: "{{ route('GetDataMR') }}",
+                    method: "GET",
+                    dataSrc: function (json) {
+                        if (!Array.isArray(json)) {
+                            console.warn("Invalid response format:", json);
+                            alert("Data tidak valid dari server. Silakan hubungi administrator.");
+                            return [];
+                        }
+                        return json;
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error:", { status: xhr.status, response: xhr.responseText, error: error });
+                        let msg = "Terjadi kesalahan saat memuat data. Silakan cek console.";
+                        if (xhr.status === 500) msg = "Server error (500). Mungkin ada masalah di backend.";
+                        else if (xhr.status === 404) msg = "Data tidak ditemukan (404).";
+                        alert(msg);
+                    }
+                },
+                columns: [
+                    {
+                        data: "MR_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "WO_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "Case_No",
+                        className: "text-center align-middle",
+                        render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
+                    },
+                    {
+                        data: "MR_Date",
+                        className: "text-center align-middle",
+                        render: data => {
+                            if (!data) return 'N/A';
+                            try {
+                                return new Date(data).toLocaleDateString('en-CA'); // YYYY-MM-DD
+                            } catch {
+                                return 'Invalid date';
+                            }
+                        }
+                    },
+                    {
+                        data: "MR_Status",
+                        className: "text-center align-middle",
+                        render: function (status) {
+                            let badgeClass = "badge-light-secondary text-gray-800";
+                            switch (status) {
+                                case "OPEN": badgeClass = "badge-light-warning text-warning"; break;
+                                case "SUBMIT":
+                                case "AP1": case "AP2": case "AP3": case "AP4": case "AP5":
+                                    badgeClass = "badge-light-primary text-primary"; break;
+                                case "INPROGRESS": badgeClass = "badge-light-info text-info"; break;
+                                case "CLOSE":
+                                case "DONE": badgeClass = "badge-light-success text-success"; break;
+                                case "REJECT": badgeClass = "badge-light-danger text-danger"; break;
+                            }
+                            return `<span class="badge ${badgeClass} fw-semibold">${status ?? '-'}</span>`;
+                        }
+                    },
+                    {
+                        data: "MR_IsUrgent",
+                        className: "text-center align-middle",
+                        render: val => val === 'Y'
+                            ? '<span class="badge bg-danger fs-7">Yes</span>'
+                            : '<span class="badge bg-secondary fs-7">No</span>'
+                    },
+                    {
+                        data: "CreatedBy",
+                        className: "text-center align-middle",
+                        render: data => data ?? '-'
+                    },
+                    {
+                        data: "MR_No",
+                        className: "",
+                        render: function (data, type, row) {
+                            const encoded = btoa(data);
+                            const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded);
+                            const editUrl = mrEditRoute.replace('PLACEHOLDER', encoded);
+
+                            let buttons = '<div class="d-flex gap-2">';
+                            if ((row.MR_Status === "OPEN" || row.MR_Status === "REJECT") && canEditMR) {
+                                buttons += `
+                                    <a href="${editUrl}" class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                                    style="width: 40px; height: 40px;" title="Edit Case">
+                                        <i class="ki-duotone ki-pencil fs-3 text-warning">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </a>`;
+                            }
+                            buttons += `
+                                <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                                style="width: 40px; height: 40px;" title="View Case">
+                                    <i class="ki-duotone ki-eye fs-3 text-primary">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </a>
+                            </div>`;
+                            return buttons;
+                        }
+                    }
+                ],
+                destroy: true,
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true,
+                language: {
+                    emptyTable: "Data tidak tersedia",
+                    loadingRecords: "Memuat...",
+                    processing: "Memproses...",
+                    search: "Cari:"
+                }
+            });
+
+            function showPageLoading() {
+                $('.page-loader').removeClass('d-none').fadeIn(200);
+            }
+
+            function hidePageLoading() {
+                setTimeout(() => {
+                    $('.page-loader').fadeOut(200, function () {
+                        $(this).addClass('d-none');
+                    });
+                }, 800);
+            }
+
+            $('#applyFilter').on('click', function () {
+                const keyword = $('#searchReport').val().trim().toLowerCase();
+                const status = $('#statusFilter').val();
+
+                showPageLoading();
+
+                setTimeout(() => {
+                    table.search(keyword).draw();
+                    table.column(4).search(status === 'all' ? '' : status).draw();
+
+                    // Filter berdasarkan date range
+                    if (startDate && endDate) {
+                        table.rows().every(function () {
+                            const rowData = this.data();
+                            const mrDate = new Date(rowData.MR_Date).toISOString().split('T')[0];
+                            const inRange = mrDate >= startDate && mrDate <= endDate;
+                            $(this.node()).toggle(inRange);
+                        });
+                    } else {
+                        table.rows().every(function () {
+                            $(this.node()).show();
+                        });
+                    }
+
+                    hidePageLoading();
+                }, 300);
+            });
+        });
     </script>
 
     {{-- Script Button Export --}}
@@ -347,23 +541,6 @@
             url.searchParams.append('search', search); 
             window.open(url.toString(), '_blank');  
         });  
-    </script>
-
-    {{-- Script Choose Date Range --}}
-    <script>
-        $('#dateFilter').daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'YYYY-MM-DD'
-            }
-        });
-        $('#dateFilter').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
-        $('#dateFilter').on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-        });
     </script>
 
 @endsection
