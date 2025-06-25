@@ -7,6 +7,7 @@
 		<meta charset="utf-8" />	
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		
 
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
@@ -18,7 +19,7 @@
 
 		<link href="{{ asset('assets/css/custom-style.css') }}" rel="stylesheet" type="text/css"/>		
 		<!--end::Global Stylesheets Bundle-->
-	</head>
+</head>
 
 
 	<!--begin::Body-->
@@ -184,14 +185,20 @@
 		});
 	</script>
 
-	// <script>
-	// 	document.querySelector("form").addEventListener("submit", function () {
-	// 		const btn = this.querySelector("button[type=submit]");
-	// 		btn.querySelector(".indicator-label").style.display = "none";
-	// 		btn.querySelector(".indicator-progress").style.display = "inline-block";
-	// 		btn.setAttribute("disabled", "true");
-	// 	});
-	// </script>
+
+	@if (session('session_expired'))
+		<script>
+			window.onload = () => {
+				Swal.fire({
+					icon: 'info',
+					title: 'Session Expired',
+					text: '{{ session('session_expired') }}',
+					confirmButtonText: 'Login!'
+				});
+			};
+		</script>
+	@endif
+
 
 <script>
 	document.querySelector('form').addEventListener('submit', function (e) {

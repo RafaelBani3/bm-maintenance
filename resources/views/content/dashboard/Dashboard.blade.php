@@ -1199,5 +1199,19 @@
 
     @endif
 
+    	@if (session('session_expired'))
+		<script>
+			window.onload = () => {
+				Swal.fire({
+					icon: 'info',
+					title: 'Session Expired',
+					text: '{{ session('session_expired') }}',
+					confirmButtonText: 'Login Ulang'
+				});
+			};
+		</script>
+	@endif
+
+
 @endsection
 

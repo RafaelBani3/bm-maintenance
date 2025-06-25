@@ -20,7 +20,7 @@ use Spatie\Permission\Models\Role;
 class AuthController extends Controller
 {
        // View Login Page
-       public function LoginPage(){
+    public function LoginPage(){
         return View('content.auth.Login');
     }
 
@@ -50,7 +50,7 @@ class AuthController extends Controller
         if ($user && Hash::check($request->Password, $user->Password)) {
             $request->session()->regenerate();
             Auth::guard('web')->login($user);   
-
+            
             Log::info('Login Success', ['id' => $user->id]);
 
             return redirect()->route('Dashboard');

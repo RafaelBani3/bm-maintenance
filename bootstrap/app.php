@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'usermiddleware' => \App\Http\Middleware\UserMiddleware::class, 
             'CatchUnauthorizedException' => \App\Http\Middleware\CatchUnauthorizedException::class,
+            'RoleCheck' => \App\Http\Middleware\RoleCheck::class,
+            'auth' => \App\Http\Middleware\CustomAuthenticate::class,
 
         ]);
     })

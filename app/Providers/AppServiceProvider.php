@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
 
     protected function redirectTo()
     {
-        return route('Login.page');
+        return route('login');
     }
 
 }

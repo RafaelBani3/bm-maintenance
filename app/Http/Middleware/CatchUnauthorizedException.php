@@ -17,8 +17,6 @@ class CatchUnauthorizedException
      */
        public function handle(Request $request, Closure $next)
     {
-                Log::info("dadwadwa");
-
         try {
             return $next($request);
         } catch (UnauthorizedException $e) {

@@ -10,15 +10,21 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\WOController;
 use Illuminate\Support\Facades\Route;
 
-    // Default
-    Route::get('/', function () {
-        return redirect()->route('login');
+
+    Route::middleware(['guest'])->group(function () {
+        // Default
+        Route::get('/', function () {
+            return redirect()->route('login');
+        });
+
+        // Login Routes
+        Route::get('/Login', [AuthController::class, 'LoginPage'])->name('login');
+        Route::post('/Login', [AuthController::class, 'LoginCheck'])->name('Login.post');
     });
 
-    // Login Routes
-    Route::get('/Login', [AuthController::class, 'LoginPage'])->name('login');
-    Route::post('/Login', [AuthController::class, 'LoginCheck'])->name('Login.post');
+  
 
+Route::group(['middleware' => 'auth'], function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
 
@@ -43,12 +49,6 @@ use Illuminate\Support\Facades\Route;
         Route::get('/Auth/Matrix/{id}/Edit', [AuthController::class, 'EditMatrix'])->name('EditMatrix');
         Route::post('/Auth/Matrix/{id}/Update', [AuthController::class, 'UpdateMatrix'])->name('UpdateMatrix');
     });
-
-
-
-
-
-
 
     // All can Access
     Route::prefix('Dashboard')->group(function () {
@@ -125,11 +125,7 @@ use Illuminate\Support\Facades\Route;
     // End List WOC
     
     
-    
-    
-    
-    
-    
+
     // PERMISSION VIEW CR
     Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' , 'permission:view cr']], function () {
     // PAGE CREATE CASE
@@ -156,20 +152,6 @@ use Illuminate\Support\Facades\Route;
         // Update Hasil Update Case
         Route::post('/Case/Update', [CaseController::class, 'UpdateCase'])->name('cases.update');
     // end Edit Page
-
-    // // List/View Case Table Page
-    //     //List/View Cases
-    //     Route::get('/Case/List', [CaseController::class, 'viewListBA'])->name('ViewCase');
-    //     Route::get('/api/cases', [CaseController::class, 'getCases'])->name('GetCasesDataTable');
- 
-    //     // Detail Case
-    //     Route::get('/Case/Detail/{case_no}', [CaseController::class, 'showDetailPage'])
-    //     ->where('case_no', '.*') 
-    //     ->name('case.detail');
-        
-    //     // EXPORT
-    //     Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
-    
     // End List Case Table
     });
 
@@ -178,7 +160,7 @@ use Illuminate\Support\Facades\Route;
     Route::middleware(['auth','CatchUnauthorizedException' ,'permission:view cr_ap'])->group(function() {
     // Approval Page
         // Approval List Case
-        Route::get('/Case/Approval-list', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
+        Route::get('    ', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
         Route::get('/api/Aproval-cases', [CaseController::class, 'getApprovalCases'])->name('approval.cases');
 
         // Detail Approval Case
@@ -271,15 +253,6 @@ use Illuminate\Support\Facades\Route;
         // Submit/Update MR
         Route::post('/Material-Request/Update', [MRController::class, 'UpdateMR'])->name('update.mr');
 
-        // Page List MR
-        // Route::get('/Material-Request/list', [MRController::class, 'PageListMR'])->name('ListMR');
-
-        // Ambil data MR berdasarkan User yang login dan tampilkan pada table
-        // Route::get('/Material-Request/get-data-list', [MRController::class, 'GetDataMr'])->name('GetDataMR');
-        
-        // Mengarahkan user ke page Detail MR berdasarkan MR yang dipilih
-        // Route::get('/Material-Request/Detail/{encodedMRNo}', [MRController::class, 'detail'])->name('MaterialRequest.Detail');
-        
         // Menghapus/Delete Material yang sudah ditambahkan (Page EDIT MR)
         Route::post('/Material-Request/Delete-Material', [MRController::class, 'deleteMaterial'])->name('DeleteMaterial');
         
@@ -333,16 +306,7 @@ use Illuminate\Support\Facades\Route;
         // SAVE DRAFT WOC
         Route::post('/WorkOrder-Complition/Save-Draft', [WocController::class, 'SaveDraftWOC'])->name('WOC.SaveDraft');
 
-
         Route::post('/WorkOrder-Complition/UpdateWOC', [WocController::class, 'UpdateWOC'])->name('UpdateWOC');
-
-        // // Mengambil data WOC berdasarkan Wo No tampilkan pada table
-        // Route::get('/WorkOrder-Complition/GetSubmittedData', [WocController::class, 'getSubmittedData'])->name('GetWOCData');
-
-        // // Untuk Mengarahkan ke Page DETAIL WOC
-        // Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWOC'])->name('WocDetail');
-    
-        // Route::get('/WorkOrder-Complition/Export', [ExportController::class, 'exportWOC'])->name('woc.export');
 
     });
 
@@ -367,3 +331,4 @@ use Illuminate\Support\Facades\Route;
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications'])->name('Notifications');
     Route::post('/notification/read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('/notification/mark-as-read/{notifNo}', [NotificationController::class, 'ButtonMarkAsRead']);
+})->name('Dashboard');
