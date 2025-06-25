@@ -460,7 +460,7 @@
                                         title="Approved Material Requests are ready for processing.">
                                         <div class="d-flex align-items-center">
                                             <i class="ki-duotone ki-check fs-2 text-success me-2"></i>
-                                            <span class="fw-semibold text-success">Approved/Done</span>
+                                            <span class="fw-semibold text-success">Approved</span>
                                         </div>
                                         <span class="fw-bold text-success" id="mr-approved">0</span>
                                     </a>
