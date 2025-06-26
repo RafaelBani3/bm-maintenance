@@ -318,7 +318,7 @@
     </script> --}}
 
     {{-- BISA TAPI BERANTAKAN --}}
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             $('#WOCTable').DataTable({
                 processing: true,
@@ -389,7 +389,7 @@
                 }
             }
         });
-    </script>
+    </script> --}}
 
 {{-- bisa tgl 26 --}}
     <script>
