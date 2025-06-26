@@ -115,6 +115,7 @@ class DashboardController extends Controller
         }
 
         $caseNo = base64_decode($encodedCaseNo); 
+        
         $case = Cases::with([
             'workOrder.materialRequest'
         ])->where('Case_No', $caseNo)->first();

@@ -122,11 +122,8 @@
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-    </script>
-
-    <script>
+    {{-- VERSI LAMA TAPI ERROR --}}
+    {{-- <script>
         // Declare Route
         const getApprovalWOCUrl = "{{ route('getdatawoc') }}";
         const detailApprovalWOCBase = "{{ route('woc.detail.approval', ['encodedWO' => '__REPLACE__']) }}";
@@ -316,6 +313,237 @@
                         hidePageLoading();
                     }, 300);
                 });
+            });
+        });
+    </script> --}}
+
+    {{-- BISA TAPI BERANTAKAN --}}
+    <script>
+        $(document).ready(function () {
+            $('#WOCTable').DataTable({
+                processing: true,
+                serverSide: false, // set true kalau ingin pakai server-side pagination
+                ajax: {
+                    url: "{{ route('getdatawoc') }}",
+                    type: "GET",
+                    dataSrc: 'data'
+                },
+                columns: [
+                    { data: 'WOC_No', defaultContent: '-', className: 'text-start align-middle' },
+                    { data: 'WO_No', defaultContent: '-', className: 'text-start align-middle' },
+                    {
+                        data: 'case.Case_Name',
+                        defaultContent: '-',
+                        className: 'text-start align-middle'
+                    },
+                    {
+                        data: 'created_by.Fullname',
+                        defaultContent: '-',
+                        className: 'text-start align-middle'
+                    },
+                    {
+                        data: 'created_by.position.PS_Name',
+                        defaultContent: '-',
+                        className: 'text-start align-middle'
+                    },
+                    {
+                        data: 'WO_CompDate',
+                        render: function (data) {
+                            return data ? moment(data).format('DD MMM YYYY') : '-';
+                        },
+                        className: 'text-start align-middle'
+                    },
+                    {
+                        data: 'WO_CompBy',
+                        defaultContent: '-',
+                        className: 'text-start align-middle'
+                    },
+                    {
+                        data: 'WO_Status',
+                        render: function (data) {
+                            return `<span class="badge bg-light-${getStatusColor(data)} fw-bold">${data}</span>`;
+                        },
+                        className: 'text-start align-middle'
+                    },
+                    {
+                        data: null,
+                        className: 'text-start align-middle',
+                        render: function (data, type, row) {
+                            return `
+                                <a href="#" class="btn btn-sm btn-primary">Detail</a>
+                                <a href="#" class="btn btn-sm btn-success">Approve</a>
+                            `;
+                        }
+                    }
+                ]
+            });
+
+            function getStatusColor(status) {
+                switch (status) {
+                    case 'SUBMIT_COMPLETION': return 'warning';
+                    case 'AP1': return 'primary';
+                    case 'AP2': return 'info';
+                    case 'AP3': return 'dark';
+                    case 'AP4': return 'success';
+                    default: return 'secondary';
+                }
+            }
+        });
+    </script>
+
+{{-- bisa tgl 26 --}}
+    <script>
+        // ROUTE & CONFIG
+        const getApprovalWOCUrl = "{{ route('getdatawoc') }}";
+        const detailApprovalWOCBase = "{{ route('woc.detail.approval', ['encodedWO' => '__REPLACE__']) }}";
+
+        // GLOBAL VARIABEL UNTUK FILTER
+        let startDate = null;
+        let endDate = null;
+
+        $(document).ready(function () {
+            // === INIT DATE RANGE PICKER ===
+            $('#dateFilter').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+                startDate = picker.startDate.format('YYYY-MM-DD');
+                endDate = picker.endDate.format('YYYY-MM-DD');
+                $(this).val(startDate + ' - ' + endDate);
+            });
+
+            $('#dateFilter').on('cancel.daterangepicker', function () {
+                $(this).val('');
+                startDate = null;
+                endDate = null;
+            });
+
+            // === INISIALISASI DATATABLE ===
+            const table = $('#WOCTable').DataTable({
+                destroy: true,
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true,
+                fixedColumns: {
+                    leftColumns: 2,
+                    rightColumns: 1
+                },
+                ajax: {
+                    url: getApprovalWOCUrl,
+                    type: "GET",
+                    dataSrc: "data"
+                },
+                columns: [
+                    {
+                        data: 'WOC_No',
+                        render: data => `<span class="fw-bold text-primary fs-6">${data}</span>`
+                    },
+                    {
+                        data: 'WO_No',
+                        render: data => `<span class="fw-bold fs-6">${data}</span>`
+                    },
+                    {
+                        data: 'case.Case_Name',
+                        render: data => `<span class="fw-bold fs-6">${data}</span>`
+                    },
+                    {
+                        data: 'created_by.Fullname',
+                        render: data => `<span class="fw-bold fs-6">${data}</span>`
+                    },
+                    {
+                        data: 'created_by.position.PS_Name',
+                        render: data => `<span class="fw-bold fs-6">${data}</span>`
+                    },
+                    {
+                        data: 'WO_CompDate',
+                        render: function (data) {
+                            if (!data) return '';
+                            const d = new Date(data);
+                            return `<span class="fw-bold fs-6">${d.toLocaleDateString('id-ID')} ${d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>`;
+                        }
+                    },
+                    {
+                        data: 'WO_CompBy',
+                        render: data => `<span class="fw-bold fs-6">${data}</span>`
+                    },
+                    {
+                        data: 'WO_Status',
+                        render: function (data) {
+                            let badgeClass = 'badge-light-secondary text-gray-900';
+
+                            switch (data) {
+                                case 'OPEN':
+                                case 'INPROGRESS':
+                                    badgeClass = 'badge-light-info text-info'; break;
+                                case 'Open_Completion':
+                                    badgeClass = 'badge-light-warning text-warning'; break;
+                                case 'Submit':
+                                case 'SUBMIT_COMPLETION':
+                                case 'AP1':
+                                case 'AP2':
+                                case 'AP3':
+                                case 'AP4':
+                                    badgeClass = 'badge-light-primary text-primary'; break;
+                                case 'Reject':
+                                    badgeClass = 'badge-light-danger text-danger'; break;
+                                case 'DONE':
+                                    badgeClass = 'badge-light-success text-success'; break;
+                                case 'CLOSE':
+                                    badgeClass = 'badge-light-dark text-dark'; break;
+                            }
+
+                            return `<span class="badge ${badgeClass} fw-bold fs-6">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'WO_No',
+                        render: function (data) {
+                            const encoded = data ? btoa(data) : '';
+                            const detailUrl = detailApprovalWOCBase.replace('__REPLACE__', encoded);
+                            return `<a href="${detailUrl}" class="btn btn-secondary hover-scale">
+                                        <i class="ki-duotone ki-eye"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                        View
+                                    </a>`;
+                        }
+                    }
+                ]
+            });
+
+            // === FILTER BUTTON ACTION ===
+            $('#applyFilter').on('click', function () {
+                const keyword = $('#searchReport').val().trim().toLowerCase();
+                const status = $('#statusFilter').val();
+
+                showPageLoading();
+
+                setTimeout(() => {
+                    // FILTER KEYWORD
+                    table.search(keyword).draw();
+
+                    // FILTER STATUS
+                    table.column(7).search(status === 'all' ? '' : status).draw(); // kolom 7 = status
+
+                    // FILTER TANGGAL
+                    if (startDate && endDate) {
+                        table.rows().every(function () {
+                            const rowData = this.data();
+                            const compDate = new Date(rowData.WO_CompDate).toISOString().split('T')[0];
+                            const isInRange = compDate >= startDate && compDate <= endDate;
+                            $(this.node()).toggle(isInRange);
+                        });
+                    } else {
+                        table.rows().every(function () {
+                            $(this.node()).show();
+                        });
+                    }
+
+                    hidePageLoading();
+                }, 300);
             });
         });
     </script>

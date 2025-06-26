@@ -52,7 +52,7 @@ class WocController extends Controller
             ->whereNull('WO_CompDate')
             ->whereNull('WO_IsReject')
             ->where('CR_BY', $userId)   
-            ->where(function ($query) {
+            ->where(function ($query) { 
                 $query->where('WO_NeedMat', 'N')
                     ->orWhereIn('WO_No', function ($subquery) {
                         $subquery->select('WO_No')

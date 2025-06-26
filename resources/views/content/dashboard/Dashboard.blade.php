@@ -347,6 +347,7 @@
 
                 </div>
 
+                <!-- Row 2: WOC DAN MR -->
                 <div class="d-flex flex-wrap gap-5 mb-xl-10">
                     
                     <!-- Total WOC -->
@@ -964,14 +965,14 @@
         </script>
 
         {{-- Tabel Tracking --}}
-        <script>
+        {{-- <script>
             $(document).ready(function() {
                 $("#kt_datatable_both_scrolls").DataTable({
                     "scrollY": 200,
                     "scrollX": true
                 });
             });
-        </script>
+        </script> --}}
 
 
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
@@ -1083,32 +1084,6 @@
     {{-- Script Dashboard Approval --}}
     @if(auth()->user()->hasAnyPermission(['view cr_ap','view mr_ap']))
         {{-- Script Approval Case --}}
-        {{-- <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                fetch('{{ route('dashboard.case-approval-progress') }}')
-                    .then(response => response.json())
-                    .then(data => {
-                        const pendingCount = data.pending ?? 0;
-                        const approvedCount = data.approved ?? 0;
-                        const total = data.total ?? 0;
-                        const percentage = data.percentage ?? 0;
-
-                        document.getElementById('pending-case-count').textContent = pendingCount;
-                        document.getElementById('case-progress-bar').style.width = percentage + "%";
-
-                        const progressText = (total === 0)
-                            ? "No assigned case approval"
-                            : `${approvedCount} of ${total} Case Approved (${percentage}%)`;
-
-                        document.getElementById('case-progress-text').textContent = progressText;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching case approval progress:', error);
-                        document.getElementById('case-progress-text').textContent = "Unable to load approval data.";
-                    });
-            });
-        </script> --}}
-
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 fetch('{{ route('dashboard.case-approval-progress') }}')
@@ -1144,17 +1119,6 @@
         </script>
 
         {{-- Script MR Approval By Manger --}}
-        {{-- <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Untuk Pending Material Request
-                fetch('{{ route('ajax.pendingMRCount') }}')
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('pending-mr-count').textContent = data.count;
-                    });
-            });
-        </script> --}}
-        {{-- Script MR Approval By Manager --}}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 fetch('{{ route('ajax.pendingMRCount') }}')
@@ -1169,19 +1133,6 @@
             });
         </script>
 
-        {{-- Script woc APPROVAL --}}
-        {{-- <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                fetch('{{ route('ajax.pendingWOCCount') }}')
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('pending-woc-count').textContent = data.count;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching pending WOC count:', error);
-                    });
-            });
-        </script> --}}
         {{-- Script WO Completed (Need Approval) --}}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -1199,7 +1150,7 @@
 
     @endif
 
-    	@if (session('session_expired'))
+    @if (session('session_expired'))
 		<script>
 			window.onload = () => {
 				Swal.fire({
