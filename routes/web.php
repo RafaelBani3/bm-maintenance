@@ -160,7 +160,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::middleware(['auth','CatchUnauthorizedException' ,'permission:view cr_ap'])->group(function() {
     // Approval Page
         // Approval List Case
-        Route::get('    ', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
+        Route::get('Case/Approval-list', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
         Route::get('/api/Aproval-cases', [CaseController::class, 'getApprovalCases'])->name('approval.cases');
 
         // Detail Approval Case
