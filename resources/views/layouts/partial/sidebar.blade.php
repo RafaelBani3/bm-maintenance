@@ -299,6 +299,28 @@
                                     </a>
                                 </div>
                             </div>
+
+                            <div class="menu-sub menu-sub-accordion">
+                                <div class="menu-item">
+                                    <a class="menu-link {{ request()->routeIs('PositionPage') ? 'active' : '' }}" href="{{ route('PositionPage') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Create New Position</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="menu-sub menu-sub-accordion">
+                                <div class="menu-item">
+                                    <a class="menu-link {{ request()->routeIs('CategoryPage') ? 'active' : '' }}" href="{{ route('CategoryPage') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span> 
+                                        <span class="menu-title">Create New Category</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>

@@ -12,323 +12,365 @@ use Illuminate\Support\Facades\Route;
 
 
     Route::middleware(['guest'])->group(function () {
-        // Default
-        Route::get('/', function () {
-            return redirect()->route('login');
-        });
-
         // Login Routes
         Route::get('/Login', [AuthController::class, 'LoginPage'])->name('login');
         Route::post('/Login', [AuthController::class, 'LoginCheck'])->name('Login.post');
     });
 
+    // Default
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
   
 
-Route::group(['middleware' => 'auth'], function () {
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
+    Route::group(['middleware' => 'auth'], function () {
+        // Logout
+        Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
 
-    // Change paswword
-    Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('changepasswordpage');
-    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
+        // Change paswword
+        Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('changepasswordpage');
+        Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
 
-    // Route Untuk BUAT USER BARU
-    Route::middleware(['auth', 'role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
-        Route::get('/Auth/Create-User', [AuthController::class, 'CreateUser'])->name('CreateNewUser');
-        Route::post('/Auth/Save-New-User', [AuthController::class, 'SaveNewUser'])->name('SaveNewUser');
+        // Route Untuk BUAT USER BARU
+        Route::middleware(['auth', 'role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
+            Route::get('/Auth/Create-User', [AuthController::class, 'CreateUser'])->name('CreateNewUser');
+            Route::post('/Auth/Save-New-User', [AuthController::class, 'SaveNewUser'])->name('SaveNewUser');
         
-        Route::get('/Auth/Users/{id}/Edit', [AuthController::class, 'EditUser'])->name('EditUser');
-        Route::put('/Auth/Users/{id}/Update', [AuthController::class, 'UpdateUser'])->name('UpdateUser');
+            Route::get('/Auth/Users/{id}/Edit', [AuthController::class, 'EditUser'])->name('EditUser');
+            Route::put('/Auth/Users/{id}/Update', [AuthController::class, 'UpdateUser'])->name('UpdateUser');
+            Route::delete('/Auth/Users/{id}/Delete', [AuthController::class, 'DeleteUser'])->name('DeleteUser');
+        });
 
-    });
-
-    Route::middleware(['auth','role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
-        Route::get('/Auth/Create-Matrix', [AuthController::class, 'CreateNewMatrix'])->name('CreateNewMatrix');
-        Route::post('/Auth/Save-Matrix', [AuthController::class, 'SaveMatrix'])->name('SaveMatrix');
-       
-        Route::get('/Auth/Matrix/{id}/Edit', [AuthController::class, 'EditMatrix'])->name('EditMatrix');
-        Route::post('/Auth/Matrix/{id}/Update', [AuthController::class, 'UpdateMatrix'])->name('UpdateMatrix');
-    });
-
-    // All can Access
-    Route::prefix('Dashboard')->group(function () {
-        Route::get('/', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
-        Route::get('/ajax/case-summary', [DashboardController::class, 'caseSummary'])->name('case.summary');
-        Route::post('/stor', [DashboardController::class, 'store'])->name('case.store');
-    });
-
-    // Route::get('/cases/tracking/{caseNo}', [DashboardController::class, 'TrackingCase'])->name('TrackingCase');
-    Route::get('/track-case', [DashboardController::class, 'trackCase'])->name('track.case');
-
-
-    // Dashboard
-    // Ambil Data Case
-    Route::get('/dashboard/wo-summary', [DashboardController::class, 'GetWOSummary'])->name('dashboard.wo-summary');
-
-    Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary'])
-    ->name('Dashboard.MR.Summary');
-
-    Route::get('/dashboard/summary-woc', [DashboardController::class, 'GetWOCSummary'])->name('WOC.Summary');
-
-
-    // Approval
-    // Route::get('/ajax/pending-case-count', [DashboardController::class, 'getPendingCaseCount'])->name('ajax.pendingCaseCount');
-    Route::get('/dashboard/pending-woc-count', [DashboardController::class, 'getPendingWOCCount'])->name('ajax.pendingWOCCount');
-
-    Route::get('/dashboard/case-approval-progress', [DashboardController::class, 'getCaseApprovalProgress'])->name('dashboard.case-approval-progress');
-
-    Route::get('/ajax/pending-mr-count', [DashboardController::class, 'getPendingMRCount'])->name('ajax.pendingMRCount');
-
-    Route::get('/dashboard/case-wo-summary', [DashboardController::class, 'getCaseWOSummary'])->name('dashboard.case-wo-summary');
-
-    Route::get('/dashboard/waiting-counts', [DashboardController::class, 'getWaitingCounts'])->name('dashboard.waitingCounts');
-
-
-    
-    // List/View Case Table Page
-        //List/View Cases
-        Route::get('/Case/List', [CaseController::class, 'viewListBA'])->name('ViewCase');
-        Route::get('/api/cases', [CaseController::class, 'getCases'])->name('GetCasesDataTable');
-
-        // Detail Case
-        Route::get('/Case/Detail/{case_no}', [CaseController::class, 'showDetailPage'])
-        ->where('case_no', '.*')->name('case.detail');
+        // CRUD MATRIX
+        Route::middleware(['auth','role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
+            Route::get('/Auth/Create-Matrix', [AuthController::class, 'CreateNewMatrix'])->name('CreateNewMatrix');
+            Route::post('/Auth/Save-Matrix', [AuthController::class, 'SaveMatrix'])->name('SaveMatrix');
         
-        // EXPORT
-            Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
-    // END LIST CASE
+            Route::get('/Auth/Matrix/{id}/Edit', [AuthController::class, 'EditMatrix'])->name('EditMatrix');
+            Route::post('/Auth/Matrix/{id}/Update', [AuthController::class, 'UpdateMatrix'])->name('UpdateMatrix');
+            Route::delete('/Auth/Matrix/{mat_no}/Delete', [AuthController::class, 'DeleteMatrix'])->name('DeleteMatrix');
+        });
 
-    // Page List MR
-        Route::get('/Material-Request/list', [MRController::class, 'PageListMR'])->name('ListMR');
+        // CRUD POSITION
+        Route::prefix('positions')->group(function () {
+            Route::get('/', [AuthController::class, 'PositionPage'])->name('PositionPage');
+            Route::post('/Save', [AuthController::class, 'SavePosition'])->name('SavePosition');
+            Route::get('/Edit/{id}', [AuthController::class, 'EditPosition'])->name('EditPosition');
+            Route::put('/Update/{id}', [AuthController::class, 'UpdatePosition'])->name('UpdatePosition');
+            Route::delete('/Delete/{id}', [AuthController::class, 'DeletePosition'])->name('DeletePosition');
+        });
 
-        // Ambil data MR berdasarkan User yang login dan tampilkan pada table
-        Route::get('/Material-Request/get-data-list', [MRController::class, 'GetDataMr'])->name('GetDataMR');
+        // CRUD CATEGORY
+        Route::prefix('Category')->group(function () {
+            Route::get('/', [AuthController::class, 'CategoryPage'])->name('CategoryPage');
+            Route::post('/Save', [AuthController::class, 'SaveCategory'])->name('SaveCategory');
+            Route::get('/Edit/{id}', [AuthController::class, 'EditCategory'])->name('EditCategory');
+            Route::put('/Update/{id}', [AuthController::class, 'UpdateCategory'])->name('UpdateCategory');
+            Route::delete('/Delete/{id}', [AuthController::class, 'DeleteCategory'])->name('DeleteCategory');
+        });
+
+        // CRUD SUBCATEGORY
+        Route::prefix('Sub-Category')->group(function () {
+            Route::get('/', [AuthController::class, 'SubCategoryPage'])->name('SubCategoryPage');
+            Route::post('/Save', [AuthController::class, 'SubSaveCategory'])->name('SaveSubCategory');
+            Route::get('/Edit/{id}', [AuthController::class, 'SubEditCategory'])->name('EditSubCategory');
+            Route::put('/Update/{id}', [AuthController::class, 'SubUpdateCategory'])->name('UpdateSubCategory');
+            Route::delete('/Delete/{id}', [AuthController::class, 'SubDeleteCategory'])->name('DeleteSubCategory');
+        });
+
+
+
+
         
-        // Mengarahkan user ke page Detail MR berdasarkan MR yang dipilih
-        Route::get('/Material-Request/Detail/{encodedMRNo}', [MRController::class, 'detail'])->name('MaterialRequest.Detail');
-    
 
-        // EXPORT DATA MR
-        Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');
-    // end list MR
-    
-    // Page List WOC
-        Route::get('/WorkOrder-Complition/List', [WocController::class, 'ListWOCPage'])->name('ListWOCPage');
 
-         // Mengambil data WOC berdasarkan Wo No tampilkan pada table
-        Route::get('/WorkOrder-Complition/GetSubmittedData', [WocController::class, 'getSubmittedData'])->name('GetWOCData');
 
-        // Untuk Mengarahkan ke Page DETAIL WOC
-        Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWOC'])->name('WocDetail');
-    
-        Route::get('/WorkOrder-Complition/Export', [ExportController::class, 'exportWOC'])->name('woc.export');
-    // End List WOC
-    
-    
 
-    // PERMISSION VIEW CR
-    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' , 'permission:view cr']], function () {
-    // PAGE CREATE CASE
-        // Create Cases
-        Route::get('/Case/Create', [CaseController::class, 'CreateCase'])->name('CreateCase');
-        // SubCategories
-        Route::get('/get-subcategories/{cat_no}', [CaseController::class, 'getSubCategories']);
-        // Validation
-        Route::post('/validate-case', [CaseController::class, 'validateCase'])->name('case.validate');
-        // Create and Save Cases
-        Route::post('/Case/Create/Save', [CaseController::class, 'SaveCase'])->name('SaveCase');
-    // End Create Case
+
+
+
+
+
+
+        // All can Access
+        Route::prefix('Dashboard')->group(function () {
+            Route::get('/', [DashboardController::class, 'PageDashboard'])->name('Dashboard');
+            Route::get('/ajax/case-summary', [DashboardController::class, 'caseSummary'])->name('case.summary');
+            Route::post('/stor', [DashboardController::class, 'store'])->name('case.store');
+        });
+
+        // Route::get('/cases/tracking/{caseNo}', [DashboardController::class, 'TrackingCase'])->name('TrackingCase');
+        Route::get('/track-case', [DashboardController::class, 'trackCase'])->name('track.case');
+
+
+        // Dashboard
+        // Ambil Data Case
+        Route::get('/dashboard/wo-summary', [DashboardController::class, 'GetWOSummary'])->name('dashboard.wo-summary');
+
+        Route::get('/dashboard/material-request-summary', [DashboardController::class, 'getMRSummary'])
+        ->name('Dashboard.MR.Summary');
+
+        Route::get('/dashboard/summary-woc', [DashboardController::class, 'GetWOCSummary'])->name('WOC.Summary');
+
+
+        // Approval
+        // Route::get('/ajax/pending-case-count', [DashboardController::class, 'getPendingCaseCount'])->name('ajax.pendingCaseCount');
+        Route::get('/dashboard/pending-woc-count', [DashboardController::class, 'getPendingWOCCount'])->name('ajax.pendingWOCCount');
+
+        Route::get('/dashboard/case-approval-progress', [DashboardController::class, 'getCaseApprovalProgress'])->name('dashboard.case-approval-progress');
+
+        Route::get('/ajax/pending-mr-count', [DashboardController::class, 'getPendingMRCount'])->name('ajax.pendingMRCount');
+
+        Route::get('/dashboard/case-wo-summary', [DashboardController::class, 'getCaseWOSummary'])->name('dashboard.case-wo-summary');
+
+        Route::get('/dashboard/waiting-counts', [DashboardController::class, 'getWaitingCounts'])->name('dashboard.waitingCounts');
+
+
         
-    // Page Edit Case
+        // List/View Case Table Page
+            //List/View Cases
+            Route::get('/Case/List', [CaseController::class, 'viewListBA'])->name('ViewCase');
+            Route::get('/api/cases', [CaseController::class, 'getCases'])->name('GetCasesDataTable');
+
+            // Detail Case
+            Route::get('/Case/Detail/{case_no}', [CaseController::class, 'showDetailPage'])
+            ->where('case_no', '.*')->name('case.detail');
+            
+            // EXPORT
+                Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
+        // END LIST CASE
+
+        // Page List MR
+            Route::get('/Material-Request/list', [MRController::class, 'PageListMR'])->name('ListMR');
+
+            // Ambil data MR berdasarkan User yang login dan tampilkan pada table
+            Route::get('/Material-Request/get-data-list', [MRController::class, 'GetDataMr'])->name('GetDataMR');
+            
+            // Mengarahkan user ke page Detail MR berdasarkan MR yang dipilih
+            Route::get('/Material-Request/Detail/{encodedMRNo}', [MRController::class, 'detail'])->name('MaterialRequest.Detail');
+        
+
+            // EXPORT DATA MR
+            Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');
+        // end list MR
+        
+        // Page List WOC
+            Route::get('/WorkOrder-Complition/List', [WocController::class, 'ListWOCPage'])->name('ListWOCPage');
+
+            // Mengambil data WOC berdasarkan Wo No tampilkan pada table
+            Route::get('/WorkOrder-Complition/GetSubmittedData', [WocController::class, 'getSubmittedData'])->name('GetWOCData');
+
+            // Untuk Mengarahkan ke Page DETAIL WOC
+            Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWOC'])->name('WocDetail');
+        
+            Route::get('/WorkOrder-Complition/Export', [ExportController::class, 'exportWOC'])->name('woc.export');
+        // End List WOC
+        
+        
+
+        // PERMISSION VIEW CR
+        Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' , 'permission:view cr']], function () {
+        // PAGE CREATE CASE
+            // Create Cases
+            Route::get('/Case/Create', [CaseController::class, 'CreateCase'])->name('CreateCase');
+            // SubCategories
+            Route::get('/get-subcategories/{cat_no}', [CaseController::class, 'getSubCategories']);
+            // Validation
+            Route::post('/validate-case', [CaseController::class, 'validateCase'])->name('case.validate');
+            // Create and Save Cases
+            Route::post('/Case/Create/Save', [CaseController::class, 'SaveCase'])->name('SaveCase');
+        // End Create Case
+            
         // Page Edit Case
-        Route::get('/Case/Edit/{encoded_case_no}', [CaseController::class, 'EditCase'])->name('EditCase');
+            // Page Edit Case
+            Route::get('/Case/Edit/{encoded_case_no}', [CaseController::class, 'EditCase'])->name('EditCase');
 
-        // Delete Image
-        Route::post('/Case/delete-image', [CaseController::class, 'deleteImage'])->name('cases.deleteImage');
+            // Delete Image
+            Route::post('/Case/delete-image', [CaseController::class, 'deleteImage'])->name('cases.deleteImage');
 
-        // Save Draft
-        Route::post('/Case/save-draft', [CaseController::class, 'SaveDraftCase'])->name('case.saveDraft');
+            // Save Draft
+            Route::post('/Case/save-draft', [CaseController::class, 'SaveDraftCase'])->name('case.saveDraft');
 
-        // Update Hasil Update Case
-        Route::post('/Case/Update', [CaseController::class, 'UpdateCase'])->name('cases.update');
-    // end Edit Page
-    // End List Case Table
-    });
+            // Update Hasil Update Case
+            Route::post('/Case/Update', [CaseController::class, 'UpdateCase'])->name('cases.update');
+        // end Edit Page
+        // End List Case Table
+        });
 
 
-    // PERMISSION VIEW CR_AP
-    Route::middleware(['auth','CatchUnauthorizedException' ,'permission:view cr_ap'])->group(function() {
-    // Approval Page
-        // Approval List Case
-        Route::get('Case/Approval-list', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
-        Route::get('/api/Aproval-cases', [CaseController::class, 'getApprovalCases'])->name('approval.cases');
+        // PERMISSION VIEW CR_AP
+        Route::middleware(['auth','CatchUnauthorizedException' ,'permission:view cr_ap'])->group(function() {
+        // Approval Page
+            // Approval List Case
+            Route::get('Case/Approval-list', [CaseController::class, 'ApprovalListBA'])->name('ApprovalCase');
+            Route::get('/api/Aproval-cases', [CaseController::class, 'getApprovalCases'])->name('approval.cases');
 
-        // Detail Approval Case
-        Route::post('/Case/Approval/Detail', [CaseController::class, 'storeCaseNoApprovalList'])->name('approvaldetail');
-       
-        // Ambil Detail Case Berdasarkan Case No
-        Route::get('/Case/Approval/Detail/{case_no}', [CaseController::class, 'ApprovalDetailCase'])
-        ->where('case_no', '.*')
-        ->name('case.approval.detail');
-
-        // Approve or Reject Cases
-        Route::post('/cases/{caseNo}/approve-reject', [CaseController::class, 'approveReject'])
-            ->where('caseNo', '.*') 
-            ->name('cases.approveReject');
-    });
-
-    // PERMISSION VIEW WO
-    Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view wo']], function () { 
-        // View Create WO Page
-        Route::get('/Work-Order/Create', [WOController::class, 'CreateWO'])->name('CreateWO');
+            // Detail Approval Case
+            Route::post('/Case/Approval/Detail', [CaseController::class, 'storeCaseNoApprovalList'])->name('approvaldetail');
         
-        // Get Reference No (Case No)
-        Route::get('/get-cases', [WOController::class, 'getCases'])->name('get.cases');
-        
-        // View List WO Page
-        Route::get('/Work-Order/List', [WOController::class, 'ListWO'])->name('ListWO');
-        
-        // View Details Case di Page Create WO
-        Route::get('/case-details/{caseNo}', [WOController::class, 'getCaseDetails'])
-        ->where('caseNo', '.*')->name('case.details');
+            // Ambil Detail Case Berdasarkan Case No
+            Route::get('/Case/Approval/Detail/{case_no}', [CaseController::class, 'ApprovalDetailCase'])
+            ->where('case_no', '.*')
+            ->name('case.approval.detail');
 
-        // Ambil Data Technician di page Create WO
-        Route::get('/api/technicians', [WOController::class, 'getTechnicians'])->name('GetTechnician');
+            // Approve or Reject Cases
+            Route::post('/cases/{caseNo}/approve-reject', [CaseController::class, 'approveReject'])
+                ->where('caseNo', '.*') 
+                ->name('cases.approveReject');
+        });
 
-        // Save Work Order
-        Route::post('/Work-Order/Save', [WOController::class, 'SaveWO'])->name('SaveWO');
-        
-        // Page Edit WO
-        Route::get('/Work-Order/Edit/{wo_no}', [WOController::class, 'EditWO'])->name('EditWO');
+        // PERMISSION VIEW WO
+        Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view wo']], function () { 
+            // View Create WO Page
+            Route::get('/Work-Order/Create', [WOController::class, 'CreateWO'])->name('CreateWO');
+            
+            // Get Reference No (Case No)
+            Route::get('/get-cases', [WOController::class, 'getCases'])->name('get.cases');
+            
+            // View List WO Page
+            Route::get('/Work-Order/List', [WOController::class, 'ListWO'])->name('ListWO');
+            
+            // View Details Case di Page Create WO
+            Route::get('/case-details/{caseNo}', [WOController::class, 'getCaseDetails'])
+            ->where('caseNo', '.*')->name('case.details');
 
-        // Save Draft WO
-        Route::post('/Work-Order/Save-Draft', [WOController::class, 'SaveDraftWO'])->name('WorkOrder.SaveDraft');
+            // Ambil Data Technician di page Create WO
+            Route::get('/api/technicians', [WOController::class, 'getTechnicians'])->name('GetTechnician');
 
-        // Route Update WO 
-        Route::post('/Work-Order/Update', [WOController::class, 'UpdateWO'])->name('WorkOrder.Update');
+            // Save Work Order
+            Route::post('/Work-Order/Save', [WOController::class, 'SaveWO'])->name('SaveWO');
+            
+            // Page Edit WO
+            Route::get('/Work-Order/Edit/{wo_no}', [WOController::class, 'EditWO'])->name('EditWO');
 
-        // List WO Table
-        Route::get('/work-orders', [WOController::class, 'getWorkOrders'])->name('GetWODataTable');
+            // Save Draft WO
+            Route::post('/Work-Order/Save-Draft', [WOController::class, 'SaveDraftWO'])->name('WorkOrder.SaveDraft');
 
-        // Ambil data Nama dan id Teknisis
-        Route::get('/get-intended-users', [WOController::class, 'getIntendedUsers'])->name('get.intended.users');
-        
-        // Mengambil data WO untuk ditampilkan pada table
-        Route::post('/Work-Order/Detail', [WOController::class, 'GetWorkOrderNo']);
-        
-        // Mengarahkan User ke page Detail WO
-        Route::get('/Work-Order/Detail/{wo_no}', [WOController::class, 'showDetailWO'])
-        ->where('case_no', '.*') ->name('WorkOrderDetail');
+            // Route Update WO 
+            Route::post('/Work-Order/Update', [WOController::class, 'UpdateWO'])->name('WorkOrder.Update');
 
-        // Untuk Menghapus Teknisi yang ada didalam databsae (Page Edit wo)
-        Route::post('/work-order/remove-technician', [WOController::class, 'removeTechnician'])->name('work-order.remove-technician');
-        
-        // EXPORT WO
-        Route::get('/wo/export', [ExportController::class, 'exportWO'])->name('wo.export');
+            // List WO Table
+            Route::get('/work-orders', [WOController::class, 'getWorkOrders'])->name('GetWODataTable');
 
-    });
+            // Ambil data Nama dan id Teknisis
+            Route::get('/get-intended-users', [WOController::class, 'getIntendedUsers'])->name('get.intended.users');
+            
+            // Mengambil data WO untuk ditampilkan pada table
+            Route::post('/Work-Order/Detail', [WOController::class, 'GetWorkOrderNo']);
+            
+            // Mengarahkan User ke page Detail WO
+            Route::get('/Work-Order/Detail/{wo_no}', [WOController::class, 'showDetailWO'])
+            ->where('case_no', '.*') ->name('WorkOrderDetail');
 
+            // Untuk Menghapus Teknisi yang ada didalam databsae (Page Edit wo)
+            Route::post('/work-order/remove-technician', [WOController::class, 'removeTechnician'])->name('work-order.remove-technician');
+            
+            // EXPORT WO
+            Route::get('/wo/export', [ExportController::class, 'exportWO'])->name('wo.export');
 
-    // PERMISSION VIEW MR 
-    Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view mr']], function () { 
-
-        // Mengarahkan User ke Page Create MR
-        Route::get('/Material-Request/Create', [MRController::class, 'CreateMR'])->name('CreateMR');
-
-        // Mengambil data WO Berdasarkan USER yang login
-        Route::get('/ajax/Get-WO-By-User', [MRController::class, 'getWOByUser'])->name('getwodataformr');
-        
-        // Mengambil dan menampilkan data WO berdasarkan WO No yang dipilih untuk ditampilakn pada field form
-        Route::get('/ajax/Get-WO-Details', [MRController::class, 'getWODetails'])->name('getwodetailsformr');
-
-        // Save MR
-        Route::post('/Material-Request/save', [MRController::class, 'SaveMR'])->name('SaveMR');
-
-        // Page Edit/Revision MR
-        Route::get('/Material-Request/Edit/{mr_no}', [MRController::class, 'EditMR'])->name('EditMR');
-
-        // Save Draft
-        Route::post('/Material-Request/Save-Draft', [MRController::class, 'SaveDraftMR'])->name('MR.SaveDraft');
-
-        // Submit/Update MR
-        Route::post('/Material-Request/Update', [MRController::class, 'UpdateMR'])->name('update.mr');
-
-        // Menghapus/Delete Material yang sudah ditambahkan (Page EDIT MR)
-        Route::post('/Material-Request/Delete-Material', [MRController::class, 'deleteMaterial'])->name('DeleteMaterial');
-        
-        // EXPORT DATA MR
-        // Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');
-    });
-
-    // PERMISSION MR AP
-    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view mr_ap']], function () { 
-        // View Page MR AP
-        Route::get('/Material-Request/List-Approval', [MRController::class, 'ApprovalListMR'])->name('ApprovalListMR');
-        
-        // Get Data MR untuk Approvel
-        Route::get('/Api/List-MR-Approval', [MRController::class, 'getApprovalMR'])->name('matreq.list');
-        
-        // Get Case Data dari table WO untuk Create MR
-        Route::get('/Api/List-MR-Approval/get-cases', [MRController::class, 'getCases'])->name('api.getCases');
-
-        // Route::get('/get-case-details/{caseNo}', [MRController::class, 'getCaseDetails'])->name('api.getCaseDetails');
-        Route::get('/get-case-details/{encodedCaseNo}', [MRController::class, 'getCaseDetails']);
-
-        Route::get('/Material-Request/Approval-Detail/{encodedMRNo}', [MRController::class, 'ApprovalDetailMR'])->name('ApprovalDetailMR');
-
-        // Approve or Reject MR        
-        Route::post('/material-request/approve/{mr_no}', [MRController::class, 'approveReject'])->name('MaterialRequest.ApproveReject');
-
-    }); 
-
-// PAGE WOC
-    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view cr']], function () { 
-
-        // WOC
-        Route::get('/WorkOrder-Complition/Create', [WocController::class, 'CreateWOC'])->name('CreateWOC');
-
-        // List WOC
-        // Route::get('/WorkOrder-Complition/List', [WocController::class, 'ListWOCPage'])->name('ListWOCPage');
-
-        Route::get('/get-work-orders', [WocController::class, 'getWorkOrders'])->name('GetWoDataforWOC');
-        Route::get('/get-work-order-details/{encoded}', [WocController::class, 'getWorkOrderDetails'])->name('GetWoDetail');
-
-        // CREATE WOC
-        Route::post('/WorkOrder-Complition/Save', [WocController::class, 'saveCompletion'])->name('SaveWOC');
-
-        Route::post('/WorkOrder-Complition/delete-image', [WocController::class, 'deleteImage'])->name('WOC.deleteImage');
-
-        // Mengarahkan ke Page Edit WOC
-        Route::get('/WorkOrder-Complition/Edit/{wo_no}', [WocController::class, 'EditWOC'])->name('EditWOC');
-
-        Route::post('/WorkOrder-Complition/remove-technician', [WocController::class, 'removeTechnician'])->name('WOC.remove-technician');
-        
-        // SAVE DRAFT WOC
-        Route::post('/WorkOrder-Complition/Save-Draft', [WocController::class, 'SaveDraftWOC'])->name('WOC.SaveDraft');
-
-        Route::post('/WorkOrder-Complition/UpdateWOC', [WocController::class, 'UpdateWOC'])->name('UpdateWOC');
-
-    });
-
-    Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view cr_ap']], function () { 
-
-        // Page List Approval WOC
-        Route::get('/WorkOrder-Complition/List-Approval', [WocController::class, 'ApprovalListWOC'])->name('ApprovalListWOC');
-
-        // Ambil Data WOC dgn Status "SBUMIT" untuk ditampilkan pada page List Approval WOC
-        Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC'])->name('getdatawoc');
-
-        // Page Detail Approval WOC
-        Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC'])->name('woc.detail.approval');
-        
-        // Approve/Reject WOC
-        Route::post('/workorder/approval/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
-
-    }); 
+        });
 
 
-    // Notifikasi
-    Route::get('/notifications', [NotificationController::class, 'fetchNotifications'])->name('Notifications');
-    Route::post('/notification/read/{id}', [NotificationController::class, 'markAsRead']);
-    Route::post('/notification/mark-as-read/{notifNo}', [NotificationController::class, 'ButtonMarkAsRead']);
-})->name('Dashboard');
+        // PERMISSION VIEW MR 
+        Route::group(['middleware' => ['auth','CatchUnauthorizedException' ,'permission:view mr']], function () { 
+
+            // Mengarahkan User ke Page Create MR
+            Route::get('/Material-Request/Create', [MRController::class, 'CreateMR'])->name('CreateMR');
+
+            // Mengambil data WO Berdasarkan USER yang login
+            Route::get('/ajax/Get-WO-By-User', [MRController::class, 'getWOByUser'])->name('getwodataformr');
+            
+            // Mengambil dan menampilkan data WO berdasarkan WO No yang dipilih untuk ditampilakn pada field form
+            Route::get('/ajax/Get-WO-Details', [MRController::class, 'getWODetails'])->name('getwodetailsformr');
+
+            // Save MR
+            Route::post('/Material-Request/save', [MRController::class, 'SaveMR'])->name('SaveMR');
+
+            // Page Edit/Revision MR
+            Route::get('/Material-Request/Edit/{mr_no}', [MRController::class, 'EditMR'])->name('EditMR');
+
+            // Save Draft
+            Route::post('/Material-Request/Save-Draft', [MRController::class, 'SaveDraftMR'])->name('MR.SaveDraft');
+
+            // Submit/Update MR
+            Route::post('/Material-Request/Update', [MRController::class, 'UpdateMR'])->name('update.mr');
+
+            // Menghapus/Delete Material yang sudah ditambahkan (Page EDIT MR)
+            Route::post('/Material-Request/Delete-Material', [MRController::class, 'deleteMaterial'])->name('DeleteMaterial');
+            
+            // EXPORT DATA MR
+            // Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');
+        });
+
+        // PERMISSION MR AP
+        Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view mr_ap']], function () { 
+            // View Page MR AP
+            Route::get('/Material-Request/List-Approval', [MRController::class, 'ApprovalListMR'])->name('ApprovalListMR');
+            
+            // Get Data MR untuk Approvel
+            Route::get('/Api/List-MR-Approval', [MRController::class, 'getApprovalMR'])->name('matreq.list');
+            
+            // Get Case Data dari table WO untuk Create MR
+            Route::get('/Api/List-MR-Approval/get-cases', [MRController::class, 'getCases'])->name('api.getCases');
+
+            // Route::get('/get-case-details/{caseNo}', [MRController::class, 'getCaseDetails'])->name('api.getCaseDetails');
+            Route::get('/get-case-details/{encodedCaseNo}', [MRController::class, 'getCaseDetails']);
+
+            Route::get('/Material-Request/Approval-Detail/{encodedMRNo}', [MRController::class, 'ApprovalDetailMR'])->name('ApprovalDetailMR');
+
+            // Approve or Reject MR        
+            Route::post('/material-request/approve/{mr_no}', [MRController::class, 'approveReject'])->name('MaterialRequest.ApproveReject');
+
+        }); 
+
+    // PAGE WOC
+        Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view cr']], function () { 
+
+            // WOC
+            Route::get('/WorkOrder-Complition/Create', [WocController::class, 'CreateWOC'])->name('CreateWOC');
+
+            // List WOC
+            // Route::get('/WorkOrder-Complition/List', [WocController::class, 'ListWOCPage'])->name('ListWOCPage');
+
+            Route::get('/get-work-orders', [WocController::class, 'getWorkOrders'])->name('GetWoDataforWOC');
+            Route::get('/get-work-order-details/{encoded}', [WocController::class, 'getWorkOrderDetails'])->name('GetWoDetail');
+
+            // CREATE WOC
+            Route::post('/WorkOrder-Complition/Save', [WocController::class, 'saveCompletion'])->name('SaveWOC');
+
+            Route::post('/WorkOrder-Complition/delete-image', [WocController::class, 'deleteImage'])->name('WOC.deleteImage');
+
+            // Mengarahkan ke Page Edit WOC
+            Route::get('/WorkOrder-Complition/Edit/{wo_no}', [WocController::class, 'EditWOC'])->name('EditWOC');
+
+            Route::post('/WorkOrder-Complition/remove-technician', [WocController::class, 'removeTechnician'])->name('WOC.remove-technician');
+            
+            // SAVE DRAFT WOC
+            Route::post('/WorkOrder-Complition/Save-Draft', [WocController::class, 'SaveDraftWOC'])->name('WOC.SaveDraft');
+
+            Route::post('/WorkOrder-Complition/UpdateWOC', [WocController::class, 'UpdateWOC'])->name('UpdateWOC');
+
+        });
+
+        Route::group(['middleware' => ['auth', 'CatchUnauthorizedException' ,'permission:view cr_ap']], function () { 
+
+            // Page List Approval WOC
+            Route::get('/WorkOrder-Complition/List-Approval', [WocController::class, 'ApprovalListWOC'])->name('ApprovalListWOC');
+
+            // Ambil Data WOC dgn Status "SBUMIT" untuk ditampilkan pada page List Approval WOC
+            Route::get('/WorkOrder-Complition/getApprovalWOC', [WocController::class, 'getApprovalWOC'])->name('getdatawoc');
+
+            // Page Detail Approval WOC
+            Route::get('/WorkOrder-Complition/DetailApprovalWOC/{encodedWO}', [WocController::class, 'DetailApprovalWOC'])->name('woc.detail.approval');
+            
+            // Approve/Reject WOC
+            Route::post('/workorder/approval/{wo_no}', [WocController::class, 'approveReject'])->name('workorder.approveReject');
+
+        }); 
+
+
+        // Notifikasi
+        Route::get('/notifications', [NotificationController::class, 'fetchNotifications'])->name('Notifications');
+        Route::post('/notification/read/{id}', [NotificationController::class, 'markAsRead']);
+        Route::post('/notification/mark-as-read/{notifNo}', [NotificationController::class, 'ButtonMarkAsRead']);
+    })->name('Dashboard');

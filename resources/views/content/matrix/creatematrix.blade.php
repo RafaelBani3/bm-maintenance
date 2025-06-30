@@ -58,14 +58,6 @@
                                                     </span>
                                                 </td>
                                                 <td>{{ $matrix->Mat_Max }}</td>
-                                                {{-- <td>
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @php $approver = $matrix->{"AP$i"}; @endphp
-                                                        @if ($approver)
-                                                            <span class="badge bg-light-info text-info fs-7 fw-semibold">{{ $matrix->{"approver{$i}"}->Fullname ?? '-' }}</span>
-                                                        @endif
-                                                    @endfor
-                                                </td> --}}
                                                 <td>
                                                     {{ $matrix->approver1?->Fullname ?? '-' }}
                                                 </td>
@@ -83,11 +75,22 @@
                                                 </td>
 
                                                 <td>{{ $matrix->created_at->format('d M Y') }}</td>
-                                                <td class="text-center">
+                                                {{-- <td class="text-center">
                                                     <a href="{{ route('EditMatrix', $matrix->Mat_No) }}" class="btn btn-sm btn-light-primary">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
+                                                </td> --}}
+                                                <td class="text-center">
+                                                    <a href="{{ route('EditMatrix', $matrix->Mat_No) }}" class="btn btn-sm btn-light-primary me-1" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
+                                                    <button class="btn btn-sm btn-light-danger" data-bs-toggle="tooltip" title="Delete"
+                                                        onclick="deleteMatrix('{{ route('DeleteMatrix', $matrix->Mat_No) }}')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -283,6 +286,56 @@
             });
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function deleteMatrix(deleteUrl) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This matrix will be permanently deleted. This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+                confirmButton: 'btn btn-danger',
+                cancelButton: 'btn btn-secondary'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Kirim form DELETE manual
+                const form = document.createElement('form');
+                form.action = deleteUrl;
+                form.method = 'POST';
+
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+
 
 
 

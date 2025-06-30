@@ -497,6 +497,13 @@ class MRController extends Controller
             $query->where('Mat_Req.MR_Status', $status);
         }
 
+        if ($sortColumn) {
+        $query->orderBy($sortColumn, $sortDirection);
+        } else {
+            $query->orderBy('Mat_Req.MR_Date', 'DESC')
+                ->orderBy('Mat_Req.MR_No', 'DESC');
+        }
+
         $matReqs = $query->orderBy($sortColumn, $sortDirection)->get();
 
         return response()->json($matReqs);

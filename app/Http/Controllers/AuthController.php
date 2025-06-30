@@ -164,25 +164,19 @@ class AuthController extends Controller
         return redirect()->route('CreateNewUser')->with('success', 'User updated successfully.');
     }
 
+    public function DeleteUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
+        // Cek agar user tidak bisa menghapus dirinya sendiri
+        if ($request->user()->is($user)) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
 
+        $user->delete();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return back()->with('success', 'User deleted successfully.');
+    }
 
 
 
@@ -248,5 +242,168 @@ class AuthController extends Controller
 
         return redirect()->route('CreateNewMatrix')->with('success', 'Matrix updated successfully.');
     }
+
+
+    public function DeleteMatrix($mat_no)
+    {
+        $matrix = Matrix::where('Mat_No', $mat_no)->firstOrFail();
+
+        $matrix->delete();
+
+        return redirect()->back()->with('success', 'Matrix Successfully Deleted.');
+    }
+
+
+
+
+// CRUD POSITION
+    public function PositionPage()
+    {
+        $positions = Position::latest()->get();
+        return view('content.auth.position.createposition', compact('positions'));
+    }
+
+    public function SavePosition(Request $request)
+    {
+        $request->validate([
+            'PS_Name' => 'required|string|max:255',
+            'PS_Desc' => 'nullable|string|max:500',
+        ]);
+
+        Position::create($request->only('PS_Name', 'PS_Desc'));
+
+        return back()->with('success', 'Position created successfully.');
+    }
+
+    public function EditPosition($id)
+    {
+        return Position::findOrFail($id);
+    }
+
+    public function UpdatePosition(Request $request, $id)
+    {
+        $request->validate([
+            'PS_Name' => 'required|string|max:255',
+            'PS_Desc' => 'nullable|string|max:500',
+        ]);
+
+        $position = Position::findOrFail($id);
+        $position->update($request->only('PS_Name', 'PS_Desc'));
+
+        return back()->with('success', 'Position updated successfully.');
+    }
+
+    public function DeletePosition($id)
+    {
+        Position::findOrFail($id)->delete();
+        return back()->with('success', 'Position deleted successfully.');
+    }
+
+
+// CATEGORY
+    public function CategoryPage(){
+        $category = Cats::latest()->get();
+        $subcategory = Subcats::latest()->get();
+        // $subcategory = Subcats::orderBy('created_at', 'desc')->get();
+
+        return view('content.auth.category.createcategory', compact('category', 'subcategory'));
+    }
+
+    public function SaveCategory(Request $request)
+    {
+        $request->validate([
+            'Cat_Name' => 'required|string|max:255',
+            'Cat_Desc' => 'nullable|string|max:500',
+        ]);
+
+        Cats::create($request->only('Cat_Name', 'Cat_Desc'));
+
+        return back()->with('success', 'Category created successfully.');
+    }
+
+
+    public function UpdateCategory(Request $request, $id)
+    {
+        $request->validate([
+            'Cat_Name' => 'required|string|max:255',
+            'Cat_Desc' => 'nullable|string|max:255',
+        ]);
+
+        Cats::where('Cat_No', $id)->update([
+            'Cat_Name' => $request->Cat_Name,
+            'Cat_Desc' => $request->Cat_Desc,
+            'updated_at' => now(),  
+        ]);
+
+        return redirect()->route('CategoryPage')->with('success', 'Category updated successfully.');
+    }
+
+    public function DeleteCategory($id)
+    {
+        try {
+            Cats::where('Cat_No', $id)->delete();
+            return response()->json(['status' => 'success', 'message' => 'Category deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete category.']);
+        }
+    }
+
+
+    // --- SUBCATEGORY ---
+
+    // public function SubCategoryPage()
+    // {
+    //     $subcategory = Subcats::with('category')->orderByDesc('created_at')->get();
+    //     return view('pages.subcategory', compact('subcategory'));
+    // }
+
+    public function SubSaveCategory(Request $request)
+    {
+        $request->validate([
+            'Cat_No' => 'required|exists:Cats,Cat_No',
+            'Scat_Name' => 'required|string|max:255',
+            'Scat_Desc' => 'nullable|string|max:255',
+        ]);
+
+        Subcats::create([
+            'Scat_No' => strtoupper(Str::random(10)),
+            'Cat_No' => $request->Cat_No,
+            'Scat_Name' => $request->Scat_Name,
+            'Scat_Desc' => $request->Scat_Desc,
+        ]);
+
+        return redirect()->route('CategoryPage')->with('success', 'Sub-category created successfully.');
+    }
+
+    public function SubUpdateCategory(Request $request, $id)
+    {
+        $request->validate([
+            'Cat_No' => 'nullable|string|max:255',
+            'Scat_Name' => 'required|string|max:255',
+            'Scat_Desc' => 'nullable|string|max:255',
+        ]);
+
+        Subcats::where('Scat_No', $id)->update([
+            'Cat_No' => $request->Cat_No,
+            'Scat_Name' => $request->Scat_Name,
+            'Scat_Desc' => $request->Scat_Desc,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('CategoryPage')->with('success', 'Sub-category updated successfully.');
+    }
+
+    public function SubDeleteCategory($id)
+    {
+        // Subcats::where('Scat_No', $id)->delete();
+        // return redirect()->route('SubCategoryPage')->with('success', 'Sub-category deleted successfully.');
+        try {
+            Subcats::where('Scat_No', $id)->delete();
+            return response()->json(['status' => 'success', 'message' => 'Sub-Category deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete sub-category.']);
+        }
+    }
+
 
 }

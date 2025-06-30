@@ -560,33 +560,68 @@ class WOController extends Controller
     }
 
     // Mengambil data WO dari Database dan tampilkan pada table WO
+    // public function getWorkOrders(Request $request)
+    // {
+    //     $userId = Auth::id();
+    
+    //     $workOrders = WorkOrder::with(['createdBy','completedBy'])  
+    //         ->where('CR_BY', $userId)
+    //         ->get()
+    //         ->map(function ($wo) {
+    //             return [
+    //                 'WO_No' => $wo->WO_No,
+    //                 'Case_No' => $wo->Case_No,
+    //                 'created_by_fullname' => $wo->createdBy ? $wo->createdBy->Fullname : '-',
+    //                 'CR_DT' => $wo->CR_DT,
+    //                 'WO_Start' => $wo->WO_Start,
+    //                 'WO_End' => $wo->WO_End,
+    //                 'WO_Status' => $wo->WO_Status,
+    //                 'WO_Narative' => $wo->WO_Narative,
+    //                 'WO_NeedMat' => $wo->WO_NeedMat,
+    //                 'WO_CompDate' => $wo->WO_CompDate,
+    //                 'WO_CompBy' => $wo->WO_CompBy,
+    //                 'completed_by_fullname' => $wo->completedBy ? $wo->completedBy->Fullname : '-', 
+
+    //             ];
+    //         });
+    
+    //     return response()->json($workOrders);
+    // }
+
     public function getWorkOrders(Request $request)
     {
-        $userId = Auth::id();
-    
-        $workOrders = WorkOrder::with('createdBy')  
-            ->where('CR_BY', $userId)
-            ->get()
-            ->map(function ($wo) {
-                return [
-                    'WO_No' => $wo->WO_No,
-                    'Case_No' => $wo->Case_No,
-                    'created_by_fullname' => $wo->createdBy ? $wo->createdBy->Fullname : '-',
-                    'CR_DT' => $wo->CR_DT,
-                    'WO_Start' => $wo->WO_Start,
-                    'WO_End' => $wo->WO_End,
-                    'WO_Status' => $wo->WO_Status,
-                    'WO_Narative' => $wo->WO_Narative,
-                    'WO_NeedMat' => $wo->WO_NeedMat,
-                    'WO_CompDate' => $wo->WO_CompDate,
-                    'WO_CompBy' => $wo->WO_CompBy,
-                    'completed_by_fullname' => $wo->completedBy ? $wo->completedBy->Fullname : '-', 
+        try {
+            $userId = Auth::id();
 
-                ];
-            });
-    
-        return response()->json($workOrders);
+            $workOrders = WorkOrder::with(['createdBy', 'completedBy'])  
+                ->where('CR_BY', $userId)
+                ->get()
+                ->map(function ($wo) {
+                    return [
+                        'WO_No' => $wo->WO_No,
+                        'Case_No' => $wo->Case_No,
+                        'created_by_fullname' => $wo->createdBy ? $wo->createdBy->Fullname : '-',
+                        'CR_DT' => $wo->CR_DT,
+                        'WO_Start' => $wo->WO_Start,
+                        'WO_End' => $wo->WO_End,
+                        'WO_Status' => $wo->WO_Status,
+                        'WO_Narative' => $wo->WO_Narative,
+                        'WO_NeedMat' => $wo->WO_NeedMat,
+                        'WO_CompDate' => $wo->WO_CompDate,
+                        'WO_CompBy' => $wo->WO_CompBy,
+                        'completed_by_fullname' => $wo->completedBy ? $wo->completedBy->Fullname : '-', 
+                    ];
+                });
+
+            return response()->json($workOrders);
+        } catch (\Exception $e) {
+            Log::error('Error fetching WO data: ' . $e->getMessage());
+            return response()->json(['error' => 'Server error occurred.'], 500);
+        }
     }
+
+
+
 
     // Get WO NO    
     public function GetWorkOrderNo(Request $request)

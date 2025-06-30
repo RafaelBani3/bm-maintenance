@@ -47,11 +47,23 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $user->created_at->format('d M Y') }}</td>
-                                            <td class="text-center">
+                                            {{-- <td class="text-center">
                                                 <a href="{{ route('EditUser', $user->id) }}" class="btn btn-sm btn-light-primary">
                                                     <i class="bi bi-pencil-square"></i> Edit
                                                 </a>
+                                            </td> --}}
+                                            <td class="text-center">
+                                                <a href="{{ route('EditUser', $user->id) }}" class="btn btn-sm btn-light-primary me-1" data-bs-toggle="tooltip" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+
+                                                <button class="btn btn-sm btn-light-danger" data-bs-toggle="tooltip" title="Delete"
+                                                    onclick="deleteUser('{{ route('DeleteUser', $user->id) }}')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
                                             </td>
+
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -64,7 +76,6 @@
         </div>
     </div>
 </div>
-
 
     {{-- Modal --}}
     <div class="modal fade" id="modalCreateUser" tabindex="-1" aria-hidden="true">
@@ -137,6 +148,59 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function deleteUser(deleteUrl) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This user will be permanently deleted. This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit via form
+                    const form = document.createElement('form');
+                    form.action = deleteUrl;
+                    form.method = 'POST';
+
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+
+                    const method = document.createElement('input');
+                    method.type = 'hidden';
+                    method.name = '_method';
+                    method.value = 'DELETE';
+
+                    form.appendChild(csrf);
+                    form.appendChild(method);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        // Inisialisasi Tooltip
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
+
+    
       
 
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>

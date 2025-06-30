@@ -4,7 +4,7 @@
             enableTime: true,
             dateFormat: "d/m/Y H:i",
             minDate: "today",
-            defaultDate: new Date(), // Set default to now
+            defaultDate: new Date(), 
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const today = new Date();
                 const date = dayElem.dateObj;

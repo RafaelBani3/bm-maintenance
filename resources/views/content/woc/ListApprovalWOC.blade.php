@@ -392,7 +392,7 @@
     </script> --}}
 
 {{-- bisa tgl 26 --}}
-    <script>
+    <script>    
         // ROUTE & CONFIG
         const getApprovalWOCUrl = "{{ route('getdatawoc') }}";
         const detailApprovalWOCBase = "{{ route('woc.detail.approval', ['encodedWO' => '__REPLACE__']) }}";

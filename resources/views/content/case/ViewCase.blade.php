@@ -83,7 +83,6 @@
                             <div class="card-title d-flex align-items-center">
                                 <h3 class="fw-bold m-0 text-gray-800">Case List</h3>
                             </div>
-                            {{-- <div class="mb-4 d-flex align-items-center"> <button id="exportExcel" class="btn btn-success"> <i class="ki-duotone ki-file-excel"></i> Export Excel </button> </div> --}}
                             <div class=" d-flex align-items-center">
                                 <!--begin::Export-->
                                 <button type="button" class="btn btn-light-primary me-3" id="exportExcel">
@@ -97,34 +96,7 @@
                               
                             <!--end::Title-->
                         </div>
-                
-                        {{-- <div class="card-body">
-                            <div class="row g-5 align-items-end">
-                                <div class="tab-content">
-                                    <div id="kt_billing_months" class="card-body p-0 tab-pane fade show active" role="tabpanel" aria-labelledby="kt_billing_months">
-                                        <div class="table-responsive">
-                                            <table class="table table-row-bordered align-middle gy-5 gs-9" id="casesTable"> 
-                                                <thead>
-                                                    <tr class="fw-bold text-muted">
-                                                        <th class="min-w-150px text-start text-muted align-middle sortable fs-6" data-column="Case_No">Case Id</th>
-                                                        <th class="min-w-140px text-start align-middle sortable fs-6" data-column="Case_Date">Case Date</th>
-                                                        <th class="min-w-120px text-start align-middle fs-6">Case Name</th>
-                                                        <th class="min-w-120px text-start align-middle fs-6">Case Category</th>
-                                                        <th class="min-w-120px text-start align-middle fs-6">Created By</th>
-                                                        <th class="min-w-120px text-start align-middle fs-6">Position</th>
-                                                        <th class="min-w-120px text-start align-middle fs-6">Status</th>
-                                                        <th class="min-w-100px text-start align-middle fs-6">Actions</th>
-                                                    </tr>
-                                                </thead> 
-                                                <tbody class="fw-semibold text-gray-600">
-                    
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
+            
                         <!-- HTML Table -->
                         <div class="card-body">
                             <div class="row g-5 align-items-end">
