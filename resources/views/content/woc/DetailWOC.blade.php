@@ -162,6 +162,7 @@
                                                 $badgeClass = 'badge-light-success text-success';
                                                 break;
                                             case 'REJECT':
+                                            case 'REJECT_COMPLETION':
                                                 $badgeClass = 'badge-light-danger text-danger';
                                                 break;
                                         }

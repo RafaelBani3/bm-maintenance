@@ -138,6 +138,10 @@
                                             case 'DONE' :
                                                 $badgeClass = 'badge-success';
                                                 break;
+                                            case 'REJECT':
+                                            case 'REJECT_COMPLETION':
+                                                $badgeClass = 'badge-light-danger';
+                                                break;
                                         }
                                     @endphp
                             
@@ -173,40 +177,6 @@
                             </div>
                             <!--end::Row WO Completed-->
 
-                            {{-- <div class="row mb-5 pb-5">
-                                <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label fw-semibold fs-6">
-                                    <span class="required">Existing Image</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" title="This is the currently uploaded image. You can keep or replace it.">
-                                        <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                    </span>
-                                </label>
-
-                                <div id="existing-photos" class="d-flex flex-row flex-wrap gap-4">
-                                    @foreach($wocImages as $index => $image)
-                                        <div class="d-flex flex-column align-items-center" id="image-container-{{ $image->IMG_No }}">
-                                            <!-- Gambar + Overlay -->
-                                            <a class="d-block overlay position-relative rounded shadow-sm"
-                                            data-fslightbox="lightbox-case-images"
-                                            href="{{ asset('storage/woc_photos/' . str_replace(['/', '\\'], '-', $workOrder->WO_No) . '/' . $image->IMG_Filename) }}">
-                                            
-                                                <div class="overlay-wrapper card-rounded bgi-no-repeat bgi-position-center bgi-size-cover"
-                                                    style="background-image:url('{{ asset('storage/woc_photos/' . str_replace(['/', '\\'], '-', $workOrder->WO_No) . '/' . $image->IMG_Filename) }}'); width: 100px; height: 120px; border-radius: 0.65rem;">
-                                                </div>
-
-                                                <div class="overlay-layer card-rounded bg-dark bg-opacity-50 shadow d-flex align-items-center justify-content-center position-absolute top-0 start-0 w-100 h-100 rounded"
-                                                    style="transition: all 0.3s ease;">
-                                                    <i class="bi bi-eye-fill text-white fs-2x"></i>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div> --}}
                             <!--Start::Row Exiciting Image-->
                             <div class="row mb-5 pb-4">
                                 <!--begin::Label-->
@@ -415,7 +385,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
                         </div>
                         {{-- End Detail Work Order  --}}    
                     </div>
@@ -441,96 +410,7 @@
         <div style="margin-top: 15px; color: #fff; font-size: 1.25rem;">Loading...</div>
     </div>
 
-    <script>
-        const BASE_URL = "{{ url('/') }}";
-    </script>
-    
-    <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
-
-    {{-- Script Approve & Remark --}}
-    
-        <script>
-        var quill = new Quill('#kt_docs_quill_basic', {
-            modules: {
-                toolbar: [
-                    [{
-                        header: [1, 2, false]
-                    }],
-                    ['bold', 'italic', 'underline'],
-                    ['image', 'code-block']
-                ]
-            },
-            placeholder: 'Input Your Remarks Here...',
-            theme: 'snow'
-        });
-
-        document.querySelectorAll('.approve-reject-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const action = this.getAttribute('data-action'); // 'approve' atau 'reject'
-                const notes = quill.root.innerHTML.trim();
-
-                // Validasi hanya jika REJECT
-                const isNotesEmpty = (notes === '' || notes === '<p><br></p>');
-
-                if (action === 'reject' && isNotesEmpty) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Empty Note',
-                        text: 'Please enter your note or remark before rejecting.',
-                    });
-                    return;
-                }
-
-                Swal.fire({
-                    title: `Are you sure you want to ${action.toUpperCase()} this Work Order Completion?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#198754',
-                    cancelButtonColor: '#dc3545',
-                    confirmButtonText: 'Yes!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const formData = {
-                            _token: '{{ csrf_token() }}',
-                            approvalNotes: notes,
-                            action: action
-                        };
-
-                        fetch("{{ route('workorder.approveReject', ['wo_no' => base64_encode($workOrder->WO_No)]) }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(formData)
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('HTTP error ' + response.status);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: data.message,
-                                    confirmButtonColor: '#198754'
-                                }).then(() => {
-                                    document.getElementById("page_loader").style.display = "flex";
-                                    setTimeout(() => {
-                                        window.location.href = "{{ route('ApprovalListWOC') }}";
-                                    }, 1000);
-                                });
-                            });
-                    }
-                });
-            });
-        });
-    </script>
-
+    @include('content.woc.partial.detailapprovalwocjs')
   
 @endsection
 
