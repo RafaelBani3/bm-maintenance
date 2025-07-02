@@ -78,6 +78,18 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/Delete/{id}', [AuthController::class, 'SubDeleteCategory'])->name('DeleteSubCategory');
         });
 
+        // CRUD Tecnician
+        Route::prefix('Technician')->group(function () {
+            Route::get('/', [AuthController::class, 'TechnicianPage'])->name('TechnicianPage');
+            Route::post('/Save', [AuthController::class, 'SaveTechnician'])->name('SaveTechnician');
+            // Route::get('/Edit/{id}', [AuthController::class, 'SubEditCategory'])->name('EditSubCategory');
+            Route::put('/Update/{id}', [AuthController::class, 'UpdateTechnician'])->name('UpdateTechnician');
+            Route::delete('/Delete/{id}', [AuthController::class, 'DeleteTechnician'])->name('DeleteTechnician');
+        });
+
+
+
+
 
 
 

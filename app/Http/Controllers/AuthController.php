@@ -5,6 +5,7 @@ use App\Models\Cats;
 use App\Models\Matrix;
 use App\Models\Position;
 use App\Models\Subcats;
+use App\Models\technician;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -404,6 +405,84 @@ class AuthController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Failed to delete sub-category.']);
         }
     }
+
+
+
+    // TECNICIAN
+    public function TechnicianPage(){
+        $technicians = Technician::with('position')->latest()->get();
+        $positions = Position::latest()->get();
+
+        return view('content.auth.teknisi.createteknisi', compact('technicians','positions'));
+    }
+
+    public function SaveTechnician(Request $request)
+    {
+        $request->validate([
+            'Technician_Name' => 'required|string|max:255',
+            'Position_ID' => 'required|exists:positions,id',
+        ]);
+
+       $technician = new Technician();
+        $technician_id = $technician->getIncrementTechnicianNo();
+
+        Technician::create([
+            'technician_id' => $technician_id,
+            'technician_Name' => $request->Technician_Name,
+            'PS_ID' => $request->Position_ID,
+        ]);
+
+        return back()->with('success', 'Technician created successfully.');
+    }
+
+    public function UpdateTechnician(Request $request, $id)
+    {
+        $request->validate([
+            'Technician_Name' => 'required|string|max:255',
+            'Position_ID' => 'required|exists:positions,id',
+        ]);
+
+        $technician = Technician::where('technician_id', $id)->firstOrFail();
+
+        $technician->update([
+            'technician_Name' => $request->Technician_Name,
+            'PS_ID' => $request->Position_ID,
+        ]);
+
+        return redirect()->back()->with('success', 'Technician updated successfully.');
+    }
+
+    // public function DeleteTechnician($id)
+    // {
+    //     try {
+    //         technician::where('technician_id', $id)->delete();
+    //         return response()->json(['status' => 'success', 'message' => 'Technician deleted successfully.']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['status' => 'error', 'message' => 'Failed to delete Technician.']);
+    //     }
+    // }
+
+    public function DeleteTechnician($id)
+    {
+        try {
+            technician::where('technician_id', $id)->delete();
+
+            // RETURN JSON, JANGAN REDIRECT
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Technician deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete Technician.',
+                'error' => $e->getMessage()
+            ], 500); // Kirim status 500 supaya ketahuan error
+        }
+    }
+
+
+
 
 
 }
