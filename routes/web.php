@@ -60,7 +60,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/Delete/{id}', [AuthController::class, 'DeletePosition'])->name('DeletePosition');
         });
 
-        // CRUD CATEGORY
+        // CRUD CATEGORY    ,
         Route::prefix('Category')->group(function () {
             Route::get('/', [AuthController::class, 'CategoryPage'])->name('CategoryPage');
             Route::post('/Save', [AuthController::class, 'SaveCategory'])->name('SaveCategory');
@@ -87,23 +87,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/Delete/{id}', [AuthController::class, 'DeleteTechnician'])->name('DeleteTechnician');
         });
 
-
-
-
-
-
-
         
-
-
-
-
-
-
-
-
-
-
         // All can Access
         Route::prefix('Dashboard')->group(function () {
             Route::get('/', [DashboardController::class, 'PageDashboard'])->name('Dashboard');

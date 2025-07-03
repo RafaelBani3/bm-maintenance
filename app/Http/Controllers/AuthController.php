@@ -452,15 +452,7 @@ class AuthController extends Controller
         return redirect()->back()->with('success', 'Technician updated successfully.');
     }
 
-    // public function DeleteTechnician($id)
-    // {
-    //     try {
-    //         technician::where('technician_id', $id)->delete();
-    //         return response()->json(['status' => 'success', 'message' => 'Technician deleted successfully.']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['status' => 'error', 'message' => 'Failed to delete Technician.']);
-    //     }
-    // }
+
 
     public function DeleteTechnician($id)
     {
