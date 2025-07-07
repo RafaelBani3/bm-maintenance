@@ -157,23 +157,24 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
 
-                <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 mb-5">
-                    <select name="month" class="form-select w-auto" onchange="this.form.submit()">
-                        @for ($m = 1; $m <= now()->month; $m++)
-                            <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create()->month($m)->format('F') }}
-                            </option>
-                        @endfor
-                    </select>
+            <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 mb-5">
+                <select name="month" class="form-select w-auto" onchange="this.form.submit()">
+                    @for ($m = 1; $m <= now()->month; $m++)
+                        <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                        </option>
+                    @endfor
+                </select>
 
-                    <select name="year" class="form-select w-auto" onchange="this.form.submit()">
-                        @for ($y = now()->year; $y >= now()->year - 3; $y--)
-                            <option value="{{ $y }}" {{ $y == request('year', now()->year) ? 'selected' : '' }}>
-                                {{ $y }}
-                            </option>
-                        @endfor
-                    </select>
-                </form>
+                <select name="year" class="form-select w-auto" onchange="this.form.submit()">
+                    @for ($y = now()->year; $y >= now()->year - 3; $y--)
+                        <option value="{{ $y }}" {{ $y == request('year', now()->year) ? 'selected' : '' }}>
+                            {{ $y }}
+                        </option>
+                    @endfor
+                </select>
+            </form>
+              
 
                 <!-- Row 1: Summary Cards -->
                 <div class="d-flex flex-wrap gap-5 mb-xl-10">
@@ -628,6 +629,7 @@
                     </div>
                 </div>
             </div>
+  
         </div>
         <!--end::Content-->
     @endif

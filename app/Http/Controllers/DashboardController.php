@@ -24,15 +24,20 @@ class DashboardController extends Controller
     // }
 
 
-    public function PageDashboard() {
+    public function PageDashboard(Request $request) {
         $userId = Auth::id();
         $now = Carbon::now();
-        $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
 
-        //  $cases = Cases::with(['creator', 'workOrder.materialRequest'])
-        // ->where('CR_BY', $userId)
-        // ->get();
+        // Batasi agar tidak bisa lihat bulan di masa depan
+        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+            abort(403, 'Data bulan tersebut tidak tersedia.');
+        }
+
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
             ->where('CR_BY', $userId)
             // ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) 
@@ -219,12 +224,20 @@ class DashboardController extends Controller
     //     ]);
     // }
     
-    public function caseSummary()
+    public function caseSummary(Request $request)
     {
         $userId = Auth::id();
         $now = Carbon::now();
-        $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
+
+        // Batasi agar tidak bisa lihat bulan di masa depan
+        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+            abort(403, 'Data bulan tersebut tidak tersedia.');
+        }
+
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
         $totalCases = Cases::where('CR_BY', $userId)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
@@ -260,12 +273,18 @@ class DashboardController extends Controller
 
 
     // // Controller WO
-    public function GetWOSummary()
+    public function GetWOSummary(Request $request)
     {
         $userId = Auth::id();
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
 
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+            abort(403, 'Data bulan tersebut tidak tersedia.');
+        }
+
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
         $totalWO = WorkOrder::where('CR_BY', $userId)
             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
@@ -301,22 +320,29 @@ class DashboardController extends Controller
     public function getMRSummary(Request $request)
     {
         $userId = Auth::id();
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
 
-        $thisMonthStart = now()->startOfMonth();
-        $thisMonthEnd = now()->endOfMonth();
+        // Batasi agar tidak bisa lihat bulan di masa depan
+        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+            abort(403, 'Data bulan tersebut tidak tersedia.');
+        }
 
-        $total = MatReq::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+
+        $total = MatReq::whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->where('CR_BY', $userId)
             ->count();
 
         $approved = MatReq::where('MR_Status', 'AP4')
             ->where('CR_BY', $userId)
-            ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         $rejected = MatReq::where('MR_Status', 'REJECT')
             ->where('CR_BY', $userId)
-            ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         return response()->json([
@@ -327,12 +353,21 @@ class DashboardController extends Controller
     }
 
 
-    public function GetWOCSummary()
+    public function GetWOCSummary(Request $request)
     {
         $userId = Auth::id();
 
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
+
+        // Batasi agar tidak bisa lihat bulan di masa depan
+        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+            abort(403, 'Data bulan tersebut tidak tersedia.');
+        }
+
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+
 
         $totalWOC = WorkOrder::where('CR_BY', $userId)
             ->where('WO_IsComplete', 'Y') 

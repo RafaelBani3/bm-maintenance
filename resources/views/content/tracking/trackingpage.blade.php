@@ -141,7 +141,47 @@
         <div class="d-flex flex-column flex-column-fluid py-3 py-lg-6">
             <div id="kt_app_content" class="app-content flex-column-fluid">
                 <div id="kt_app_content_container" class="app-container container-xxl">
-             
+                   
+                    <div class="card mb-5 mb-xl-10">
+                        <div class="card-header card-header-stretch">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex align-items-center">
+                                <h3 class="fw-bold m-0 text-gray-800">Filter</h3>
+                            </div>
+                            <!--end::Title-->
+                        </div>
+                
+                        {{-- Filter --}}
+                        <div class="card-body">
+                            <div class="row g-5 align-items-end">
+                                <!-- Search Input -->
+                                <div class="col-lg-5">
+                                    <label class="form-label fw-bold">Search Case Number</label>
+                                    <input type="text" id="searchReport" class="form-control form-control-solid" placeholder="Enter keyword..." />
+                                </div>
+
+                                  <!--begin::Date Range Picker-->
+                                <div class="col-lg-5">
+                                    <label for="dateFilter" class="form-label fw-bold">Date Range</label>
+                                    <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range" />
+                                </div>
+                                <!--end::Date Range Picker-->
+
+                                <!-- Apply Button -->
+                                <div class="col-lg-2">
+                                    <label class="form-label fw-bold text-white">.</label>
+                                    <button id="applyFilter" class="btn btn-primary w-100">
+                                        <i class="fa-solid fa-filter me-1"></i> Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Filter --}}
+                    </div>
+                    <!--end::Navbar-->
+                   
+                    {{-- Table --}}
                     <div class="card">
                         <div class="card-header card-header-stretch justify-content-between align-items-center">
                             <div class="card-title d-flex align-items-center">
@@ -153,74 +193,6 @@
                                 </button>
                             </div>
                         </div>
-
-                        {{-- <div class="card-body py-0">
-                            <div class="table-responsive">
-                                <table id="kt_datatable_both_scrolls" class="table table-striped table-row-bordered gy-5 gs-7">
-                                    <thead>
-                                        <tr class="fw-semibold fs-6 text-gray-800 text-start">
-                                            <th class="min-w-250px">Case No</th>
-                                            <th class="min-w-250px">Case Name</th>
-                                            <th class="min-w-250px">Status</th>
-                                            <th class="min-w-250px">Created Date</th>
-                                            <th class="min-w-100px">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($cases as $case)
-                                                <tr>
-                                                    <td class="text-start text-primary fw-semibold">{{ $case->Case_No }}</td>
-                                                    <td class="fw-semibold">{{ $case->Case_Name }}</td>
-                                                    <td class="text-start">
-                                                        <span class="badge 
-                                                            @if(in_array($case->Case_Status, ['AP1', 'AP2', 'DONE'])) badge-success
-                                                            @elseif($case->Case_Status === 'REJECT') badge-danger
-                                                            @elseif(in_array($case->Case_Status, ['INPROGRESS', 'SUBMIT'])) badge-info text-white
-                                                            @else badge-warning
-                                                            @endif">
-                                                            {{ $case->Case_Status }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="fw-semibold">{{ $case->created_at }}</td>
-                                                    <td class="text-start">
-                                                        <button class="btn btn-sm btn-light-primary px-3 py-2" data-bs-toggle="modal"
-                                                            data-bs-target="#trackModal"
-                                                            onclick="showTracking('{{ $case->Case_No }}')">
-                                                            <i class="fas fa-search me-1"></i> View
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="4" class="text-center text-muted">No cases found for this month.</td>
-                                                </tr>
-                                            @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div> --}}
-
-                        <!--begin::Filters-->
-                        <div class="row mb-5">
-                            <!-- Date Range -->
-                            <div class="col-lg-5">
-                                <label for="dateFilter" class="form-label fw-bold">Date Range</label>
-                                <input type="text" id="dateFilter" class="form-control form-control-solid" placeholder="Pick a date range" />
-                            </div>
-
-                            <!-- Search Case No -->
-                            <div class="col-lg-5">
-                                <label for="searchReport" class="form-label fw-bold">Search Case No</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fa-solid fa-magnifying-glass text-muted"></i>
-                                    </span>
-                                    <input type="text" id="searchReport" class="form-control form-control-solid" placeholder="Input Case No" />
-                                </div>
-                            </div>
-                        </div>
-                        <!--end::Filters-->
-
 
                         <!--begin::Table-->
                         <div class="card-body py-0">
@@ -250,7 +222,7 @@
                                                         {{ $case->Case_Status }}
                                                     </span>
                                                 </td>
-                                                <td class="fw-semibold">{{ $case->created_at->format('Y-m-d H:i:s') }}</td>
+                                                <td class="fw-semibold">{{ $case->created_at->format('d/m/y H:i:s') }}</td>
                                                 <td class="text-start">
                                                     <button class="btn btn-sm btn-light-primary px-3 py-2" data-bs-toggle="modal"
                                                         data-bs-target="#trackModal"
@@ -339,7 +311,7 @@
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
     <!-- DataTables Init -->
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             $('#kt_datatable_both_scrolls').DataTable({
                 "scrollX": true,
@@ -351,7 +323,7 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 
     {{-- Tracking Case berdasarkan data --}}
     <script>
@@ -438,55 +410,55 @@
     </script>
 
     <script>
-    $(document).ready(function () {
-        const table = $('#kt_datatable_both_scrolls').DataTable({
-            scrollX: true,
-            pageLength: 10,
-            language: {
-                search: "",
-                lengthMenu: "Show _MENU_ entries",
-                info: "Showing _START_ to _END_ of _TOTAL_ cases",
-            },
-            dom: 'lrtip' // Remove default search
-        });
-
-        // Search Case No
-        $('#searchReport').on('keyup', function () {
-            table.columns(0).search(this.value).draw(); // 0 = first column (Case_No)
-        });
-
-        // Date Range Picker
-        $('#dateFilter').daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'YYYY-MM-DD'
-            }
-        });
-
-        $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-
-            // Custom filter based on Created Date
-            $.fn.dataTable.ext.search.push(function (settings, data) {
-                const start = picker.startDate;
-                const end = picker.endDate;
-                const createdDate = moment(data[3], 'YYYY-MM-DD HH:mm:ss'); // Column 3 = Created Date
-
-                return createdDate.isBetween(start, end, undefined, '[]');
+        $(document).ready(function () {
+            const table = $('#kt_datatable_both_scrolls').DataTable({
+                scrollX: true,
+                pageLength: 10,
+                order: [[3, "asc"]],
+                language: {
+                    search: "",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ cases",
+                },
+                dom: 'lrtip' 
             });
 
-            table.draw();
-        });
+            // Search Case No
+            $('#searchReport').on('keyup', function () {
+                table.columns(0).search(this.value).draw(); 
+            });
 
-        $('#dateFilter').on('cancel.daterangepicker', function () {
-            $(this).val('');
-            // Remove the custom filter
-            $.fn.dataTable.ext.search.pop();
-            table.draw();
+            // Date Range Picker
+            $('#dateFilter').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+
+                // Custom filter based on Created Date
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    const start = picker.startDate;
+                    const end = picker.endDate;
+                    const createdDate = moment(data[3], 'YYYY-MM-DD HH:mm:ss'); 
+
+                    return createdDate.isBetween(start, end, undefined, '[]');
+                });
+
+                table.draw();
+            });
+
+            $('#dateFilter').on('cancel.daterangepicker', function () {
+                $(this).val('');
+                $.fn.dataTable.ext.search.pop();
+                table.draw();
+            });
         });
-    });
-</script>
+    </script>
 
 
 @endsection

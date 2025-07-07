@@ -507,7 +507,6 @@ class AuthController extends Controller
         try {
             technician::where('technician_id', $id)->delete();
 
-            // RETURN JSON, JANGAN REDIRECT
             return response()->json([
                 'status' => 'success',
                 'message' => 'Technician deleted successfully.'
@@ -517,7 +516,7 @@ class AuthController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to delete Technician.',
                 'error' => $e->getMessage()
-            ], 500); // Kirim status 500 supaya ketahuan error
+            ], 500); 
         }
     }
 
