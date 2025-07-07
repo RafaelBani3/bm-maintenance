@@ -231,14 +231,6 @@ class AuthController extends Controller
         return back()->with('success', 'User deleted successfully.');
     }
 
-
-
-
-
-
-
-
-
 // MATRIX
     public function CreateNewMatrix()
     {

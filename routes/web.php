@@ -9,6 +9,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\WOController;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
@@ -20,9 +22,12 @@ use Illuminate\Support\Facades\Route;
 
     // Default
     Route::get('/', function () {
-        return redirect()->route('login');
+        if (Auth::check()) {
+            return redirect()->route('Dashboard'); 
+        }
+
+        return redirect()->route('login'); 
     });
-  
 
     Route::group(['middleware' => 'auth'], function () {
        
