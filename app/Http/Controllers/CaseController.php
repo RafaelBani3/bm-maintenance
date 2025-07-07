@@ -565,6 +565,8 @@ class CaseController extends Controller
         // Ambil semua permission user
         $canViewCr = $user->hasPermissionTo('view cr');
         $canViewCrAp = $user->hasPermissionTo('view cr_ap');
+        $userPosition = $user->position?->PS_Name ?? null;
+
 
         Log::info("User: " . $user->Fullname);
         Log::info("Can view cr: " . json_encode($canViewCr));
@@ -587,6 +589,20 @@ class CaseController extends Controller
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
             ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')
             ->leftJoin('Positions', 'users.PS_ID', '=', 'Positions.id');
+  
+  
+            // Jika posisi user Creator atau SuperAdmin, tampilkan semua case tanpa filter
+        if (in_array($userPosition, ['Creator', 'SuperAdmin'])) {
+            if (!empty($status)) {
+                $baseQuery->where('cases.Case_Status', $status);
+            }
+
+            $cases = $baseQuery
+                ->orderBy($sortColumn, $sortDirection)
+                ->get();
+
+            return response()->json($cases);
+        }
 
         // Filter data berdasarkan permission
         if ($canViewCr && !$canViewCrAp) {

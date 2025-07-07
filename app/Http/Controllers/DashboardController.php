@@ -39,8 +39,7 @@ class DashboardController extends Controller
         $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
-            ->where('CR_BY', $userId)
-            // ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) 
+            // ->where('CR_BY', $userId)
             ->paginate(5);
 
         $totalApproved = Cases::where('CR_BY', $userId)
@@ -555,8 +554,6 @@ class DashboardController extends Controller
         return view('content.dashboard.Dashboard', compact('cases'));
     }
 
-
-    
     // TRACKING PAGE
     public function trackingPage(){
         $now = Carbon::now();
@@ -569,6 +566,9 @@ class DashboardController extends Controller
 
         return view('content.tracking.trackingpage',compact('cases'));
     }
+
+
+    
 
 
 

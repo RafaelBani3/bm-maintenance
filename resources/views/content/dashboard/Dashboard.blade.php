@@ -157,7 +157,7 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
 
-            <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 mb-5">
+            {{-- <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 mb-5">
                 <select name="month" class="form-select w-auto" onchange="this.form.submit()">
                     @for ($m = 1; $m <= now()->month; $m++)
                         <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
@@ -173,7 +173,7 @@
                         </option>
                     @endfor
                 </select>
-            </form>
+            </form> --}}
               
 
                 <!-- Row 1: Summary Cards -->
@@ -564,17 +564,18 @@
                                         <tbody>
                                             @forelse($cases as $case)
                                                 <tr>
-                                                    <td class="text-start text-primary fw-semibold">{{ $case->Case_No }}</td>
-                                                    <td class="fw-semibold">{{ $case->Case_Name }}</td>
-                                                    <td class="text-start">
+                                                    <td class="text-start text-primary fw-semibold">{{ $case->Case_No ?? '-' }}</td>
+                                                    <td>{{ $case->Case_Name ?? '-' }} {{ $case->creator->name ?? '-' }}</td>
+                                                    <td>
                                                         <span class="badge 
                                                             @if(in_array($case->Case_Status, ['AP1', 'AP2', 'DONE'])) badge-success
                                                             @elseif($case->Case_Status === 'REJECT') badge-danger
                                                             @else badge-warning
                                                             @endif">
-                                                            {{ $case->Case_Status }}
+                                                            {{ $case->Case_Status ?? '-' }}
                                                         </span>
                                                     </td>
+
                                                     <td class="text-start">
                                                         <button class="btn btn-sm btn-light-primary px-3 py-2" data-bs-toggle="modal"
                                                             data-bs-target="#trackModal"
@@ -685,6 +686,21 @@
         </div>
     </div>
 
+    {{-- Script Table Tracking --}}
+    <script>
+        $(document).ready(function () {
+            $('#kt_datatable_both_scrolls').DataTable({
+                "scrollX": true,
+                "pageLength": 5,
+                "language": {
+                    "search": "Search User:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ Cases",
+                }
+            });
+        });
+    </script>
+
     {{-- Dashboard APPROVAL --}}
     @if(auth()->user()->hasAnyPermission(['view cr_ap','view mr_ap']))
 
@@ -743,26 +759,8 @@
 
     @endif
 
-    {{-- Script Table Tracking --}}
-    <script>
-        $(document).ready(function () {
-            $('#kt_datatable_both_scrolls').DataTable({
-                "scrollX": true,
-                "pageLength": 5,
-                "order": [[3, "desc"]],
-                "language": {
-                    "search": "Search User:",
-                    "lengthMenu": "Show _MENU_ entries",
-                    "info": "Showing _START_ to _END_ of _TOTAL_ Sub-Categories",
-                }
-            });
-        });
-    </script>
-
     <!--Script: Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
-            
-
         <script>
             $(document).ready(function () {
                 fetchWaitingCounts();
@@ -930,7 +928,7 @@
         {{-- Tracking Case berdasarkan data --}}
         <script>
             function showTracking(caseNo) {
-                const encodedCaseNo = btoa(caseNo); // Encode base64
+                const encodedCaseNo = btoa(caseNo);
                 const fetchUrl = "{{ route('track.case') }}?case=" + encodeURIComponent(encodedCaseNo);
 
                 fetch(fetchUrl)
@@ -1000,17 +998,6 @@
                 new bootstrap.Modal(document.getElementById('trackModal')).show();
             }
         </script>
-
-        {{-- Tabel Tracking --}}
-        {{-- <script>
-            $(document).ready(function() {
-                $("#kt_datatable_both_scrolls").DataTable({
-                    "scrollY": 200,
-                    "scrollX": true
-                });
-            });
-        </script> --}}
-
 
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>

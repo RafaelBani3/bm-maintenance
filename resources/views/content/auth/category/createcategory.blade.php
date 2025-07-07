@@ -91,6 +91,7 @@
                                         <tr class="fw-semibold fs-6 text-gray-800 text-nowrap">
                                             <th class="min-w-200px">Sub-Category No</th>
                                             <th class="min-w-200px">Sub-Category Name</th>
+                                            <th class="min-w-200px">Category Name</th>
                                             <th class="min-w-300px">Description</th>
                                             <th class="min-w-150px">Created At</th>
                                             <th class="min-w-150px text-center">Action</th>
@@ -101,6 +102,7 @@
                                             <tr>
                                                 <td>{{ $scats->Scat_No }}</td>
                                                 <td>{{ $scats->Scat_Name}}</td>
+                                                <td>{{ $scats->category->Cat_Name}}</td>
                                                 <td>{{ $scats->Scat_Desc}}</td>
                                                 <td>{{ $scats->created_at}}</td>
                                                 <td class="text-center">
@@ -109,11 +111,6 @@
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
 
-
-
-                                                    {{-- <button class="btn btn-sm btn-light-danger" data-bs-toggle="tooltip" title="Delete" onclick="deletePosition('{{ route('DeleteSubCategory', $scats->Scat_No) }}')">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button> --}}
                                                     <button class="btn btn-sm btn-light-danger btn-delete-subcategory"
                                                             data-id="{{ $scats->Scat_No }}"
                                                             data-name="{{ $scats->Scat_Name }}"
@@ -281,9 +278,6 @@
                             </form>
                         </div>
                     </div>
-
-
-
                 </div>
             </div>
         </div>

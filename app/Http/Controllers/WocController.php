@@ -598,38 +598,88 @@ class WocController extends Controller
 
 // Page List WOC
     // Ambil Data WOC untuk ditampilkan pada table list WOC
+    
+    // public function getSubmittedData()
+    // {
+    //     $userId = Auth::id(); // Ambil ID user yang sedang login
+    //     $user = Auth::user(); // Ambil user login
+    //     $hasViewCr = $user->hasPermissionTo('view cr');
+    //     $hasViewCrAp = $user->hasPermissionTo('view cr_ap');
+    //     Log::info("User: " . $user->Fullname);
+    //     Log::info("Can view cr: " . json_encode($hasViewCr));
+    //     Log::info("Can view cr_ap: " . json_encode($hasViewCrAp));
+
+    //     // Query dasar: hanya WO yang sudah complete
+    //     $query = WorkOrder::with([
+    //         'case',
+    //         'createdBy.position',
+    //     ])->where('WO_IsComplete', 'Y');
+
+    //     // Filter berdasarkan permission
+    //     $query->where(function ($q) use ($userId, $hasViewCr, $hasViewCrAp) {
+    //         if ($hasViewCr) {
+    //             $q->orWhere('CR_BY', $userId);
+    //         }
+
+    //         if ($hasViewCrAp) {
+    //             $q->orWhere('WO_AP1', $userId)
+    //             ->orWhere('WO_AP2', $userId);
+    //         }
+    //     });
+
+    //     $data = $query->get();
+
+    //     return response()->json(['data' => $data]);
+    // }
+
     public function getSubmittedData()
     {
-        $userId = Auth::id(); // Ambil ID user yang sedang login
-        $user = Auth::user(); // Ambil user login
+        $userId = Auth::id();
+        $user = Auth::user();
+        $userPosition = $user->position?->PS_Name ?? null;
+
         $hasViewCr = $user->hasPermissionTo('view cr');
         $hasViewCrAp = $user->hasPermissionTo('view cr_ap');
+
         Log::info("User: " . $user->Fullname);
+        Log::info("User Position: " . $userPosition);
         Log::info("Can view cr: " . json_encode($hasViewCr));
         Log::info("Can view cr_ap: " . json_encode($hasViewCrAp));
 
-        // Query dasar: hanya WO yang sudah complete
-        $query = WorkOrder::with([
-            'case',
-            'createdBy.position',
-        ])->where('WO_IsComplete', 'Y');
+        // Jika user adalah Creator, langsung ambil semua WOC
+        if ($userPosition === 'Creator') {
+            $data = WorkOrder::with(['case', 'createdBy.position'])
+                ->where('WO_IsComplete', 'Y')
+                ->get();
 
-        // Filter berdasarkan permission
-        $query->where(function ($q) use ($userId, $hasViewCr, $hasViewCrAp) {
-            if ($hasViewCr) {
-                $q->orWhere('CR_BY', $userId);
-            }
+            return response()->json(['data' => $data]);
+        }
 
-            if ($hasViewCrAp) {
-                $q->orWhere('WO_AP1', $userId)
-                ->orWhere('WO_AP2', $userId);
-            }
-        });
+        // Query default untuk user selain Creator
+        $query = WorkOrder::with(['case', 'createdBy.position'])
+            ->where('WO_IsComplete', 'Y');
+
+        if ($hasViewCr || $hasViewCrAp) {
+            $query->where(function ($q) use ($userId, $hasViewCr, $hasViewCrAp) {
+                if ($hasViewCr) {
+                    $q->orWhere('CR_BY', $userId);
+                }
+
+                if ($hasViewCrAp) {
+                    $q->orWhere('WO_AP1', $userId)
+                    ->orWhere('WO_AP2', $userId);
+                }
+            });
+        } else {
+            // Tidak punya hak akses apapun
+            return response()->json(['data' => []]);
+        }
 
         $data = $query->get();
 
         return response()->json(['data' => $data]);
     }
+
 
     // Page Detail WOC
     public function showDetailWOC($encodedWONo)

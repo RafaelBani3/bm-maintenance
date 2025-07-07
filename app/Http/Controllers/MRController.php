@@ -468,30 +468,54 @@ class MRController extends Controller
         $status = $request->query('status'); 
         $sortColumn = $request->query('sortColumn', 'MR_No'); 
         $sortDirection = $request->query('sortDirection', 'ASC');
+       
+        $user = Auth::user();
+        $userId = $user->id;
+        $userPosition = $user->position?->PS_Name ?? null;
 
         $validColumns = ['MR_No', 'MR_Date'];
         if (!in_array($sortColumn, $validColumns)) {
             $sortColumn = 'MR_No'; 
         }
 
+        // $query = MatReq::select(
+        //     'Mat_Req.MR_No',
+        //     'Mat_Req.WO_No',
+        //     'Mat_Req.Case_No',
+        //     'Mat_Req.MR_Date',
+        //     'Mat_Req.MR_Status',
+        //     'Mat_Req.MR_IsUrgent',
+        //     'Mat_Req.CR_BY',
+        //     'users.Fullname as CreatedBy'
+        // )
+        // ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
+        // ->where(function ($q) use ($userId) {
+        //     $q->where('Mat_Req.CR_BY', $userId)
+        //     ->orWhere('Mat_Req.MR_AP1', $userId)
+        //     ->orWhere('Mat_Req.MR_AP2', $userId)
+        //     ->orWhere('Mat_Req.MR_AP3', $userId)
+        //     ->orWhere('Mat_Req.MR_AP4', $userId);
+        // });
         $query = MatReq::select(
-                'Mat_Req.MR_No',
-                'Mat_Req.WO_No',
-                'Mat_Req.Case_No',
-                'Mat_Req.MR_Date',
-                'Mat_Req.MR_Status',
-                'Mat_Req.MR_IsUrgent',
-                'Mat_Req.CR_BY',
-                'users.Fullname as CreatedBy'
-            )
-            ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
-            ->where(function ($q) use ($userId) {
-                $q->where('Mat_Req.CR_BY', $userId)
-                ->orWhere('Mat_Req.MR_AP1', $userId)
-                ->orWhere('Mat_Req.MR_AP2', $userId)
-                ->orWhere('Mat_Req.MR_AP3', $userId)
-                ->orWhere('Mat_Req.MR_AP4', $userId);
+            'Mat_Req.MR_No',
+            'Mat_Req.WO_No',
+            'Mat_Req.Case_No',
+            'Mat_Req.MR_Date',
+            'Mat_Req.MR_Status',
+            'Mat_Req.MR_IsUrgent',
+            'Mat_Req.CR_BY',
+            'users.Fullname as CreatedBy'
+        )
+        ->leftJoin('users', 'Mat_Req.CR_BY', '=', 'users.id')
+        ->when($userPosition !== 'Creator', function ($q) use ($userId) {
+            $q->where(function ($q2) use ($userId) {
+                $q2->where('Mat_Req.CR_BY', $userId)
+                    ->orWhere('Mat_Req.MR_AP1', $userId)
+                    ->orWhere('Mat_Req.MR_AP2', $userId)
+                    ->orWhere('Mat_Req.MR_AP3', $userId)
+                    ->orWhere('Mat_Req.MR_AP4', $userId);
             });
+        });
 
         if (!empty($status)) {
             $query->where('Mat_Req.MR_Status', $status);

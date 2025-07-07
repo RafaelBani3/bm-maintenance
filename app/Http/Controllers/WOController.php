@@ -595,9 +595,17 @@ class WOController extends Controller
     {
         try {
             $userId = Auth::id();
+            $user = Auth::user(); 
+            $userId = $user->id;
+            $userPosition = $user->position?->PS_Name ?? null;
+            Log::info('User position: ' . $userPosition);
+
 
             $workOrders = WorkOrder::with(['createdBy', 'completedBy'])  
-                ->where('CR_BY', $userId)
+                // ->where('CR_BY', $userId)
+                ->when($userPosition !== 'Creator', function ($query) use ($userId) {
+                    $query->where('CR_BY', $userId); 
+                })
                 ->get()
                 ->map(function ($wo) {
                     return [

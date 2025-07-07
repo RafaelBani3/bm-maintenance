@@ -49,6 +49,12 @@ class Subcats extends Model
     {
         return $this->hasMany(Cases::class, 'Scat_ID', 'Scat_ID');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Cats::class, 'Cat_No', 'Cat_No'); // sesuaikan foreign dan local key
+    }
+
     
     // Atur Cat_No -> Primary Key
     // protected static function boot()

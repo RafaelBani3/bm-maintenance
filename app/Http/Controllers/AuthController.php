@@ -364,8 +364,12 @@ class AuthController extends Controller
             'Cat_Name' => 'required|string|max:255',
             'Cat_Desc' => 'nullable|string|max:500',
         ]);
-
-        Cats::create($request->only('Cat_Name', 'Cat_Desc'));
+        
+        Cats::create([
+            'Cat_No' => Cats::getIncrementCatNo(),
+            'Cat_Name' => $request->Cat_Name,
+            'Cat_Desc' => $request->Cat_Desc,
+        ]);
 
         return back()->with('success', 'Category created successfully.');
     }
@@ -414,8 +418,10 @@ class AuthController extends Controller
             'Scat_Desc' => 'nullable|string|max:255',
         ]);
 
+        $subcatNo = Subcats::getIncrementCatNo();
+
         Subcats::create([
-            'Scat_No' => strtoupper(Str::random(10)),
+            'Scat_No' => Subcats::getIncrementCatNo(),
             'Cat_No' => $request->Cat_No,
             'Scat_Name' => $request->Scat_Name,
             'Scat_Desc' => $request->Scat_Desc,

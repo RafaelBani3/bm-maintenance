@@ -49,4 +49,6 @@ class Cats extends Model
     {
         return $this->hasMany(Cases::class, 'Cat_ID', 'Cat_ID');
     }
+
+    
 }
