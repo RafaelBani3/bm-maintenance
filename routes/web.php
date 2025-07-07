@@ -7,6 +7,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WocController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\WOController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
   
 
     Route::group(['middleware' => 'auth'], function () {
+       
         // Logout
         Route::post('/logout', [AuthController::class, 'logout'])->name('Logout');
 
@@ -31,6 +33,9 @@ use Illuminate\Support\Facades\Route;
         Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('changepasswordpage');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
 
+        // Tracking page
+        Route::get('/Tracking', [DashboardController::class, 'trackingPage'])->name('TrackingPage');
+        
         // Route Untuk BUAT USER BARU
         Route::middleware(['auth', 'role:SuperAdminCreator|SuperAdminApprover'])->group(function () {
             Route::get('/Auth/Create-User', [AuthController::class, 'CreateUser'])->name('CreateNewUser');
@@ -38,7 +43,7 @@ use Illuminate\Support\Facades\Route;
         
             Route::get('/Auth/Users/{id}/Edit', [AuthController::class, 'EditUser'])->name('EditUser');
             Route::put('/Auth/Users/{id}/Update', [AuthController::class, 'UpdateUser'])->name('UpdateUser');
-            Route::delete('/Auth/Users/{id}/Delete', [AuthController::class, 'DeleteUser'])->name('DeleteUser');
+            Route::delete('/Auth/Users/{id}/Delete', [AuthController::class, 'DeleteUser'])->name('DeleteUser');    
         });
 
         // CRUD MATRIX
@@ -87,6 +92,10 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/Delete/{id}', [AuthController::class, 'DeleteTechnician'])->name('DeleteTechnician');
         });
 
+        // Print/Export PDF
+        Route::get('/case/export-pdf/{case_no}', [PDFController::class, 'exportPDF'])->name('case.exportPDF');
+
+
         
         // All can Access
         Route::prefix('Dashboard')->group(function () {
@@ -97,7 +106,6 @@ use Illuminate\Support\Facades\Route;
 
         // Route::get('/cases/tracking/{caseNo}', [DashboardController::class, 'TrackingCase'])->name('TrackingCase');
         Route::get('/track-case', [DashboardController::class, 'trackCase'])->name('track.case');
-
 
         // Dashboard
         // Ambil Data Case

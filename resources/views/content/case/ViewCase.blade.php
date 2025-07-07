@@ -4,6 +4,40 @@
 @section('subtitle', '  Case List')
 
 @section('content')
+
+        <style>
+    table.ttd {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    table.ttd, table.ttd th, table.ttd td {
+        border: 1px solid #000;
+    }
+
+    table.ttd th {
+        text-align: center;
+        font-weight: normal;
+        padding: 5px;
+    }
+
+    table.ttd td {
+        vertical-align: top;
+        padding: 5px;
+        height: 60px;
+    }
+
+    .ttd-title {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .ttd-subtitle {
+        font-weight: bold;
+    }
+</style>
  
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
@@ -134,6 +168,7 @@
         </div>
     </div>
 
+   
     <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
         <span class="spinner-border text-primary" role="status"></span>
         <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>

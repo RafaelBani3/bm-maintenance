@@ -151,6 +151,9 @@ class WOController extends Controller
             case 'Adm Engineering':
             case 'Security & Parking':
             case 'HSE Koordinator':
+            case 'Finance':
+            case 'Housekeeping':
+            case 'Fitout':
                 $users = User::where('Fullname', 'Istifar Adi Saputra')->get();
                 break;
     

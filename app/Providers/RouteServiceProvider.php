@@ -22,10 +22,10 @@ class RouteServiceProvider extends ServiceProvider
         // Override guest redirect
         RedirectIfAuthenticated::redirectUsing(function ($request) {
             if (auth('auth')->check()) {
-                return route('admin.dashboard');
+                return route('Dashboard');
             }
 
-            return route('dashboard');
+            return route('Dashboard');
         });
     }
 }

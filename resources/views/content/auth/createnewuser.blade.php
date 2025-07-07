@@ -1,13 +1,59 @@
 @extends('layouts.Master')
 
 @section('title', 'BM Maintenance')
-@section('subtitle', 'Create New Users')
+@section('subtitle', 'Users List')
 
 @section('content')
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid py-3 py-lg-6">
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
+
+                <!--begin::Navbar-->
+                <div class="card mb-5 mb-xl-10">
+                    <div class="card-header card-header-stretch">
+                        <!--begin::Title-->
+                        <div class="card-title d-flex align-items-center">
+                            <h3 class="fw-bold m-0 text-gray-800">Filter</h3>
+                        </div>
+                        <!--end::Title-->
+                    </div>
+            
+                    {{-- Filter --}}
+                    <div class="card-body">
+                        <div class="row g-5 align-items-end">
+                            <!-- Search Input -->
+                            <div class="col-lg-6">
+                                <label class="form-label fw-bold">Search Fullname / Username</label>
+                                <input type="text" id="searchReport" class="form-control form-control-solid" placeholder="Enter keyword..." />
+                            </div>
+
+                            <!-- Position Filter -->
+                            <div class="col-lg-4">
+                                <label class="form-label fw-bold">Filter by Position</label>
+                                <select id="statusFilter" class="form-select form-select-solid">
+                                    <option value="">All Positions</option>
+                                    @foreach ($positions as $position)
+                                        <option value="{{ $position->PS_Name }}">{{ $position->PS_Name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            
+
+                            <!-- Apply Button -->
+                            <div class="col-lg-2">
+                                <label class="form-label fw-bold text-white">.</label>
+                                <button id="applyFilter" class="btn btn-primary w-100">
+                                    <i class="fa-solid fa-filter me-1"></i> Apply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Filter --}}
+                </div>
+                <!--end::Navbar-->
 
                 <div class="card">
                     <div class="card-header card-header-stretch justify-content-between align-items-center">
@@ -46,12 +92,7 @@
                                                     <span class="badge bg-light-success text-success fs-7">{{ strtoupper($role) }}</span>
                                                 @endforeach
                                             </td>
-                                            <td>{{ $user->created_at->format('d M Y') }}</td>
-                                            {{-- <td class="text-center">
-                                                <a href="{{ route('EditUser', $user->id) }}" class="btn btn-sm btn-light-primary">
-                                                    <i class="bi bi-pencil-square"></i> Edit
-                                                </a>
-                                            </td> --}}
+                                            <td data-order="{{ $user->created_at }}">{{ $user->created_at->format('d M Y') }}</td>
                                             <td class="text-center">
                                                 <a href="{{ route('EditUser', $user->id) }}" class="btn btn-sm btn-light-primary me-1" data-bs-toggle="tooltip" title="Edit">
                                                     <i class="bi bi-pencil-square"></i>
@@ -62,16 +103,14 @@
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </td>
-
-
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div>                    
+                
                 </div>
-
             </div>
         </div>
     </div>
@@ -149,6 +188,12 @@
         </div>
     </div>
 
+    {{-- Page Loader --}}
+    <div id="page_loader" class="page-loader flex-column bg-dark bg-opacity-25" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center;">
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-white-800 fs-6 fw-semibold mt-5 text-white">Loading...</span>
+    </div>
+
     <script>
         function deleteUser(deleteUrl) {
             Swal.fire({
@@ -204,18 +249,90 @@
 
     <!-- DataTables Init -->
     <script>
-        $(document).ready(function () {
-            $('#kt_datatable_horizontal_scroll').DataTable({
-                "scrollX": true,
-                "pageLength": 10,
-                "language": {
-                    "search": "Search User:",
-                    "lengthMenu": "Show _MENU_ entries",
-                    "info": "Showing _START_ to _END_ of _TOTAL_ users",
+        let table;
+
+        $(function () {
+            if ($.fn.DataTable.isDataTable('#kt_datatable_horizontal_scroll')) {
+                $('#kt_datatable_horizontal_scroll').DataTable().destroy();
+            }
+
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                const keyword = $('#searchReport').val().toLowerCase();
+                const position = $('#statusFilter').val().toLowerCase();
+
+                const fullname = data[0].toLowerCase(); // Fullname column
+                const username = data[1].toLowerCase(); // Username column
+                const positionData = data[2].toLowerCase(); // Position column
+
+                const keywordMatch = keyword === '' || fullname.includes(keyword) || username.includes(keyword);
+
+                const positionMatch = position === '' || positionData === position;
+
+                return keywordMatch && positionMatch;
+            });
+
+            table = $('#kt_datatable_horizontal_scroll').DataTable({
+                scrollX: true,
+                pageLength: 10,
+                order: [[4, "desc"]],
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ positions",
+                    emptyTable: "" 
                 }
+            });
+
+            $('#applyFilter').on('click', function () {
+                $('#page_loader').css('display', 'flex');
+
+                setTimeout(function () {
+                    table.draw();  
+
+                    const info = table.page.info();
+                    if (info.recordsDisplay === 0) {
+                        if (!$('.no-data-row').length) {
+                            const noDataRowHtml = `<tr class="no-data-row">
+                                <td colspan="6" style="text-align:center; font-style: italic; color: #6c757d;">
+                                </td>
+                            </tr>`;
+                            $('#kt_datatable_horizontal_scroll tbody').append(noDataRowHtml);
+                        }
+                    } else {
+                        $('.no-data-row').remove();
+                    }
+
+                    $('#page_loader').css('display', 'none');
+                }, 300);
             });
         });
     </script>
+
+    {{-- SweetAlert Popups --}}
+    @if(session('duplicate_user'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Ducplicate User!',
+                text: 'User dengan Username dan Posisi tersebut sudah ada.',
+                confirmButtonText: 'OK',
+            });
+        </script>
+    @endif
+
+    @if(session('validation_error'))
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validasi Gagal!',
+                    html: `{!! implode('<br>', $errors->all()) !!}`,
+                    confirmButtonText: 'OK',
+                });
+            </script>
+        @endif
+    @endif
+
 @endsection
 
 

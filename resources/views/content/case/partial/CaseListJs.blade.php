@@ -4,6 +4,7 @@
         const routeEditCase = "{{ route('EditCase', ['encoded_case_no' => 'case_no']) }}";
         const routeCaseDetail = "{{ route('case.detail', ['case_no' => 'case_no']) }}";
         const canEditCase = @json(auth()->user()->can('view cr'));
+        const routeExportPDF = "{{ route('case.exportPDF', 'case_no') }}";
 
         // Ambil parameter dari URL
         function getUrlParam(name) {
@@ -124,6 +125,20 @@
                                         </i>
                                     </a>`;
                             }
+
+                            // Tambahkan tombol Print PDF jika status DONE
+                            if (row.Case_Status === "DONE") {
+                                const exportPdfUrl = routeExportPDF.replace('case_no', encoded);
+                                buttons += `
+                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                        <i class="ki-duotone ki-printer fs-2 text-danger">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </a>`;
+                            }
+
+
                             buttons += `
                                 <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" title="View Case">
                                     <i class="ki-duotone ki-eye fs-2">
@@ -132,6 +147,7 @@
                                     <span class="path3"></span>
                                     </i>
                                 </a>`;
+
                             buttons += '</div>';
                             return buttons;
                         }
@@ -198,4 +214,3 @@
             });
         });
     </script>
-

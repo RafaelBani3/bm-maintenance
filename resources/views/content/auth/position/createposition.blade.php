@@ -1,7 +1,7 @@
 @extends('layouts.Master')
 
 @section('title', 'BM Maintenance')
-@section('subtitle', 'List Users')
+@section('subtitle', 'Position List')
 
 @section('content')
 
@@ -183,6 +183,7 @@
             $('#kt_datatable_horizontal_scroll').DataTable({
                 scrollX: true,
                 pageLength: 10,
+                order: [[3, "desc"]],
                 language: {
                     search: "Search:",
                     lengthMenu: "Show _MENU_ entries",

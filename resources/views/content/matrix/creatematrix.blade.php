@@ -10,6 +10,54 @@
             <div id="kt_app_content" class="app-content flex-column-fluid">
                 <div id="kt_app_content_container" class="app-container container-xxl">
 
+                    <!--begin::Navbar-->
+                    <div class="card mb-5 mb-xl-10">
+                        <div class="card-header card-header-stretch">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex align-items-center">
+                                <h3 class="fw-bold m-0 text-gray-800">Filter</h3>
+                            </div>
+                            <!--end::Title-->
+                        </div>
+                
+                        {{-- Filter --}}
+                        <div class="card-body">
+                            <div class="row g-5 align-items-end">
+
+                                <!-- Position Filter -->
+                                <div class="col-lg-5">
+                                    <label class="form-label fw-bold">Filter by Position</label>
+                                    <select id="positionFilter" class="form-select form-select-solid">
+                                        <option value="">All Positions</option>
+                                        @foreach ($positions as $position)
+                                            <option value="{{ $position->PS_Name }}">{{ $position->PS_Name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Matrix Type Filter -->
+                                <div class="col-lg-5">
+                                    <label class="form-label fw-bold">Filter by Matrix Type</label>
+                                    <select id="matrixTypeFilter" class="form-select form-select-solid">
+                                        <option value="">All Matrix Type</option>
+                                        <option value="CR">CR/WO</option>
+                                        <option value="MR">MR</option>
+                                    </select>
+                                </div>
+
+                                <!-- Apply Button -->
+                                <div class="col-lg-2">
+                                    <label class="form-label fw-bold text-white">.</label>
+                                    <button id="applyFilter" class="btn btn-primary w-100">
+                                        <i class="fa-solid fa-filter me-1"></i> Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Filter --}}
+                    </div>
+                    <!--end::Navbar-->
+
                     <div class="card">
                         <div class="card-header card-header-stretch justify-content-between align-items-center">
                             <div class="card-title d-flex align-items-center">
@@ -74,12 +122,8 @@
                                                     {{ $matrix->approver5?->Fullname ?? '-' }}
                                                 </td>
 
-                                                <td>{{ $matrix->created_at->format('d M Y') }}</td>
-                                                {{-- <td class="text-center">
-                                                    <a href="{{ route('EditMatrix', $matrix->Mat_No) }}" class="btn btn-sm btn-light-primary">
-                                                        <i class="bi bi-pencil-square"></i> Edit
-                                                    </a>
-                                                </td> --}}
+                                                <td data-order="{{ $matrix->created_at }}">{{ $matrix->created_at->format('d M Y') }}</td>
+                                    
                                                 <td class="text-center">
                                                     <a href="{{ route('EditMatrix', $matrix->Mat_No) }}" class="btn btn-sm btn-light-primary me-1" data-bs-toggle="tooltip" title="Edit">
                                                         <i class="bi bi-pencil-square"></i>
@@ -288,50 +332,113 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    function deleteMatrix(deleteUrl) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This matrix will be permanently deleted. This action cannot be undone!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!',
-            customClass: {
-                confirmButton: 'btn btn-danger',
-                cancelButton: 'btn btn-secondary'
-            },
-            buttonsStyling: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Kirim form DELETE manual
-                const form = document.createElement('form');
-                form.action = deleteUrl;
-                form.method = 'POST';
+   
+   <script>
+        function deleteMatrix(deleteUrl) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This matrix will be permanently deleted. This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kirim form DELETE manual
+                    const form = document.createElement('form');
+                    form.action = deleteUrl;
+                    form.method = 'POST';
 
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = '{{ csrf_token() }}';
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
 
-                const method = document.createElement('input');
-                method.type = 'hidden';
-                method.name = '_method';
-                method.value = 'DELETE';
+                    const method = document.createElement('input');
+                    method.type = 'hidden';
+                    method.name = '_method';
+                    method.value = 'DELETE';
 
-                form.appendChild(csrf);
-                form.appendChild(method);
-                document.body.appendChild(form);
-                form.submit();
+                    form.appendChild(csrf);
+                    form.appendChild(method);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
+    {{-- Filter DataTable --}}
+    <script>
+    let table;
+
+    $(function () {
+        if ($.fn.DataTable.isDataTable('#kt_datatable_horizontal_scroll')) {
+            $('#kt_datatable_horizontal_scroll').DataTable().destroy();
+        }
+
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Ambil value dari dropdown
+            const positionFilter = $('#positionFilter').val().toLowerCase();
+            const matrixTypeFilter = $('#matrixTypeFilter').val().toLowerCase();
+
+            const position = data[2].toLowerCase();     // Position column (index 2)
+            const matrixType = data[3].toLowerCase();   // Mat_Type column (index 3)
+
+            const positionMatch = positionFilter === '' || position === positionFilter;
+            const matrixTypeMatch = matrixTypeFilter === '' || matrixType === matrixTypeFilter;
+
+            return positionMatch && matrixTypeMatch;
+        });
+
+        // Inisialisasi DataTable
+        table = $('#kt_datatable_horizontal_scroll').DataTable({
+            scrollX: true,
+            pageLength: 10,
+            order: [[10, "desc"]], 
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ matrices",
+                emptyTable: "" 
             }
         });
-    }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Tombol Apply filter
+        $('#applyFilter').on('click', function () {
+            $('#page_loader').css('display', 'flex');
+
+            setTimeout(function () {
+                table.draw(); 
+
+                if (table.page.info().recordsDisplay === 0) {
+                    if (!$('.no-data-row').length) {
+                        const noDataRowHtml = `<tr class="no-data-row">
+                            <td colspan="12" style="text-align:center; font-style: italic; color: #6c757d;">
+                                No data found matching your criteria
+                            </td>
+                        </tr>`;
+                        $('#kt_datatable_horizontal_scroll tbody').append(noDataRowHtml);
+                    }
+                } else {
+                    $('.no-data-row').remove();
+                }
+
+                $('#page_loader').css('display', 'none');
+            }, 300);
         });
     });
 </script>

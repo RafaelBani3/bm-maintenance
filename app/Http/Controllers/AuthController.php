@@ -15,8 +15,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Yajra\DataTables\Facades\DataTables;
 
 class AuthController extends Controller
 {
@@ -108,35 +110,85 @@ class AuthController extends Controller
     {
         $roles = Role::all();
         $positions = Position::all();
-        $users = User::with(['roles', 'position'])->get();
+        $users = User::with(['roles', 'position'])
+        ->latest()
+        ->get();
 
         return view('content.auth.createnewuser', compact('roles', 'positions', 'users'));
     }
 
+    // public function SaveNewUser(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'Fullname' => 'required|string|max:255',
+    //         'Username' => 'required|string|max:255|unique:users,Username',
+    //         'Password' => 'nullable|string|min:6',
+    //         'roles' => 'required|array|min:1',
+    //         'roles.*' => 'string|exists:roles,name',
+    //         'PS_ID' => 'required|exists:Positions,id',
+    //     ]);
+
+    //     $user = User::create([
+    //         'Fullname' => $validated['Fullname'],
+    //         'Username' => $validated['Username'],
+    //         'Password' => Hash::make($validated['Password'] ?? 'admin123'),
+    //         'remember_token'=> Str::random(60),
+    //         'CR_DT' => now(),
+    //         'PS_ID' => $validated['PS_ID'],
+    //     ]);
+
+    //     // Assign multiple roles
+    //     $user->assignRole($validated['roles']);
+
+    //     return redirect()->route('CreateNewUser')->with('success', 'User berhasil ditambahkan.');
+    // }
+
+    
     public function SaveNewUser(Request $request)
     {
-        $validated = $request->validate([
-            'Fullname' => 'required|string|max:255',
-            'Username' => 'required|string|max:255|unique:users,Username',
-            'Password' => 'nullable|string|min:6',
-            'roles' => 'required|array|min:1',
-            'roles.*' => 'string|exists:roles,name',
-            'PS_ID' => 'required|exists:Positions,id',
-        ]);
+        try {
+            // Validasi dasar (Username boleh sama asal tidak sama PS_ID)
+            $validated = $request->validate([
+                'Fullname' => 'required|string|max:255',
+                'Username' => 'required|string|max:255|unique:users,Username',
+                'Password' => 'nullable|string|min:6',
+                'roles' => 'required|array|min:1',
+                'roles.*' => 'string|exists:roles,name',
+                'PS_ID' => 'required|exists:Positions,id',
+            ]);
 
-        $user = User::create([
-            'Fullname' => $validated['Fullname'],
-            'Username' => $validated['Username'],
-            'Password' => Hash::make($validated['Password'] ?? 'admin123'),
-            'remember_token'=> Str::random(60),
-            'CR_DT' => now(),
-            'PS_ID' => $validated['PS_ID'],
-        ]);
+            // Cek apakah kombinasi Username + Position sudah ada
+            $exists = User::where('Username', $validated['Username'])
+                ->where('PS_ID', $validated['PS_ID'])
+                ->exists();
 
-        // Assign multiple roles
-        $user->assignRole($validated['roles']);
+            if ($exists) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('duplicate_user', true);
+            }
 
-        return redirect()->route('CreateNewUser')->with('success', 'User berhasil ditambahkan.');
+            // Simpan user baru
+            $user = User::create([
+                'Fullname' => $validated['Fullname'],
+                'Username' => $validated['Username'],
+                'Password' => Hash::make($validated['Password'] ?? 'admin123'),
+                'remember_token'=> Str::random(60),
+                'CR_DT' => now(),
+                'PS_ID' => $validated['PS_ID'],
+            ]);
+
+            // Assign roles
+            $user->assignRole($validated['roles']);
+
+            return redirect()->route('CreateNewUser')->with('success', 'User berhasil ditambahkan.');
+        
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput()
+                ->with('validation_error', true);
+        }
     }
 
     public function EditUser($id)
@@ -185,10 +237,14 @@ class AuthController extends Controller
 
 
 
+
+
 // MATRIX
     public function CreateNewMatrix()
     {
-        $matrices = Matrix::with(['approver1', 'approver2', 'approver3', 'approver4', 'approver5'])->get();
+        $matrices = Matrix::with(['approver1', 'approver2', 'approver3', 'approver4', 'approver5'])
+        ->latest()
+        ->get();
         $users = User::select('id', 'Fullname')->get();
         $positions = Position::all();
 
@@ -472,6 +528,7 @@ class AuthController extends Controller
             ], 500); // Kirim status 500 supaya ketahuan error
         }
     }
+
 
 
 

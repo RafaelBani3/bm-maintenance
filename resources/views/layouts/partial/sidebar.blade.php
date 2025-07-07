@@ -334,6 +334,24 @@
                             </div>
                         </div>
                     @endif
+
+                    <div data-kt-menu-trigger="click" class="menu-item {{ request()->routeIs('TrackingPage') ? 'show' : '' }}">
+                        <!--begin:Menu Dashboard-->
+                        <a class="{{ request()->routeIs('TrackingPage') ? 'active' : '' }}" href="{{ route('TrackingPage') }}">
+                            <span class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="ki-duotone ki-element-11 fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+                                </span>
+                                <span class="menu-title">Tracking List</span>
+                            </span>
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
                 </div>
                 <!--end::Menu-->
                

@@ -157,6 +157,24 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
 
+                <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 mb-5">
+                    <select name="month" class="form-select w-auto" onchange="this.form.submit()">
+                        @for ($m = 1; $m <= now()->month; $m++)
+                            <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
+                                {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                            </option>
+                        @endfor
+                    </select>
+
+                    <select name="year" class="form-select w-auto" onchange="this.form.submit()">
+                        @for ($y = now()->year; $y >= now()->year - 3; $y--)
+                            <option value="{{ $y }}" {{ $y == request('year', now()->year) ? 'selected' : '' }}>
+                                {{ $y }}
+                            </option>
+                        @endfor
+                    </select>
+                </form>
+
                 <!-- Row 1: Summary Cards -->
                 <div class="d-flex flex-wrap gap-5 mb-xl-10">
 
@@ -536,10 +554,10 @@
                                     <table id="kt_datatable_both_scrolls" class="table table-striped table-row-bordered gy-5 gs-7">
                                         <thead>
                                             <tr class="fw-semibold fs-6 text-gray-800 text-start">
-                                                <th class="min-w-150px">Case No</th>
+                                                <th class="min-w-250px">Case No</th>
                                                 <th class="min-w-250px">Case Name</th>
-                                                <th class="min-w-150px">Status</th>
-                                                <th class="min-w-150px">Action</th>
+                                                <th class="min-w-250px">Status</th>
+                                                <th class="min-w-250px">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -614,6 +632,7 @@
         <!--end::Content-->
     @endif
 
+    
     <!-- Tracking Case Modal -->    
     <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -722,10 +741,26 @@
 
     @endif
 
+    {{-- Script Table Tracking --}}
+    <script>
+        $(document).ready(function () {
+            $('#kt_datatable_both_scrolls').DataTable({
+                "scrollX": true,
+                "pageLength": 5,
+                "order": [[3, "desc"]],
+                "language": {
+                    "search": "Search User:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ Sub-Categories",
+                }
+            });
+        });
+    </script>
 
     <!--Script: Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
-        
+            
+
         <script>
             $(document).ready(function () {
                 fetchWaitingCounts();

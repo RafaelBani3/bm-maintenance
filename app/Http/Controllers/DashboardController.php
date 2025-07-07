@@ -23,6 +23,7 @@ class DashboardController extends Controller
     //     return view('content.dashboard.Dashboard', compact('cases'));
     // }
 
+
     public function PageDashboard() {
         $userId = Auth::id();
         $now = Carbon::now();
@@ -34,7 +35,7 @@ class DashboardController extends Controller
         // ->get();
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
             ->where('CR_BY', $userId)
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) 
+            // ->whereBetween('created_at', [$startOfMonth, $endOfMonth]) 
             ->paginate(5);
 
         $totalApproved = Cases::where('CR_BY', $userId)
@@ -188,7 +189,6 @@ class DashboardController extends Controller
 
 
     // Controller Case : Total Case & Chart Total Case By Category
-    
     // public function caseSummary()
     // {
     //     $userId = Auth::id();
@@ -522,8 +522,21 @@ class DashboardController extends Controller
 
 
     
+    // TRACKING PAGE
+    public function trackingPage(){
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+
+        $cases = Cases::with(['creator', 'workOrder.materialRequest'])                          
+            ->latest()
+            ->get();
+
+        return view('content.tracking.trackingpage',compact('cases'));
+    }
 
 
 
 }
+
 
