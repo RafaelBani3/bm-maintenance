@@ -21,29 +21,64 @@ class Subcats extends Model
         'Scat_Desc',
     ];
 
-    public function getIncrementCatNo()
-    {
-        $currentYear = date('Y');
-        $currentMonth = date('m');
+    // public function getIncrementCatNo()
+    // {
+    //     $currentYear = date('Y');
+    //     $currentMonth = date('m');
 
-        $lastNumber = $this
-        ->whereYear('created_at', $currentYear)
-        ->whereMonth('created_at', $currentMonth)
-        ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(Scat_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
-        ->first()   
-        ->max_n;
+    //     $lastNumber = $this
+    //     ->whereYear('created_at', $currentYear)
+    //     ->whereMonth('created_at', $currentMonth)
+    //     ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(Scat_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
+    //     ->first()   
+    //     ->max_n;
             
+    //     return str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    // }
+
+    // public static function getIncrementScatNo()
+    // {
+    //     // Ambil nomor terbesar dari kolom Scat_No (ambil 3 digit pertama, hilangkan nol di depan, lalu konversi ke angka)
+    //     $lastNumber = self::select(DB::raw("
+    //             IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTRING(Scat_No, 1, 3)) AS UNSIGNED)), 0) AS max_n
+    //         "))
+    //         ->first()
+    //         ->max_n;
+
+    //     // Kembalikan nomor berikutnya dalam format 3 digit (001, 002, dst)
+    //     return str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    // }
+
+    public static function getIncrementScatNoGlobal(): string
+    {
+        $lastNumber = self::select(DB::raw("
+            IFNULL(MAX(CAST(TRIM(LEADING '0' FROM Scat_No) AS UNSIGNED)), 0) AS max_n
+        "))->first()->max_n;
+
         return str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
 
-        static::creating(function ($model) {
-            $model->Scat_No = $model->getIncrementCatNo();
-        });
-    }
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($model) {
+    //         $model->Scat_No = $model->getIncrementCatNo();
+    //     });
+    // }
+
+
+  
+
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($model) {
+    //         $model->Scat_No = $model->getIncrementCatNo();
+    //     });
+    // }
 
     public function cases()
     {

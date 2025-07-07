@@ -20,7 +20,10 @@
             $('#kt_datatable_horizontal_scroll_2').DataTable({
                 "scrollX": true,
                 "pageLength": 5,
-                "order": [[3, "desc"]],
+                "order": [[4, "desc"]],
+                "fixedColumns": {
+                    "right": 1,
+                },
                 "language": {
                     "search": "Search User:",
                     "lengthMenu": "Show _MENU_ entries",

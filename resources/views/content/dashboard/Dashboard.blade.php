@@ -688,17 +688,17 @@
 
     {{-- Script Table Tracking --}}
     <script>
-        $(document).ready(function () {
-            $('#kt_datatable_both_scrolls').DataTable({
-                "scrollX": true,
-                "pageLength": 5,
-                "language": {
-                    "search": "Search User:",
-                    "lengthMenu": "Show _MENU_ entries",
-                    "info": "Showing _START_ to _END_ of _TOTAL_ Cases",
-                }
+        @if($cases->count() > 0)
+            $(document).ready(function() {
+                $('#kt_datatable_both_scrolls').DataTable({
+                    paging: true,
+                    searching: true,
+                    info: true,
+                    lengthChange: false,
+                    pageLength: 5,
+                });
             });
-        });
+        @endif
     </script>
 
     {{-- Dashboard APPROVAL --}}

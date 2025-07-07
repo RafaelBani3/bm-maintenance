@@ -231,6 +231,14 @@ class AuthController extends Controller
         return back()->with('success', 'User deleted successfully.');
     }
 
+
+
+
+
+
+
+
+
 // MATRIX
     public function CreateNewMatrix()
     {
@@ -364,9 +372,11 @@ class AuthController extends Controller
             'Cat_Name' => 'required|string|max:255',
             'Cat_Desc' => 'nullable|string|max:500',
         ]);
-        
+
+        $newCatNo = Cats::getIncrementCatNo();
+
         Cats::create([
-            'Cat_No' => Cats::getIncrementCatNo(),
+            'Cat_No' => $newCatNo,
             'Cat_Name' => $request->Cat_Name,
             'Cat_Desc' => $request->Cat_Desc,
         ]);
@@ -418,10 +428,10 @@ class AuthController extends Controller
             'Scat_Desc' => 'nullable|string|max:255',
         ]);
 
-        $subcatNo = Subcats::getIncrementCatNo();
+        $newScatNo = Subcats::getIncrementScatNoGlobal();
 
-        Subcats::create([
-            'Scat_No' => Subcats::getIncrementCatNo(),
+        Subcats::create([   
+            'Scat_No' => $newScatNo,
             'Cat_No' => $request->Cat_No,
             'Scat_Name' => $request->Scat_Name,
             'Scat_Desc' => $request->Scat_Desc,
@@ -429,6 +439,10 @@ class AuthController extends Controller
 
         return redirect()->route('CategoryPage')->with('success', 'Sub-category created successfully.');
     }
+
+
+ 
+
 
     public function SubUpdateCategory(Request $request, $id)
     {
@@ -513,6 +527,7 @@ class AuthController extends Controller
         try {
             technician::where('technician_id', $id)->delete();
 
+            // RETURN JSON, JANGAN REDIRECT
             return response()->json([
                 'status' => 'success',
                 'message' => 'Technician deleted successfully.'
@@ -522,7 +537,7 @@ class AuthController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to delete Technician.',
                 'error' => $e->getMessage()
-            ], 500); 
+            ], 500); // Kirim status 500 supaya ketahuan error
         }
     }
 

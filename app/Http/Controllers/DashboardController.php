@@ -39,9 +39,9 @@ class DashboardController extends Controller
         $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
-            // ->where('CR_BY', $userId)
+            ->where('CR_BY', $userId)
             ->paginate(5);
-
+    
         $totalApproved = Cases::where('CR_BY', $userId)
             ->whereIn('Case_Status', ['AP2'])
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
@@ -568,7 +568,7 @@ class DashboardController extends Controller
     }
 
 
-    
+
 
 
 
