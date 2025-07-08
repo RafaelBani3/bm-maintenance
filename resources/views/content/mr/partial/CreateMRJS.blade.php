@@ -28,10 +28,10 @@
         const form = document.getElementById('MrForm');
         const pageLoader = document.getElementById('page_loader');
         const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+        
         // Declare Route untuk ke Edit MR
         const editMRRouteTemplate = "{{ route('EditMR', ['mr_no' => '__MR_NO__']) }}";
 
-    
         function validateMaterialTable() {
             const rows = document.querySelectorAll('#material-body tr');
             let isValid = true;

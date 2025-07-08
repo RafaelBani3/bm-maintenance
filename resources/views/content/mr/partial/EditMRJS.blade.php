@@ -460,258 +460,258 @@
             });
         });
     </script> --}}
+    
     <script>
-    $(document).ready(function () {
-        const listMRUrl = "{{ route('ListMR') }}";
-        const form = document.getElementById('MrForm');
-        const pageLoader = document.getElementById('page_loader');
-        let isDraftSaved = false;
+        $(document).ready(function () {
+            const listMRUrl = "{{ route('ListMR') }}";
+            const form = document.getElementById('MrForm');
+            const pageLoader = document.getElementById('page_loader');
+            let isDraftSaved = false;
 
-        function validateMaterialTable() {
-            const rows = document.querySelectorAll('#material-body tr');
-            let isValid = true;
+            function validateMaterialTable() {
+                const rows = document.querySelectorAll('#material-body tr');
+                let isValid = true;
 
-            if (rows.length === 0) {
-                Swal.fire({
-                    title: 'Validation Error!',
-                    text: 'Material List cannot be empty. Please add at least one item.',
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                    customClass: { confirmButton: "btn btn-warning" }
-                });
-                return false;
-            }
-
-            rows.forEach((row) => {
-            const qty = row.querySelector('input[name*="[qty]"]');
-            // const unit = row.querySelector('select[name*="[unit]"]'); 
-            // const code = row.querySelector('input[name*="[code]"]');
-            const name = row.querySelector('input[name*="[name]"]');
-            const desc = row.querySelector('input[name*="[desc]"]');
-
-            [qty, name, desc].forEach(el => el?.classList.remove('is-invalid'));
-
-            if (!qty?.value || qty.value <= 0) {
-                qty?.classList.add('is-invalid');
-                isValid = false;
-            }
-            // if (!unit?.value.trim()) {
-            //     unit?.classList.add('is-invalid');
-            //     isValid = false;
-            // }
-            // if (!code?.value.trim()) {
-            //     code?.classList.add('is-invalid');
-            //     isValid = false;
-            // }
-            if (!name?.value.trim()) {
-                name?.classList.add('is-invalid');
-                isValid = false;
-            }
-            if (!desc?.value.trim()) {
-                desc?.classList.add('is-invalid');
-                isValid = false;
-            }
-        });
-
-
-            if (!isValid) {
-                Swal.fire({
-                    title: 'Validation Error!',
-                    text: 'Please fill in the required fields in the Material List table.',
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                    customClass: { confirmButton: "btn btn-warning" }
-                });
-            }
-
-            return isValid;
-        }
-
-        const validator = FormValidation.formValidation(
-            form,
-            {
-                fields: {
-                    reference_number: { validators: { notEmpty: { message: 'Reference is required' } } },
-                    case_no: { validators: { notEmpty: { message: 'Case No is required' } } },
-                    date: { validators: { notEmpty: { message: 'Date is required' } } },
-                    created_by: { validators: { notEmpty: { message: 'Created BY is required' } } },
-                    department: { validators: { notEmpty: { message: 'Department is required' } } },
-                    Designation: { validators: { notEmpty: { message: 'Designation is required' } } }
-                },
-                plugins: {
-                    trigger: new FormValidation.plugins.Trigger(),
-                    bootstrap5: new FormValidation.plugins.Bootstrap5({
-                        rowSelector: '.fv-row',
-                        eleInvalidClass: '',
-                        eleValidClass: ''
-                    })
-                }
-            }
-        );
-
-        // === SAVE DRAFT BUTTON ===
-        $(document).on('click', '#kt_docs_formvalidation_text_save', function (e) {
-            e.preventDefault();
-            const saveButton = $(this);
-
-            validator.validate().then(function (status) {
-                if (status === 'Valid') {
-                    if (!validateMaterialTable()) return;
-
-                    pageLoader.style.display = "flex";
-                    saveButton.prop('disabled', true);
-
-                    const formData = new FormData(form);
-
-                    $.ajax({
-                        url: "{{ route('MR.SaveDraft') }}",
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            pageLoader.style.display = "none";
-                            saveButton.prop('disabled', false);
-
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: response.message || 'Draft saved successfully.',
-                                    icon: 'success',
-                                    confirmButtonText: 'OK',
-                                    customClass: { confirmButton: "btn btn-success" }
-                                }).then(() => {
-                                    saveButton.hide(); // Hide the save button
-                                    isDraftSaved = true;
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Failed!',
-                                    text: response.message || 'Failed to save draft.',
-                                    icon: 'error',
-                                    confirmButtonText: 'OK',
-                                    customClass: { confirmButton: "btn btn-danger" }
-                                });
-                            }
-                        },
-                        error: function (xhr) {
-                            pageLoader.style.display = "none";
-                            saveButton.prop('disabled', false);
-
-                            Swal.fire({
-                                title: 'Error!',
-                                text: xhr.responseJSON?.message || 'Failed to save draft. Please try again.',
-                                icon: 'warning',
-                                confirmButtonText: 'OK',
-                                customClass: { confirmButton: "btn btn-warning" }
-                            });
-                        }
-                    });
-                } else {
+                if (rows.length === 0) {
                     Swal.fire({
                         title: 'Validation Error!',
-                        text: 'Please fill all required fields properly.',
+                        text: 'Material List cannot be empty. Please add at least one item.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        customClass: { confirmButton: "btn btn-warning" }
+                    });
+                    return false;
+                }
+
+                rows.forEach((row) => {
+                const qty = row.querySelector('input[name*="[qty]"]');
+                // const unit = row.querySelector('select[name*="[unit]"]'); 
+                // const code = row.querySelector('input[name*="[code]"]');
+                const name = row.querySelector('input[name*="[name]"]');
+                const desc = row.querySelector('input[name*="[desc]"]');
+
+                [qty, name, desc].forEach(el => el?.classList.remove('is-invalid'));
+
+                if (!qty?.value || qty.value <= 0) {
+                    qty?.classList.add('is-invalid');
+                    isValid = false;
+                }
+                // if (!unit?.value.trim()) {
+                //     unit?.classList.add('is-invalid');
+                //     isValid = false;
+                // }
+                // if (!code?.value.trim()) {
+                //     code?.classList.add('is-invalid');
+                //     isValid = false;
+                // }
+                if (!name?.value.trim()) {
+                    name?.classList.add('is-invalid');
+                    isValid = false;
+                }
+                if (!desc?.value.trim()) {
+                    desc?.classList.add('is-invalid');
+                    isValid = false;
+                }
+            });
+
+                if (!isValid) {
+                    Swal.fire({
+                        title: 'Validation Error!',
+                        text: 'Please fill in the required fields in the Material List table.',
                         icon: 'warning',
                         confirmButtonText: 'OK',
                         customClass: { confirmButton: "btn btn-warning" }
                     });
                 }
-            });
-        });
 
-        // === FORM SUBMIT / UPDATE BUTTON ===
-        $('#MrForm').on('submit', function (e) {
-            e.preventDefault();
-
-            if (!isDraftSaved) {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: 'You must save the Material Request draft first before submitting.',
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                    customClass: { confirmButton: "btn btn-warning" }
-                });
-                return;
+                return isValid;
             }
 
-            validator.validate().then(function (status) {
-                if (status === 'Valid') {
-                    if (!validateMaterialTable()) return;
+            const validator = FormValidation.formValidation(
+                form,
+                {
+                    fields: {
+                        reference_number: { validators: { notEmpty: { message: 'Reference is required' } } },
+                        case_no: { validators: { notEmpty: { message: 'Case No is required' } } },
+                        date: { validators: { notEmpty: { message: 'Date is required' } } },
+                        created_by: { validators: { notEmpty: { message: 'Created BY is required' } } },
+                        department: { validators: { notEmpty: { message: 'Department is required' } } },
+                        Designation: { validators: { notEmpty: { message: 'Designation is required' } } }
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger(),
+                        bootstrap5: new FormValidation.plugins.Bootstrap5({
+                            rowSelector: '.fv-row',
+                            eleInvalidClass: '',
+                            eleValidClass: ''
+                        })
+                    }
+                }
+            );
 
-                    const submitButton = $('#kt_docs_formvalidation_text_submit');
-                    const formData = new FormData(form);
+            // === SAVE DRAFT BUTTON ===
+            $(document).on('click', '#kt_docs_formvalidation_text_save', function (e) {
+                e.preventDefault();
+                const saveButton = $(this);
 
-                    pageLoader.style.display = "flex";
-                    submitButton.find(".indicator-label").hide();
-                    submitButton.find(".indicator-progress").show();
-                    submitButton.prop('disabled', true);
+                validator.validate().then(function (status) {
+                    if (status === 'Valid') {
+                        if (!validateMaterialTable()) return;
 
-                    setTimeout(function () {
+                        pageLoader.style.display = "flex";
+                        saveButton.prop('disabled', true);
+
+                        const formData = new FormData(form);
+
                         $.ajax({
-                            url: "{{ route('update.mr') }}",
+                            url: "{{ route('MR.SaveDraft') }}",
                             type: "POST",
                             data: formData,
                             processData: false,
                             contentType: false,
                             success: function (response) {
-                                setTimeout(function () {
-                                    pageLoader.style.display = "none";
-                                    submitButton.find(".indicator-label").show();
-                                    submitButton.find(".indicator-progress").hide();
-                                    submitButton.prop('disabled', false);
+                                pageLoader.style.display = "none";
+                                saveButton.prop('disabled', false);
 
-                                    if (response.success) {
-                                        Swal.fire({
-                                            title: 'Success!',
-                                            text: response.message || 'Material Request has been saved successfully.',
-                                            icon: 'success',
-                                            confirmButtonText: 'OK',
-                                            customClass: { confirmButton: "btn btn-success" }
-                                        }).then(() => {
-                                            window.location.href = listMRUrl;
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Failed!',
-                                            text: response.message || 'Failed to save Material Request.',
-                                            icon: 'error',
-                                            confirmButtonText: 'OK',
-                                            customClass: { confirmButton: "btn btn-danger" }
-                                        });
-                                    }
-                                }, 800);
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: response.message || 'Draft saved successfully.',
+                                        icon: 'success',
+                                        confirmButtonText: 'OK',
+                                        customClass: { confirmButton: "btn btn-success" }
+                                    }).then(() => {
+                                        saveButton.hide();
+                                        isDraftSaved = true;
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Failed!',
+                                        text: response.message || 'Failed to save draft.',
+                                        icon: 'error',
+                                        confirmButtonText: 'OK',
+                                        customClass: { confirmButton: "btn btn-danger" }
+                                    });
+                                }
                             },
                             error: function (xhr) {
-                                setTimeout(function () {
-                                    pageLoader.style.display = "none";
-                                    submitButton.find(".indicator-label").show();
-                                    submitButton.find(".indicator-progress").hide();
-                                    submitButton.prop('disabled', false);
+                                pageLoader.style.display = "none";
+                                saveButton.prop('disabled', false);
 
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: xhr.responseJSON?.message || 'Failed to save Material Request. Please try again.',
-                                        icon: 'warning',
-                                        confirmButtonText: 'OK',
-                                        customClass: { confirmButton: "btn btn-warning" }
-                                    });
-                                }, 800);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: xhr.responseJSON?.message || 'Failed to save draft. Please try again.',
+                                    icon: 'warning',
+                                    confirmButtonText: 'OK',
+                                    customClass: { confirmButton: "btn btn-warning" }
+                                });
                             }
                         });
-                    }, 800);
-                } else {
+                    } else {
+                        Swal.fire({
+                            title: 'Validation Error!',
+                            text: 'Please fill all required fields properly.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK',
+                            customClass: { confirmButton: "btn btn-warning" }
+                        });
+                    }
+                });
+            });
+
+            // === FORM SUBMIT / UPDATE BUTTON ===
+            $('#MrForm').on('submit', function (e) {
+                e.preventDefault();
+
+                if (!isDraftSaved) {
                     Swal.fire({
-                        title: 'Validation Error!',
-                        text: 'Please fill all required fields properly.',
+                        title: 'Warning!',
+                        text: 'You must save the Material Request draft first before submitting.',
                         icon: 'warning',
                         confirmButtonText: 'OK',
                         customClass: { confirmButton: "btn btn-warning" }
                     });
+                    return;
                 }
+
+                validator.validate().then(function (status) {
+                    if (status === 'Valid') {
+                        if (!validateMaterialTable()) return;
+
+                        const submitButton = $('#kt_docs_formvalidation_text_submit');
+                        const formData = new FormData(form);
+
+                        pageLoader.style.display = "flex";
+                        submitButton.find(".indicator-label").hide();
+                        submitButton.find(".indicator-progress").show();
+                        submitButton.prop('disabled', true);
+
+                        setTimeout(function () {
+                            $.ajax({
+                                url: "{{ route('update.mr') }}",
+                                type: "POST",
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    setTimeout(function () {
+                                        pageLoader.style.display = "none";
+                                        submitButton.find(".indicator-label").show();
+                                        submitButton.find(".indicator-progress").hide();
+                                        submitButton.prop('disabled', false);
+
+                                        if (response.success) {
+                                            Swal.fire({
+                                                title: 'Success!',
+                                                text: response.message || 'Material Request has been saved successfully.',
+                                                icon: 'success',
+                                                confirmButtonText: 'OK',
+                                                customClass: { confirmButton: "btn btn-success" }
+                                            }).then(() => {
+                                                window.location.href = listMRUrl;
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                title: 'Failed!',
+                                                text: response.message || 'Failed to save Material Request.',
+                                                icon: 'error',
+                                                confirmButtonText: 'OK',
+                                                customClass: { confirmButton: "btn btn-danger" }
+                                            });
+                                        }
+                                    }, 800);
+                                },
+                                error: function (xhr) {
+                                    setTimeout(function () {
+                                        pageLoader.style.display = "none";
+                                        submitButton.find(".indicator-label").show();
+                                        submitButton.find(".indicator-progress").hide();
+                                        submitButton.prop('disabled', false);
+
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: xhr.responseJSON?.message || 'Failed to save Material Request. Please try again.',
+                                            icon: 'warning',
+                                            confirmButtonText: 'OK',
+                                            customClass: { confirmButton: "btn btn-warning" }
+                                        });
+                                    }, 800);
+                                }
+                            });
+                        }, 800);
+                    } else {
+                        Swal.fire({
+                            title: 'Validation Error!',
+                            text: 'Please fill all required fields properly.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK',
+                            customClass: { confirmButton: "btn btn-warning" }
+                        });
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 
 
     {{-- Table --}}

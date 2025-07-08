@@ -433,7 +433,7 @@
                         data: "MR_IsUrgent",
                         className: "text-center align-middle",
                         render: val => val === 'Y'
-                            ? '<span class="badge bg-danger fs-7">Yes</span>'
+                            ? '<span class="badge bg-light-danger text-denger fs-7">Yes</span>'
                             : '<span class="badge bg-secondary fs-7">No</span>'
                     },
                     {

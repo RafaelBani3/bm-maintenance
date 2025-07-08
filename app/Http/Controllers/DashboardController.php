@@ -23,57 +23,138 @@ class DashboardController extends Controller
     //     return view('content.dashboard.Dashboard', compact('cases'));
     // }
 
+// PAGE DASHBOARD YANG UDAH BISA
+//     public function PageDashboard(Request $request) {
+//         $userId = Auth::id();
+//         $now = Carbon::now();
 
-    public function PageDashboard(Request $request) {
+//         $month = $request->get('month', now()->month);
+//         $year = $request->get('year', now()->year);
+
+//         if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+//             abort(403, 'Data bulan tersebut tidak tersedia.');
+//         }
+
+//         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+//         $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+
+//         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+//             ->where('CR_BY', $userId)
+//             ->paginate(5);
+    
+//         $totalApproved = Cases::where('CR_BY', $userId)
+//             ->whereIn('Case_Status', ['AP2'])
+//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+//             ->count();
+
+//         $totalRejected = Cases::where('CR_BY', $userId)
+//             ->where('Case_Status', 'REJECT')
+//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+//             ->count();
+
+//         $totalWOtoMR = WorkOrder::where('WO_MR', $userId)
+//             ->where('WO_NeedMat', 'Y') 
+//             ->whereIn('WO_Status', ['SUBMIT']) 
+//             ->whereMonth('created_at', now()->month)
+//             ->whereYear('created_at', now()->year)
+//             ->count();
+
+//         $totalWOtoWOC = WorkOrder::whereNull('WO_MR')
+//             ->where('CR_BY', $userId)
+//             ->where('WO_NeedMat', 'N')
+//             ->where('WO_IsComplete', 'N')
+//             ->whereNull('WO_CompDate') 
+//             ->whereIn('WO_Status', ['INPROGRESS'])
+//             ->whereMonth('created_at', now()->month)
+//             ->whereYear('created_at', now()->year)
+//             ->count();
+
+//         // $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
+//         //     ->where('CR_BY', $userId)
+//         //     ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+//         //     ->count();
+
+//         $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
+//             ->whereHas('workOrder', function ($q) use ($userId) {
+//                 $q->where('CR_BY', $userId);
+//             })
+//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+//             ->count();
+
+//         $TotalMRrejected = MatReq::where('MR_Status', 'REJECT')
+//             ->where('CR_BY', $userId)
+//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+//             ->count();
+
+//         $rejectedWoc = WorkOrder::where('CR_BY', $userId)
+//             ->where('WO_Status', 'REJECT_COMPLETION')
+//             ->whereNotNull('WOC_No')
+//             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+//             ->count();
+
+//         $doneWoc = WorkOrder::where('CR_BY', $userId)
+//             ->where('WO_Status', 'DONE')
+//             ->whereNotNull('WOC_No')
+//             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+//             ->count();
+
+//         return view('content.dashboard.Dashboard', compact(
+//   'cases', 
+//  'totalApproved', 
+//             'totalRejected',
+//             'totalWOtoMR',
+//             'TotalMRapproved',
+//             'TotalMRrejected',
+//             'rejectedWoc',
+//             'doneWoc',
+//             'totalWOtoWOC'
+//         ));
+//     }
+
+    public function PageDashboard(Request $request)
+    {
         $userId = Auth::id();
-        $now = Carbon::now();
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
+        $now = now();
 
-        // Batasi agar tidak bisa lihat bulan di masa depan
-        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-            abort(403, 'Data bulan tersebut tidak tersedia.');
+        $month = (int) $request->get('month', $now->month);
+        $year = (int) $request->get('year', $now->year);
+
+        // Validasi 
+        if ($year > $now->year || ($year === $now->year && $month > $now->month)) {
+            return redirect()->back()->with('warning', 'Data for that month is not available for the future.');
         }
 
-        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
+        $startOfMonth = Carbon::create($year, $month)->startOfMonth();
+        $endOfMonth = Carbon::create($year, $month)->endOfMonth();
+
+        // CASE LIST
         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
             ->where('CR_BY', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->paginate(5);
-    
-        $totalApproved = Cases::where('CR_BY', $userId)
-            ->whereIn('Case_Status', ['AP2'])
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->count();
 
-        $totalRejected = Cases::where('CR_BY', $userId)
-            ->where('Case_Status', 'REJECT')
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->count();
+        // CASE STATS
+        $totalApproved = $cases->where('Case_Status', 'AP2')->count();
+        $totalRejected = $cases->where('Case_Status', 'REJECT')->count();
 
+        // WORK ORDER STATS
         $totalWOtoMR = WorkOrder::where('WO_MR', $userId)
-            ->where('WO_NeedMat', 'Y') 
-            ->whereIn('WO_Status', ['SUBMIT']) 
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->where('WO_NeedMat', 'Y')
+            ->where('WO_Status', 'SUBMIT')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         $totalWOtoWOC = WorkOrder::whereNull('WO_MR')
             ->where('CR_BY', $userId)
             ->where('WO_NeedMat', 'N')
             ->where('WO_IsComplete', 'N')
-            ->whereNull('WO_CompDate') 
-            ->whereIn('WO_Status', ['INPROGRESS'])
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->whereNull('WO_CompDate')
+            ->where('WO_Status', 'INPROGRESS')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
-        // $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
-        //     ->where('CR_BY', $userId)
-        //     ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-        //     ->count();
-
+        // MATERIAL REQUEST STATS
         $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
             ->whereHas('workOrder', function ($q) use ($userId) {
                 $q->where('CR_BY', $userId);
@@ -86,30 +167,34 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
+        // WORK ORDER COMPLETION STATS
         $rejectedWoc = WorkOrder::where('CR_BY', $userId)
             ->where('WO_Status', 'REJECT_COMPLETION')
             ->whereNotNull('WOC_No')
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         $doneWoc = WorkOrder::where('CR_BY', $userId)
             ->where('WO_Status', 'DONE')
             ->whereNotNull('WOC_No')
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         return view('content.dashboard.Dashboard', compact(
-  'cases', 
- 'totalApproved', 
+            'cases',
+            'totalApproved',
             'totalRejected',
             'totalWOtoMR',
+            'totalWOtoWOC',
             'TotalMRapproved',
             'TotalMRrejected',
             'rejectedWoc',
             'doneWoc',
-            'totalWOtoWOC'
+            'month',
+            'year'
         ));
     }
+
 
     public function trackCase(Request $request)
     {
@@ -223,42 +308,86 @@ class DashboardController extends Controller
     //     ]);
     // }
     
+    // public function caseSummary(Request $request)
+    // {
+    //     $userId = Auth::id();
+    //     $now = Carbon::now();
+    //     $month = $request->get('month', now()->month);
+    //     $year = $request->get('year', now()->year);
+
+    //     // Batasi agar tidak bisa lihat bulan di masa depan
+    //     if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+    //         abort(403, 'Data bulan tersebut tidak tersedia.');
+    //     }
+
+    //     $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+    //     $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+
+    //     $totalCases = Cases::where('CR_BY', $userId)
+    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+    //         ->count();
+
+    //     $totalApproved = Cases::where('CR_BY', $userId)
+    //         ->where('Case_Status', ['AP2'])
+    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+    //         ->count();
+
+    //     $totalRejected = Cases::where('CR_BY', $userId)
+    //         ->where('Case_Status', 'REJECT')
+    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+    //         ->count();
+
+    //     $caseByCategory = DB::table('Cats')
+    //         ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
+    //             $join->on('Cats.Cat_No', '=', 'cases.Cat_No')
+    //                 ->where('cases.CR_BY', '=', $userId)
+    //                 ->whereBetween('cases.created_at', [$startOfMonth, $endOfMonth]);
+    //         })
+    //         ->select('Cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
+    //         ->groupBy('Cats.Cat_Name')
+    //         ->get();
+
+    //     return response()->json([
+    //         'totalCases' => $totalCases,
+    //         'totalApproved' => $totalApproved,
+    //         'totalRejected' => $totalRejected,
+    //         'categories' => $caseByCategory,
+    //     ]);
+    // }
+
     public function caseSummary(Request $request)
     {
         $userId = Auth::id();
-        $now = Carbon::now();
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
+        $now = now();
 
-        // Batasi agar tidak bisa lihat bulan di masa depan
-        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-            abort(403, 'Data bulan tersebut tidak tersedia.');
+        $month = (int) $request->get('month', $now->month);
+        $year = (int) $request->get('year', $now->year);
+
+        // Validasi 
+        if ($year > $now->year || ($year === $now->year && $month > $now->month)) {
+            return redirect()->back()->with('warning', 'Data for that month is not available for the future.');
         }
 
-        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+        $startOfMonth = Carbon::create($year, $month)->startOfMonth();
+        $endOfMonth = Carbon::create($year, $month)->endOfMonth();
 
-        $totalCases = Cases::where('CR_BY', $userId)
+        // Ambil semua case user dalam bulan itu sekali query
+        $cases = Cases::where('CR_BY', $userId)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->count();
+            ->get();
 
-        $totalApproved = Cases::where('CR_BY', $userId)
-            ->where('Case_Status', ['AP2'])
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->count();
+        $totalCases = $cases->count();
+        $totalApproved = $cases->where('Case_Status', 'AP2')->count();
+        $totalRejected = $cases->where('Case_Status', 'REJECT')->count();
 
-        $totalRejected = Cases::where('CR_BY', $userId)
-            ->where('Case_Status', 'REJECT')
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->count();
-
+        // Grouping kategori dan count
         $caseByCategory = DB::table('Cats')
-            ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
+            ->leftJoin('cases', function ($join) use ($userId, $startOfMonth, $endOfMonth) {
                 $join->on('Cats.Cat_No', '=', 'cases.Cat_No')
                     ->where('cases.CR_BY', '=', $userId)
                     ->whereBetween('cases.created_at', [$startOfMonth, $endOfMonth]);
             })
-            ->select('Cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
+            ->select('Cats.Cat_Name', DB::raw('COUNT(cases.Case_No) as total'))
             ->groupBy('Cats.Cat_Name')
             ->get();
 
@@ -270,41 +399,80 @@ class DashboardController extends Controller
         ]);
     }
 
-
     // // Controller WO
+    // public function GetWOSummary(Request $request)
+    // {
+    //     $userId = Auth::id();
+    //     $month = $request->get('month', now()->month);
+    //     $year = $request->get('year', now()->year);
+
+    //     if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
+    //         abort(403, 'Data bulan tersebut tidak tersedia.');
+    //     }
+
+    //     $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+    //     $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+
+    //     $totalWO = WorkOrder::where('CR_BY', $userId)
+    //         ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+    //         ->count();
+
+    //     // $inprogress = WorkOrder::where('CR_BY', $userId)
+    //     //     ->where('WO_Status', ['SUBMIT','INPROGRESS'])
+    //     //     ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+    //     //     ->count();
+
+    //     $inprogress = WorkOrder::where(function ($query) use ($userId) {
+    //     $query->where('CR_BY', $userId)
+    //             ->orWhere('WO_MR', $userId);
+    //     })
+    //     ->whereIn('WO_Status', ['SUBMIT', 'INPROGRESS'])
+    //     ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+    //     ->count();
+
+    //     $done = WorkOrder::where('CR_BY', $userId)
+    //         ->where('WO_Status', 'DONE')
+    //         ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+    //         ->count();
+
+    //     return response()->json([
+    //         'total' => $totalWO,
+    //         'inprogress' => $inprogress,
+    //         'done' => $done,
+    //     ]);
+    // }
+
     public function GetWOSummary(Request $request)
     {
         $userId = Auth::id();
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
+        $now = now();
 
-        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-            abort(403, 'Data bulan tersebut tidak tersedia.');
+        $month = (int) $request->get('month', $now->month);
+        $year = (int) $request->get('year', $now->year);
+
+        // Validasi 
+        if ($year > $now->year || ($year === $now->year && $month > $now->month)) {
+            return redirect()->back()->with('warning', 'Data for that month is not available for the future.');
         }
 
         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
         $totalWO = WorkOrder::where('CR_BY', $userId)
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
-        // $inprogress = WorkOrder::where('CR_BY', $userId)
-        //     ->where('WO_Status', ['SUBMIT','INPROGRESS'])
-        //     ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
-        //     ->count();
-
         $inprogress = WorkOrder::where(function ($query) use ($userId) {
-        $query->where('CR_BY', $userId)
+            $query->where('CR_BY', $userId)
                 ->orWhere('WO_MR', $userId);
         })
         ->whereIn('WO_Status', ['SUBMIT', 'INPROGRESS'])
-        ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+        ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
         ->count();
 
         $done = WorkOrder::where('CR_BY', $userId)
             ->where('WO_Status', 'DONE')
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         return response()->json([
@@ -314,17 +482,18 @@ class DashboardController extends Controller
         ]);
     }
 
-    
     // Controller MR
     public function getMRSummary(Request $request)
     {
         $userId = Auth::id();
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
+        $now = now();
 
-        // Batasi agar tidak bisa lihat bulan di masa depan
-        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-            abort(403, 'Data bulan tersebut tidak tersedia.');
+        $month = (int) $request->get('month', $now->month);
+        $year = (int) $request->get('year', $now->year);
+
+        // Validasi 
+        if ($year > $now->year || ($year === $now->year && $month > $now->month)) {
+            return redirect()->back()->with('warning', 'Data for that month is not available for the future.');
         }
 
         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
@@ -351,39 +520,40 @@ class DashboardController extends Controller
         ]);
     }
 
-
     public function GetWOCSummary(Request $request)
     {
         $userId = Auth::id();
 
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
+        $now = now();
 
-        // Batasi agar tidak bisa lihat bulan di masa depan
-        if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-            abort(403, 'Data bulan tersebut tidak tersedia.');
+        $month = (int) $request->get('month', $now->month);
+        $year = (int) $request->get('year', $now->year);
+
+        // Validasi 
+        if ($year > $now->year || ($year === $now->year && $month > $now->month)) {
+            return redirect()->back()->with('warning', 'Data for that month is not available for the future.');
         }
 
         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
-
         $totalWOC = WorkOrder::where('CR_BY', $userId)
             ->where('WO_IsComplete', 'Y') 
             ->whereNotNull('WOC_No')
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('WO_CompDate', [$startOfMonth, $endOfMonth])
             ->count();
 
         $rejectedWoc = WorkOrder::where('CR_BY', $userId)
             ->where('WO_Status', 'REJECT_COMPLETION')
             ->whereNotNull('WOC_No')
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('WO_CompDate', [$startOfMonth, $endOfMonth])
             ->count();
 
         $doneWoc = WorkOrder::where('CR_BY', $userId)
+            ->where('WO_IsComplete', 'Y') 
             ->where('WO_Status', 'DONE')
             ->whereNotNull('WOC_No')
-            ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
+            ->whereBetween('WO_CompDate', [$startOfMonth, $endOfMonth])
             ->count();
 
         return response()->json([

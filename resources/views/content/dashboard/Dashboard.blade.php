@@ -1,7 +1,8 @@
 @extends('layouts.Master')
 
-@section('title', 'BM Maintenance')
+{{-- @section('title', 'BM Maintenance') --}}
 @section('subtitle', 'Dashboard')
+@section('title', 'Dashboard Summary – ' . \Carbon\Carbon::create($year, $month)->format('F Y')) {{-- Ini judul di halaman content --}}
 
 @section('content')
 
@@ -149,32 +150,33 @@
         z-index: 1;
     }
     </style>
-             
+
     <!--begin::Dashboard Creator-->
     @if(auth()->user()->hasAnyPermission(['view cr', 'view wo', 'view mr']))
-        
         <!-- Main Content -->       
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
+                
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 align-items-center flex-wrap">
+                        <label for="month" class="fw-semibold mb-0 me-2">Month Filter:</label>
+                        <select name="month" id="month" class="form-select w-auto" onchange="this.form.submit()">
+                            @for ($m = 1; $m <= 12; $m++)
+                                <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                                </option>
+                            @endfor
+                        </select>
 
-            {{-- <form method="GET" action="{{ route('Dashboard') }}" class="d-flex gap-2 mb-5">
-                <select name="month" class="form-select w-auto" onchange="this.form.submit()">
-                    @for ($m = 1; $m <= now()->month; $m++)
-                        <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
-                            {{ \Carbon\Carbon::create()->month($m)->format('F') }}
-                        </option>
-                    @endfor
-                </select>
-
-                <select name="year" class="form-select w-auto" onchange="this.form.submit()">
-                    @for ($y = now()->year; $y >= now()->year - 3; $y--)
-                        <option value="{{ $y }}" {{ $y == request('year', now()->year) ? 'selected' : '' }}>
-                            {{ $y }}
-                        </option>
-                    @endfor
-                </select>
-            </form> --}}
-              
+                        <select name="year" id="year" class="form-select w-auto ms-2" onchange="this.form.submit()">
+                            @for ($y = now()->year; $y >= now()->year - 3; $y--)
+                                <option value="{{ $y }}" {{ $y == request('year', now()->year) ? 'selected' : '' }}>
+                                    {{ $y }}
+                                </option>
+                            @endfor
+                        </select>
+                    </form>
+                </div>
 
                 <!-- Row 1: Summary Cards -->
                 <div class="d-flex flex-wrap gap-5 mb-xl-10">
@@ -543,9 +545,13 @@
                     <div class="col-md-12 col-xl-12">
                         <div class="card h-md-100 shadow-sm">
                             <div class="card-header p=5 d-flex justify-content-between align-items-center">
-                                <h3 class="card-title fw-bold text-gray-800">
+                                {{-- <h3 class="card-title fw-bold text-gray-800">
                                     <i class="ki-duotone ki-briefcase me-2 text-primary fs-2"></i>
                                     Tracking Case - {{ \Carbon\Carbon::now()->format('F Y') }}
+                                </h3> --}}
+                                <h3 class="card-title fw-bold text-gray-800">
+                                    <i class="ki-duotone ki-briefcase me-2 text-primary fs-2"></i>
+                                    Tracking Case - {{ \Carbon\Carbon::create($year, $month)->format('F Y') }}
                                 </h3>
                                 <span class="badge badge-light-primary">{{ $cases->total() }} Case(s)</span>
                             </div>
@@ -593,9 +599,9 @@
                                     </table>
                                 </div>
 
-                                <div class="d-flex justify-content-center my-4">
+                                {{-- <div class="d-flex justify-content-center my-4">
                                     {{ $cases->links('pagination::bootstrap-5') }}
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -635,7 +641,6 @@
         <!--end::Content-->
     @endif
 
-    
     <!-- Tracking Case Modal -->    
     <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -690,7 +695,7 @@
     <script>
         @if($cases->count() > 0)
             $(document).ready(function() {
-                $('#kt_datatable_both_scrolls').DataTable({
+                $('#kt_datatable_both_scrolls').DataTable({ 
                     paging: true,
                     searching: true,
                     info: true,
@@ -784,7 +789,8 @@
         <!--Script Case Chart & Total Case-->
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {
-                fetch("{{ route('case.summary') }}")
+                // fetch("{{ route('case.summary') }}")
+                fetch("{{ route('case.summary') }}?month={{ $month }}&year={{ $year }}")
                     .then(response => response.json())
                     .then(data => {
                         // Tampilkan total case bulan ini
@@ -878,7 +884,14 @@
         {{-- Script WO hanya Tampil total data WO --}}
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {
-                fetch("{{ route('dashboard.wo-summary') }}")
+                // Parse query params for month & year, fallback to current
+                const urlParams = new URLSearchParams(window.location.search);
+                const month = urlParams.get('month') || new Date().getMonth() + 1; // JS month is 0-based
+                const year = urlParams.get('year') || new Date().getFullYear();
+
+                const fetchUrl = `{{ route('dashboard.wo-summary') }}?month=${month}&year=${year}`;
+
+                fetch(fetchUrl)
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById("wo-total").textContent = data.total ?? 0;
@@ -890,7 +903,7 @@
         </script>
 
         {{-- SCRIPT MR --}}
-        <script>
+        {{-- <script>
             $(document).ready(function () {
                 $.ajax({
                     url: "{{ route('Dashboard.MR.Summary') }}",
@@ -905,10 +918,32 @@
                     }
                 });
             });
+        </script> --}}
+        <script>
+            $(document).ready(function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const month = urlParams.get('month') || new Date().getMonth() + 1;
+                const year = urlParams.get('year') || new Date().getFullYear();
+
+                const fetchUrl = `{{ route('Dashboard.MR.Summary') }}?month=${month}&year=${year}`;
+
+                $.ajax({
+                    url: fetchUrl,
+                    type: "GET",
+                    success: function (data) {
+                        $("#mr-total").text(data.total ?? 0);
+                        $("#mr-approved").text(data.approved ?? 0);
+                        $("#mr-rejected").text(data.rejected ?? 0);
+                    },
+                    error: function (xhr) {
+                        console.error("Gagal mengambil data Material Request", xhr);
+                    }
+                });
+            });
         </script>
 
         {{-- SCRIPT WOC --}}
-        <script>
+        {{-- <script>
             $(document).ready(function () {
                 $.ajax({
                     url: "{{ route('WOC.Summary') }}", 
@@ -923,7 +958,30 @@
                     }
                 });
             });
+        </script> --}}
+        <script>
+            $(document).ready(function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const month = urlParams.get('month') || new Date().getMonth() + 1;
+                const year = urlParams.get('year') || new Date().getFullYear();
+
+                const apiUrl = "{{ route('WOC.Summary') }}" + `?month=${month}&year=${year}`;
+
+                $.ajax({
+                    url: apiUrl,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#woc-total').text(response.total ?? 0);
+                        $('#woc-done').text(response.doneWoc ?? 0);
+                        $('#woc-reject').text(response.rejectedWoc ?? 0); 
+                    },
+                    error: function (xhr) {
+                        console.error('Failed to load WOC Summary:', xhr.responseText);
+                    }
+                });
+            });
         </script>
+
 
         {{-- Tracking Case berdasarkan data --}}
         <script>
@@ -1002,6 +1060,7 @@
         <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 
+        {{-- Grafik/Chart --}}
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 fetch("{{ route('dashboard.case-wo-summary') }}")
@@ -1187,6 +1246,17 @@
 		</script>
 	@endif
 
+    @if(session('warning'))
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: '{{ session('warning') }}',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
+
+
 
 @endsection
-

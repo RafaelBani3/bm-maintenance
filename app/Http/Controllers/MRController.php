@@ -57,8 +57,8 @@ class MRController extends Controller
                 'p.PS_Name as department'
             )
             ->where(function ($query) use ($userId) {
-                $query->where('wo.CR_BY', $userId)
-                    ->orWhere('wo.WO_MR', $userId);
+                $query->where('wo.WO_MR', $userId);
+                    // ->orWhere('wo.WO_MR', $userId);
             })
             ->where('wo.WO_Status', 'SUBMIT')
             ->where('wo.WO_NeedMat', 'Y')
@@ -409,6 +409,7 @@ class MRController extends Controller
             DB::rollBack();
 
             Logs::create([
+                'Logs_No' => Logs::generateLogsNo(),
                 'LOG_Type'   => 'MR',
                 'LOG_RefNo'  => $mr->MR_No,
                 'LOG_Status' => 'FAILED',
