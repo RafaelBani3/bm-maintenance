@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->string('dept_no',30)->primary(); 
-            $table->string('dept_name');  
-            $table->string('dept_desc')->nullable(); 
-            $table->string('dept_code', 10)->unique();
-            $table->timestamps();
-        });
+        // Schema::create('departments', function (Blueprint $table) {
+        //     $table->string('dept_no',30)->primary(); 
+        //     $table->string('dept_name');  
+        //     $table->string('dept_desc')->nullable(); 
+        //     $table->string('dept_code', 10)->unique();
+        //     $table->timestamps();
+        // });
 
         Schema::create('Positions', function (Blueprint $table) {
             $table->id();
