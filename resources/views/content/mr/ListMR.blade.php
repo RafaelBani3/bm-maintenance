@@ -336,6 +336,8 @@
         const mrDetailRoute = "{{ route('MaterialRequest.Detail', ['encodedMRNo' => 'PLACEHOLDER']) }}";
         const mrEditRoute = "{{ route('EditMR', ['mr_no' => 'PLACEHOLDER']) }}";
         const canEditMR = @json(auth()->user()->can('view mr'));
+        const exportPDFRoute = "{{ route('ExportMRPDF', 'PLACEHOLDER') }}";
+
 
         // Global variables for date range
         let startDate = null;
@@ -463,15 +465,16 @@
 
                              // Tambahkan tombol Print PDF jika status DONE
                             if (row.MR_Status === "DONE") {
-                                // const exportPdfUrl = routeExportPDF.replace('case_no', encoded);
-                                buttons += `
-                                    <a href="" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
-                                        <i class="ki-duotone ki-printer fs-2 text-danger">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </a>`;
-                            }
+                            const exportPdfUrl = exportPDFRoute.replace('PLACEHOLDER', encoded);
+                            buttons += `
+                                <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                    <i class="ki-duotone ki-printer fs-2 text-danger">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </a>`;
+                        }
+
 
                             buttons += `
                                 <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 

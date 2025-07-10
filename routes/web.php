@@ -105,9 +105,11 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/Delete/{id}', [AuthController::class, 'DeleteTechnician'])->name('DeleteTechnician');
         });
 
-        // Print/Export PDF
+        // Print/Export Case PDF
         Route::get('/case/export-pdf/{case_no}', [PDFController::class, 'exportPDF'])->name('case.exportPDF');
 
+        // Print MR PDR
+        Route::get('/material-request/export-pdf/{encoded}', [PDFController::class, 'exportMRPDF'])->name('ExportMRPDF');
 
         
         // All can Access

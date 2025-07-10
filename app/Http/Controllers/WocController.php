@@ -155,6 +155,7 @@ class WocController extends Controller
             $wo->WOC_No = $wocNo;
             $wo->WO_IsComplete = 'Y';
             // $wo->WO_CompDate = Carbon::now();
+            $wo->WO_Status = "OPEN_COMPLETION";
             $wo->WO_Compdate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
             $wo->WO_Narative = $request->work_description;
             $wo->WO_CompBy = Auth::id(); 
@@ -172,6 +173,7 @@ class WocController extends Controller
                 'LOG_Desc' => 'CREATED WORK ORDER COMPLETION',
             ]);
 
+            // Image
             $uploadedPaths = [];
             if ($request->hasFile('photos')) {
                 $WocNo = str_replace(['/','\\'],'-', $wocNo);

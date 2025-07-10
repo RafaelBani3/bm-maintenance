@@ -223,7 +223,7 @@
                                 $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
-                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 240px; object-fit: cover;"><br>
+                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 300px; object-fit: cover;"><br>
                             </td>
                         @endforeach
 
@@ -325,7 +325,9 @@
                 <td class="ttd-subtitle">TTD</td>
                 <td class="ttd-subtitle"></td>
                 @for ($i = 1; $i <= $maxStep; $i++)
-                    <td class="ttd-subtitle"></td>
+                    <td class="ttd-subtitle">
+                        <img src="{{ public_path('assets/media/logoapv.png') }}" style="width: 100px; height: 100px; object-fit: cover;" alt="Logo">
+                    </td>
                 @endfor
             </tr>
         </table>
