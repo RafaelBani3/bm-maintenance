@@ -13,7 +13,8 @@ class Position extends Model
     protected $fillable = 
     [
         'PS_Name', 
-        'PS_Desc'
+        'PS_Desc',
+        'dept_no',
     ];
 
     public static function generatePositionNo()
@@ -28,6 +29,11 @@ class Position extends Model
         }
     
         return 'PS' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Departement::class, 'dept_no');
     }
 
 

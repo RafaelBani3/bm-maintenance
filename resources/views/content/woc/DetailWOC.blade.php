@@ -375,7 +375,7 @@
     <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.bundle.js') }}"></script>
 
     {{-- LOG Modal --}}
-    <div class="modal fade" tabindex="-1" id="kt_modal_scrollable_2">
+    <div class="modal fade" tabindex="-1" id="kt_modal_scrollable_2">   
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 

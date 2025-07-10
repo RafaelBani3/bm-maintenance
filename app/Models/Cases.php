@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Cases extends Model
@@ -58,10 +60,34 @@ class Cases extends Model
         'updated_at',
     ];
 
-    public function getIncrementCaseNo()
+    // public function getIncrementCaseNo()
+    // {
+    //     $currentMonth = date('n'); 
+    //     $currentYear = date('Y'); 
+
+    //     $monthRoman = [
+    //         1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
+    //         7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
+    //     ];
+    //     $romanMonth = $monthRoman[$currentMonth];
+
+            
+    //     $lastNumber = $this
+    //     ->whereYear('created_at', $currentYear)
+    //     ->whereMonth('created_at', $currentMonth)
+    //     ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(Case_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
+    //     ->first()
+    //     ->max_n;
+
+    //     $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+
+    //     return "$newNumber/BMGT/ENG-BAK/$romanMonth/$currentYear";
+    // }
+
+   public function getIncrementCaseNo()
     {
-        $currentMonth = date('n'); 
-        $currentYear = date('Y'); 
+        $currentMonth = date('n');
+        $currentYear = date('Y');
 
         $monthRoman = [
             1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
@@ -69,17 +95,24 @@ class Cases extends Model
         ];
         $romanMonth = $monthRoman[$currentMonth];
 
-            
+        $userId = Auth::id();
+        $positionId = User::find($userId)?->PS_ID;
+
+        $deptCode = optional(
+            Position::with('department')->find($positionId)
+        )->department->dept_code ?? 'XXX';
+
+        // Generate nomor urut
         $lastNumber = $this
-        ->whereYear('created_at', $currentYear)
-        ->whereMonth('created_at', $currentMonth)
-        ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(Case_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
-        ->first()
-        ->max_n;
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(Case_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
+            ->first()
+            ->max_n;
 
         $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
 
-        return "$newNumber/BMGT/ENG-BAK/$romanMonth/$currentYear";
+        return "$newNumber/BMGT/{$deptCode}-BAK/$romanMonth/$currentYear";
     }
 
     protected static function boot()

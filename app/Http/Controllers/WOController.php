@@ -147,29 +147,30 @@ class WOController extends Controller
     
         switch ($position) {
             case 'Spv Engineering':
-            case 'IT Leader':
             case 'Adm Engineering':
             case 'Security & Parking':
             case 'HSE Koordinator':
             case 'Finance':
-            case 'Housekeeping':
             case 'Fitout':
                 $users = User::where('Fullname', 'Istifar Adi Saputra')->get();
                 break;
-    
             case 'HR Admin':
                 $users = User::where('Fullname', 'Aisyah Nuraini')->get();
                 break;
-    
             case 'TR':
                 $users = User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia'])->get();
                 break;
-    
             case 'Storekeeper':
                 $users = User::where('Fullname', 'Rizqhan Fajar Pramudita')->get();
                 break;
             case 'Creator':
                 $users = User::where('Fullname', 'SUPER ADMIN CREATOR')->get();
+                break;
+            case 'IT Leader':
+                $users = User::where('Fullname', 'Naswan Nusih')->get();
+                break;
+            case 'Housekeeping':
+                $users = User::where('Fullname', ['M Dina', 'Eni Novianti'])->get();
                 break;
     
             default:
@@ -315,7 +316,7 @@ class WOController extends Controller
         Log::info('Fetching intended users for position: ' . $position . ' by user: ' . $user->Fullname);
     
         $users = match ($position) {
-            'Spv Engineering', 'IT Leader', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator' =>
+            'Spv Engineering', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator' =>
                 User::where('Fullname', 'Istifar Adi Saputra')->get(),
     
             'HR Admin' =>
@@ -329,7 +330,12 @@ class WOController extends Controller
             
             'Creator' => 
                 User::where('Fullname', 'SUPER ADMIN CREATOR')->get(),
+  
+            'IT Leader' =>
+                  User::where('Fullname', 'Naswan Nusih')->get(),
 
+            'Housekeeping' =>
+                User::where('Fullname', ['M Dina', 'Eni Novianti'])->get(),
     
             default => collect()
         };

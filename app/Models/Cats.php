@@ -22,11 +22,7 @@ class Cats extends Model
 
     public static function getIncrementCatNo()
     {
-        // $lastNumber = $this
-        // ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(Cat_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
-        // ->first()   
-        // ->max_n;
-
+  
         $lastNumber = self::select(DB::raw("
             IFNULL(MAX(CAST(TRIM(LEADING '0' FROM Cat_No) AS UNSIGNED)), 0) AS max_n
         "))->first()->max_n;

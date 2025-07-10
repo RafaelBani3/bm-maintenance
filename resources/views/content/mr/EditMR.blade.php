@@ -187,6 +187,30 @@
                                                     </div>
                                                     <!--end::Input Wo Date-->
 
+                                                    <!--begin::Input checkbox Urgent MR-->
+                                                    <div class="fv-row row mb-10">
+                                                        <!--begin::Label-->
+                                                        <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                                            <span class="required">Urgent Request ?</span>
+                                                            <span class="ms-1" data-bs-toggle="tooltip" title="Check this if the material request needs to be fulfilled urgently.">
+                                                                <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                    <span class="path3"></span>
+                                                                </i>
+                                                            </span>
+                                                        </label>
+                                                        <!--end::Label-->
+                                                        <div class="col-lg-8 fv-row">
+                                                            <input class="form-check-input me-3" name="is_urgent" type="checkbox" value="yes" id="is_urgent_checkbox" 
+                                                            {{ $matReq->MR_IsUrgent == 'Y' ? 'checked' : '' }}/>
+                                                            <label class="form-check-label" for="is_urgent_checkbox">
+                                                                <div class="fw-semibold text-gray-800">Yes, this is an urgent request</div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <!--end::Input checkbox Urgent MR-->
+
                                                     <!--begin:: Designation-->
                                                     <div class="row mb-10">
                                                         <!--begin::Label-->

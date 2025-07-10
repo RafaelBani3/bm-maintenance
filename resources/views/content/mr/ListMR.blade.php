@@ -386,22 +386,22 @@
                 columns: [
                     {
                         data: "MR_No",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
                     },
                     {
                         data: "WO_No",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
                     },
                     {
                         data: "Case_No",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: data => `<span class="text-primary fw-bold">${data ?? 'N/A'}</span>`
                     },
                     {
                         data: "MR_Date",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: data => {
                             if (!data) return 'N/A';
                             try {
@@ -413,7 +413,7 @@
                     },
                     {
                         data: "MR_Status",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: function (status) {
                             let badgeClass = "badge-light-secondary text-gray-800";
                             switch (status) {
@@ -431,14 +431,14 @@
                     },
                     {
                         data: "MR_IsUrgent",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: val => val === 'Y'
-                            ? '<span class="badge bg-light-danger text-denger fs-7">Yes</span>'
+                            ? '<span class="badge bg-light-danger text-danger fs-7">Urgent</span>'
                             : '<span class="badge bg-secondary fs-7">No</span>'
                     },
                     {
                         data: "CreatedBy",
-                        className: "text-center align-middle",
+                        className: "text-start",
                         render: data => data ?? '-'
                     },
                     {
@@ -460,6 +460,19 @@
                                         </i>
                                     </a>`;
                             }
+
+                             // Tambahkan tombol Print PDF jika status DONE
+                            if (row.MR_Status === "DONE") {
+                                // const exportPdfUrl = routeExportPDF.replace('case_no', encoded);
+                                buttons += `
+                                    <a href="" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                        <i class="ki-duotone ki-printer fs-2 text-danger">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </a>`;
+                            }
+
                             buttons += `
                                 <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
                                 style="width: 40px; height: 40px;" title="View Case">

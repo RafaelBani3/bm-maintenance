@@ -241,41 +241,6 @@
         {{-- <table class="ttd">
             <tr>
                 <td>-</td>
-                <td colspan="1" class="ttd-title">Dibuat oleh :</td>
-                <td colspan="3" class="ttd-title">Diperiksa / disetujui oleh :</td>
-            </tr>
-            <tr>
-                <td class="ttd-subtitle">Departement</td>
-                <td class="ttd-title">{{ $case->creator->position->PS_Name ?? '-' }}</td>
-                <td class="ttd-title">{{ $case->approver1->position->PS_Name ?? '-' }}</td>
-                <td class="ttd-title">{{ $case->approver2->position->PS_Name ?? '-' }}</td>
-                <td class="ttd-title">{{ $case->approver3->position->PS_Name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><b>Nama:</b></td>
-                <td>{{ $case->creator->Fullname }}</td>
-                <td>{{ $case->approver1->Fullname ?? '-' }}</td>
-                <td>{{ $case->approver2->Fullname ?? '-' }}</td>
-                <td>{{ $case->approver3->Fullname ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><b>Tanggal:</b></td>
-                <td>{{ \Carbon\Carbon::parse($case->CR_DT)->format('d-m-Y') }}</td>
-                <td>{{ $case->Case_AP1 ? \Carbon\Carbon::parse($case->Update_Date)->format('d-m-Y') : '-' }}</td>
-                <td>{{ $case->Case_AP2 ? \Carbon\Carbon::parse($case->Update_Date)->format('d-m-Y') : '-' }}</td>
-                <td>{{ $case->Case_AP3 ? \Carbon\Carbon::parse($case->Update_Date)->format('d-m-Y') : '-' }}</td>
-            </tr>
-            <tr>
-                <td class="ttd-subtitle">TTD</td>
-                <td class="ttd-subtitle">TTD</td>
-                <td class="ttd-subtitle">TTD</td>
-                <td class="ttd-subtitle">TTD</td>
-                <td class="ttd-subtitle">TTD</td>
-            </tr>
-        </table> --}}
-        <table class="ttd">
-            <tr>
-                <td>-</td>
                 <td class="ttd-title" colspan="1">Dibuat oleh</td>
                 <td class="ttd-title" colspan="3">Diperiksa / Disetujui oleh</td>
             </tr>
@@ -307,7 +272,64 @@
                 <td class="ttd-subtitle"></td>
                 <td class="ttd-subtitle"></td>
             </tr>
+        </table> --}}
+        @php
+            $maxStep = $case->Case_ApMaxStep ?? 0;
+        @endphp
+
+        <table class="ttd">
+            {{-- HEADER --}}
+            <tr>
+                <td>-</td>
+                <td class="ttd-title">Dibuat oleh</td>
+                @for ($i = 1; $i <= $maxStep; $i++)
+                    <td class="ttd-title">Disetujui oleh {{ $i }}</td>
+                @endfor
+            </tr>
+
+            {{-- DEPARTEMEN --}}
+            <tr>
+                <td class="ttd-title">Departemen</td>
+                <td class="ttd-subtitle">{{ $case->creator->position->PS_Name ?? '-' }}</td>
+                @for ($i = 1; $i <= $maxStep; $i++)
+                    <td class="ttd-subtitle">
+                        {{ optional($case->{'approver'.$i}->position ?? null)->PS_Name ?? '-' }}
+                    </td>
+                @endfor
+            </tr>
+
+            {{-- NAMA --}}
+            <tr>
+                <td><b>Nama</b></td>
+                <td>{{ $case->creator->Fullname }}</td>
+                @for ($i = 1; $i <= $maxStep; $i++)
+                    <td>{{ $case->{'approver'.$i}->Fullname ?? '-' }}</td>
+                @endfor
+            </tr>
+
+            {{-- TANGGAL --}}
+            <tr>
+                <td><b>Tanggal</b></td>
+                <td>{{ \Carbon\Carbon::parse($case->CR_DT)->format('d-m-Y') }}</td>
+                @for ($i = 1; $i <= $maxStep; $i++)
+                    @php
+                        $approvalField = 'Case_AP' . $i;
+                        $date = ($case->$approvalField ?? false) ? \Carbon\Carbon::parse($case->Update_Date)->format('d-m-Y') : '-';
+                    @endphp
+                    <td>{{ $date }}</td>
+                @endfor
+            </tr>
+
+            {{-- TANDA TANGAN --}}
+            <tr class="ttd-sign-space">
+                <td class="ttd-subtitle">TTD</td>
+                <td class="ttd-subtitle"></td>
+                @for ($i = 1; $i <= $maxStep; $i++)
+                    <td class="ttd-subtitle"></td>
+                @endfor
+            </tr>
         </table>
+
 
         <footer>
             <div class="footer-content">
@@ -325,4 +347,3 @@
     </main> 
 </body>
 </html>
-

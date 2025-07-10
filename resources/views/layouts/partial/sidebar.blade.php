@@ -264,6 +264,7 @@
                         </div>
                     @endif
 
+                    {{-- ADD DATA --}}
                     @if(auth()->user()->hasAnyRole(['SuperAdminCreator','SuperAdminApprover']))
                         <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('CreateNewUser' ) ? 'show' : '' }}">
                             <span class="menu-link">
@@ -274,7 +275,7 @@
                                     <span class="path3"></span>
                                     </i>                                
                                 </span>
-                                <span class="menu-title">User's</span>
+                                <span class="menu-title">Admin Panel</span>
                                 <span class="menu-arrow"></span>
                             </span>
                         
@@ -284,7 +285,7 @@
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">Create New User</span>
+                                        <span class="menu-title">User List</span>
                                     </a>
                                 </div>
                             </div>
@@ -295,7 +296,7 @@
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">Create New Matrix</span>
+                                        <span class="menu-title">Matrix List</span>
                                     </a>
                                 </div>
                             </div>
@@ -306,7 +307,7 @@
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">Create New Position</span>
+                                        <span class="menu-title">Position List</span>
                                     </a>
                                 </div>
                             </div>
@@ -317,7 +318,7 @@
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span> 
-                                        <span class="menu-title">Create New Category</span>
+                                        <span class="menu-title">Category & Subcategory</span>
                                     </a>
                                 </div>
                             </div>
@@ -328,7 +329,7 @@
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span> 
-                                        <span class="menu-title">Create New Technician</span>
+                                        <span class="menu-title">Technician List</span>
                                     </a>
                                 </div>
                             </div>

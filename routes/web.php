@@ -70,6 +70,14 @@ use Illuminate\Support\Facades\Route;
             Route::delete('/Delete/{id}', [AuthController::class, 'DeletePosition'])->name('DeletePosition');
         });
 
+        // CRUD Department
+        Route::prefix('Department')->group(function () {
+            Route::post('/Save', [AuthController::class, 'SaveDepartment'])->name('SaveDepartment');
+            Route::put('/Update/{dept_no}', [AuthController::class, 'UpdateDepartment'])->name('UpdateDepartment');
+            Route::delete('/Delete/{dept_no}', [AuthController::class, 'DestroyDepartment'])->name('DestroyDepartment');
+        });
+
+
         // CRUD CATEGORY    ,
         Route::prefix('Category')->group(function () {
             Route::get('/', [AuthController::class, 'CategoryPage'])->name('CategoryPage');

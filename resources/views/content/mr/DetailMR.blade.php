@@ -6,24 +6,24 @@
 @section('content')
 
     <style>
-          #material-table th {
-        background-color: #f5f8fa;
-        color: #3f4254;
-        text-align: center;
-        vertical-align: middle;
-    }
+        material-table th {
+            background-color: #f5f8fa;
+            color: #3f4254;
+            text-align: center;
+            vertical-align: middle;
+        }
 
-    #material-table td {
-        vertical-align: middle;
-    }
+        #material-table td {
+            vertical-align: middle;
+        }
 
-    #material-table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
+        #material-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-    #material-table tr:hover {
-        background-color: #eef1f6;
-    }
+        #material-table tr:hover {
+            background-color: #eef1f6;
+        }
     </style>
 
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -200,6 +200,25 @@
                                 <!--end::Col-->
                             </div>
                             <!--end::Row Status-->
+
+                            <!--begin::Row urgent-->
+                            <div class="row mb-7 pb-4">
+                                <!--begin::Label-->
+                                <label class="col-lg-2 fw-semibold text-muted fs-5">Urgent Process?</label>
+                                <!--end::Label-->
+                                
+                                <!--begin::Col-->
+                                <div class="col-lg-10">
+                                    @if ($materialRequest->MR_IsUrgent === 'Y')
+                                        <span class="badge badge-danger fw-bold fs-6">Urgent</span>
+                                    @else
+                                        <span class="fw-normal fs-6 text-dark">Not Urgent</span>
+                                    @endif
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Row urgent-->
+
 
                             <!--begin::Row MR Allotment-->
                             <div class="row mb-7 pb-4">

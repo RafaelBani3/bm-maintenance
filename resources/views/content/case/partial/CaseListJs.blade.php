@@ -12,7 +12,6 @@
             return url.searchParams.get(name);
         }
 
-        // Simpan parameter awal dari URL
         let defaultStatus = getUrlParam('status');
         let defaultSearch = getUrlParam('search');
         let defaultStart = getUrlParam('start');
@@ -21,26 +20,22 @@
         let startDate = defaultStart || null;
         let endDate = defaultEnd || null;
 
-        // Daftar status yang valid
         const validStatuses = [
             'OPEN', 'SUBMIT', 'AP1', 'AP2', 'AP3', 'AP4', 'AP5',
             'CLOSE', 'REJECT', 'INPROGRESS', 'DONE'
         ];
 
         $(document).ready(function () {
-            // Inisialisasi Select2
             $('#statusFilter').select2({
                 placeholder: "Pilih Status",
                 allowClear: true,
                 width: 'resolve'
             });
 
-            // Set statusFilter dari URL jika valid
             if (defaultStatus && validStatuses.includes(defaultStatus)) {
                 $('#statusFilter').val(defaultStatus).trigger('change');
             }
 
-            // Inisialisasi Daterangepicker
             $('#dateFilter').daterangepicker({
                 autoUpdateInput: false,
                 locale: {

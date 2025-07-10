@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Cats;
+use App\Models\Departement;
 use App\Models\Matrix;
 use App\Models\Position;
 use App\Models\Subcats;
@@ -317,43 +318,111 @@ class AuthController extends Controller
     public function PositionPage()
     {
         $positions = Position::latest()->get();
-        return view('content.auth.position.createposition', compact('positions'));
+        $departments = Departement::all();
+        return view('content.auth.position.createposition', compact('positions','departments'));
     }
+
+    // public function SavePosition(Request $request)
+    // {
+    //     $request->validate([
+    //         'PS_Name' => 'required|string|max:255',
+    //         'PS_Desc' => 'nullable|string|max:500',
+    //     ]);
+
+    //     Position::create($request->only('PS_Name', 'PS_Desc'));
+
+    //     return back()->with('success', 'Position created successfully.');
+    // }
 
     public function SavePosition(Request $request)
     {
         $request->validate([
             'PS_Name' => 'required|string|max:255',
             'PS_Desc' => 'nullable|string|max:500',
+            'dept_no'  => 'required|exists:departments,dept_no',
         ]);
 
-        Position::create($request->only('PS_Name', 'PS_Desc'));
+        Position::create([
+            'PS_Name' => $request->PS_Name,
+            'PS_Desc' => $request->PS_Desc,
+            'dept_no' => $request->dept_no,
+        ]);
 
         return back()->with('success', 'Position created successfully.');
     }
+
 
     public function EditPosition($id)
     {
         return Position::findOrFail($id);
     }
 
+    // public function UpdatePosition(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'PS_Name' => 'required|string|max:255',
+    //         'PS_Desc' => 'nullable|string|max:500',
+    //     ]);
+
+    //     $position = Position::findOrFail($id);
+    //     $position->update($request->only('PS_Name', 'PS_Desc'));
+
+    //     return back()->with('success', 'Position updated successfully.');
+    // }
+
     public function UpdatePosition(Request $request, $id)
     {
         $request->validate([
             'PS_Name' => 'required|string|max:255',
             'PS_Desc' => 'nullable|string|max:500',
+            'dept_no' => 'required|exists:departments,dept_no',
         ]);
 
         $position = Position::findOrFail($id);
-        $position->update($request->only('PS_Name', 'PS_Desc'));
+        $position->update([
+            'PS_Name' => $request->PS_Name,
+            'PS_Desc' => $request->PS_Desc,
+            'dept_no' => $request->dept_no,
+        ]);
 
         return back()->with('success', 'Position updated successfully.');
     }
+
 
     public function DeletePosition($id)
     {
         Position::findOrFail($id)->delete();
         return back()->with('success', 'Position deleted successfully.');
+    }
+
+// DEPARTMENT
+    public function SaveDepartment(Request $request)
+    {
+        $request->validate([
+            'dept_name' => 'required',
+            'dept_code' => 'required|unique:departments',
+        ]);
+
+        Departement::create($request->all());
+        return back()->with('success', 'Department created successfully.');
+    }
+
+    public function UpdateDepartment(Request $request, $dept_no)
+    {
+        $department = Departement::findOrFail($dept_no);
+        $request->validate([
+            'dept_name' => 'required',
+            'dept_code' => 'required|unique:departments,dept_code,' . $dept_no . ',dept_no',
+        ]);
+
+        $department->update($request->all());
+        return back()->with('success', 'Department updated successfully.');
+    }
+
+    public function DestroyDepartment($dept_no)
+    {
+        Departement::destroy($dept_no);
+        return back()->with('success', 'Department deleted successfully.');
     }
 
 

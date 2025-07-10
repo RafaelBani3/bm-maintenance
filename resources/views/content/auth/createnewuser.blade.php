@@ -39,8 +39,6 @@
                                 </select>
                             </div>
 
-                            
-
                             <!-- Apply Button -->
                             <div class="col-lg-2">
                                 <label class="form-label fw-bold text-white">.</label>

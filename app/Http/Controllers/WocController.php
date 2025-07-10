@@ -864,7 +864,7 @@ class WocController extends Controller
             ->orderBy('LOG_Date', 'desc')
             ->get();  
             
-            // Ambil waktu terakhir REVISION atau SUBMITTED
+        // Ambil waktu terakhir REVISION atau SUBMITTED
         $lastCycleLog = DB::table('Logs')
             ->where('LOG_Type', 'WO')
             ->where('LOG_RefNo', $wocNo)
@@ -943,7 +943,7 @@ class WocController extends Controller
                     Logs::create([
                         'Logs_No'    => Logs::generateLogsNo(),
                         'LOG_Type'   => 'WO',
-                        'LOG_RefNo'  => $wo->WO_No,
+                        'LOG_RefNo'  => $wo->WOC_No,
                         'LOG_Status' => 'APPROVED 2',
                         'LOG_User'   => $user->id,
                         'LOG_Date'   => Carbon::now(),

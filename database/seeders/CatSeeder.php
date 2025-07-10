@@ -24,10 +24,18 @@ class CatSeeder extends Seeder
 
         $catIds = []; 
 
+        // foreach ($categories as $category) {
+        //     $cat = Cats::create(['Cat_Name' => $category]);
+        //     $catIds[$category] = $cat->Cat_No; 
+        // }
         foreach ($categories as $category) {
-            $cat = Cats::create(['Cat_Name' => $category]);
-            $catIds[$category] = $cat->Cat_No; 
+            $cat = Cats::create([
+                'Cat_No' => Cats::getIncrementCatNo(), // ✅ Pastikan ini juga dipakai
+                'Cat_Name' => $category
+            ]);
+            $catIds[$category] = $cat->Cat_No;
         }
+
 
         $subcategories = [
             ['Cat_Name' => 'New Installation', 'Scat_Name' => 'Mechanical', 'Scat_Desc' => 'Repair and diagnostics for computers'],
@@ -42,6 +50,7 @@ class CatSeeder extends Seeder
 
         foreach ($subcategories as $sub) {
             Subcats::create([
+                'Scat_No' => Subcats::getIncrementScatNoGlobal(), 
                 'Cat_No' => $catIds[$sub['Cat_Name']], 
                 'Scat_Name' => $sub['Scat_Name'],
                 'Scat_Desc' => $sub['Scat_Desc'],

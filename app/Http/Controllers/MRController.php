@@ -113,12 +113,12 @@ class MRController extends Controller
             $matReq = MatReq::create([
                 'MR_No' => $newMRNo,
                 'WO_No' => $request->reference_number,
+                'MR_IsUrgent' => $request->has('is_urgent') ? 'Y' : 'N',
                 'Case_No' => $request->case_no,
                 'MR_Date' => $MrDate,
                 'MR_Allotment' => $request->Designation,
                 'CR_BY' => Auth::id(),
                 'CR_DT' => now(),
-                'MR_IsUrgent' => 'N',
                 'MR_Status' => 'Open',
                 'MR_IsReject' => 'N',
                 'MR_APStep' => 0,
@@ -252,6 +252,7 @@ class MRController extends Controller
             
             $mr->MR_Date = $MrDate;
             $mr->MR_Allotment = $request->Designation;
+            $mr->MR_IsUrgent = $request->has('is_urgent') ? 'Y' : 'N';
             $mr->Update_Date = now();
             $mr->MR_Status = 'OPEN';
             $mr->save();
