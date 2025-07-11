@@ -5,6 +5,7 @@
         const routeCaseDetail = "{{ route('case.detail', ['case_no' => 'case_no']) }}";
         const canEditCase = @json(auth()->user()->can('view cr'));
         const routeExportPDF = "{{ route('case.exportPDF', 'case_no') }}";
+        const routeDeleteCase = "{{ route('DeleteCase', 'case_no') }}";
 
         // Ambil parameter dari URL
         function getUrlParam(name) {
@@ -109,7 +110,7 @@
                             const encoded = btoa(data);
                             const editUrl = routeEditCase.replace('case_no', encoded);
                             const detailUrl = routeCaseDetail.replace('case_no', encoded);
-
+                            const deleteUrl = routeDeleteCase.replace('case_no', encoded);
                             let buttons = '<div class="d-flex gap-2">';
                             if ((row.Case_Status === "OPEN" || row.Case_Status === "REJECT") && canEditCase) {
                                 buttons += `
@@ -125,15 +126,27 @@
                             if (row.Case_Status === "DONE") {
                                 const exportPdfUrl = routeExportPDF.replace('case_no', encoded);
                                 buttons += `
-                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
-                                        <i class="ki-duotone ki-printer fs-2 text-danger">
+                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-info d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                        <i class="ki-duotone ki-printer fs-2 text-info">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
                                     </a>`;
                             }
 
+                            // tombol Delete Case
+                            buttons += `
+                                <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kasus ini?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Delete Case">
+                                        <i class="ki-duotone ki-trash fs-2 text-danger">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </button>
+                                </form>`;
 
+                            // tombol View Case
                             buttons += `
                                 <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" title="View Case">
                                     <i class="ki-duotone ki-eye fs-2">
@@ -142,11 +155,14 @@
                                     <span class="path3"></span>
                                     </i>
                                 </a>`;
+                                
 
                             buttons += '</div>';
+                            
                             return buttons;
                         }
                     }
+                   
                 ],
                 order: [[1, "desc"]],
                 

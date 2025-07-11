@@ -160,6 +160,9 @@ use Illuminate\Support\Facades\Route;
             
             // EXPORT
                 Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
+        
+            // Delete Case
+            Route::get('/Case/Delete/{case_no}', [CaseController::class, 'deleteCase'])->name('DeleteCase');
         // END LIST CASE
 
         // Page List MR

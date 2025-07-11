@@ -548,6 +548,25 @@ class AuthController extends Controller
         return view('content.auth.teknisi.createteknisi', compact('technicians','positions'));
     }
 
+    // public function SaveTechnician(Request $request)
+    // {
+    //     $request->validate([
+    //         'Technician_Name' => 'required|string|max:255',
+    //         'Position_ID' => 'required|exists:Positions,id',
+    //     ]);
+
+    //     $technician = new Technician();
+    //     $technician_id = $technician->getIncrementTechnicianNo();
+
+    //     Technician::create([
+    //         'technician_id' => $technician_id,
+    //         'technician_Name' => $request->Technician_Name,
+    //         'PS_ID' => $request->Position_ID,
+    //     ]);
+
+    //     return back()->with('success', 'Technician created successfully.');
+    // }
+
     public function SaveTechnician(Request $request)
     {
         $request->validate([
@@ -555,8 +574,7 @@ class AuthController extends Controller
             'Position_ID' => 'required|exists:Positions,id',
         ]);
 
-       $technician = new Technician();
-        $technician_id = $technician->getIncrementTechnicianNo();
+        $technician_id = Technician::getIncrementTechnicianNo();
 
         Technician::create([
             'technician_id' => $technician_id,
@@ -566,6 +584,7 @@ class AuthController extends Controller
 
         return back()->with('success', 'Technician created successfully.');
     }
+
 
     public function UpdateTechnician(Request $request, $id)
     {
