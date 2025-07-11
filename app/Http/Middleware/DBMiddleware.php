@@ -13,12 +13,12 @@ class DBMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
-    {
-        $db = $request->db ?? session('db');
-        if($db) {
-            config(['database.connections.mysql.database'=>$db]);
-        }
-        return $next($request);
-    }
+    // public function handle(Request $request, Closure $next): Response
+    // {
+    //     $db = $request->db ?? session('db');
+    //     if($db) {
+    //         config(['database.connections.mysql.database'=>$db]);
+    //     }
+    //     return $next($request);
+    // }
 }

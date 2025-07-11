@@ -547,13 +547,16 @@ class CaseController extends Controller
         $caseNo = base64_decode($encoded_case_no);
         $case = Cases::where('Case_No', $caseNo)->firstOrFail();
         $userName = Auth::user()->Fullname;
+        $user = Auth::user();
+        $userName = $user->Fullname;
 
-        // $allowedRoles = ['SUPERADMINCREATOR', 'SUPERADMINAPPROVER'];
+        // Ambil nama position user
+        $userPosition = $user->position->PS_Name; 
 
-        // if (!in_array(Auth::user()->role, $allowedRoles)) {
-        //     return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus case ini.');
-        // }
-
+        // Validasi: hanya CREATOR dan APPROVER yang boleh
+        if (!in_array(strtoupper($userPosition), ['CREATOR', 'APPROVER'])) {
+            return redirect()->back()->with('error', 'YOU NOT HAVE ANY PERMISSION!.');
+        }
         // Logs
         DB::table('Logs')->insert([
             'Logs_No' => Logs::generateLogsNo(),

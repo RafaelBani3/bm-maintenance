@@ -275,7 +275,7 @@ use Illuminate\Support\Facades\Route;
 
             // Route Update WO 
             Route::post('/Work-Order/Update', [WOController::class, 'UpdateWO'])->name('WorkOrder.Update');
-
+            
             // List WO Table
             Route::get('/work-orders', [WOController::class, 'getWorkOrders'])->name('GetWODataTable');
 
@@ -294,6 +294,9 @@ use Illuminate\Support\Facades\Route;
             
             // EXPORT WO
             Route::get('/wo/export', [ExportController::class, 'exportWO'])->name('wo.export');
+
+            // Delete WO
+            Route::post('/work-order/delete/{wo_no}', [WOController::class, 'DeleteWO'])->name('DeleteWO');
 
         });
 

@@ -12,14 +12,14 @@ return new class extends Migration
 
     public function up()
     {
-        Schema::table('Positions', function (Blueprint $table) {
-            $table->string('dept_no', 30)->after('PS_Desc')->nullable();
+        // Schema::table('Positions', function (Blueprint $table) {
+        //     $table->string('dept_no', 30)->after('PS_Desc')->nullable();
 
-            $table->foreign('dept_no')
-                ->references('dept_no')
-                ->on('departments')
-                ->onDelete('set null');
-        });
+        //     $table->foreign('dept_no')
+        //         ->references('dept_no')
+        //         ->on('departments')
+        //         ->onDelete('set null');
+        // });
     }
 
 

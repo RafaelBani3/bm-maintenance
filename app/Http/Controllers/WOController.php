@@ -638,6 +638,22 @@ class WOController extends Controller
     }
 
 
+    public function DeleteWO($encoded_wo_no)
+    {
+        $woNo = base64_decode($encoded_wo_no);
+        $userPosition = strtoupper(Auth::user()->position->PS_Name ?? '');
+
+        if (!in_array($userPosition, ['CREATOR', 'APPROVER'])) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin menghapus Work Order ini.');
+        }
+
+        $wo = WorkOrder::where('WO_No', $woNo)->firstOrFail();
+        $wo->delete();
+
+        return redirect()->back()->with('success', 'Work Order berhasil dihapus.');
+    }
+
+
 
 
     // Get WO NO    

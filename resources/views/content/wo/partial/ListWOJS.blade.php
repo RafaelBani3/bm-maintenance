@@ -7,7 +7,9 @@
         // Declare Route untuk Ke page Edit dan Detail WO
         const editWORoute = "{{ route('EditWO', ['wo_no' => 'PLACEHOLDER']) }}";
         const detailWORoute = "{{ route('WorkOrderDetail', ['wo_no' => 'PLACEHOLDER']) }}";
-        
+        const userPosition = "{{ strtoupper(Auth::user()->position->PS_Name ?? '') }}";
+
+
         $(document).ready(function () {
             const baseUrl = "{{ url('/') }}"; 
 
@@ -157,18 +159,25 @@
                                     `;
                                 }
 
-                                if (row.PS_Name === "Creator" || row.PS_Name === "Approver") {
+                                // Tombol Delete (hanya jika position = CREATOR atau APPROVER)
+                                if (userPosition === 'CREATOR' || userPosition === 'APPROVER') {
+                                    const deleteUrl = `{{ route('DeleteWO', ['wo_no' => 'WOPLACEHOLDER']) }}`.replace('WOPLACEHOLDER', encodedWONo);
                                     buttons += `
-                                        <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kasus ini?');">
-                                            <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
-                                            <button type="submit" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Delete Case">
-                                                <i class="ki-duotone ki-trash fs-2 text-danger">
+                                        <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Yakin ingin menghapus Work Order ini?')" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <button type="submit" 
+                                                class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" 
+                                                style="width: 40px; height: 40px;" 
+                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Work Order">
+                                                <i class="ki-duotone ki-trash fs-3 text-danger">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
                                             </button>
-                                        </form>`;
+                                        </form>
+                                    `;
                                 }
+
 
                                 // Tombol View (selalu muncul)
                                 buttons += `
@@ -183,6 +192,8 @@
                                         </i>
                                     </a>
                                 </div>`;
+
+                  
 
                                 return buttons;
                             } catch (err) {

@@ -111,12 +111,12 @@
 									</div>
 
 									<!-- Select Database -->
-									<div class="fv-row mb-3">
+									{{-- <div class="fv-row mb-3">
 										<select name="db" id="db">
 											<option value="bm_maintenance">LIVE</option>
 											<option value="dev_bm_maintenance">TRAINING</option>
 										</select>
-									</div>
+									</div> --}}
 									
 									<!--begin::Submit button-->
 									<div class="d-grid mb-10">

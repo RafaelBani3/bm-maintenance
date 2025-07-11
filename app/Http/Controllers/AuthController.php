@@ -40,7 +40,7 @@ class AuthController extends Controller
         $request->validate([
             'Username' => 'required',
             'Password' => 'required|min:5',
-            'db' => 'required',
+            // 'db' => 'required',
         ]);
 
         $user = User::where('Username', $request->Username)->first();
@@ -55,7 +55,7 @@ class AuthController extends Controller
         if ($user && Hash::check($request->Password, $user->Password)) {
             $request->session()->regenerate();
             
-            session()->put('db', $request->db);
+            // session()->put('db', $request->db);
             
             Auth::guard('web')->login($user);   
             
