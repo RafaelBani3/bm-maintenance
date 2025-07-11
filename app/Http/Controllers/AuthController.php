@@ -508,11 +508,6 @@ class AuthController extends Controller
 
         return redirect()->route('CategoryPage')->with('success', 'Sub-category created successfully.');
     }
-
-
- 
-
-
     public function SubUpdateCategory(Request $request, $id)
     {
         $request->validate([
@@ -557,7 +552,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'Technician_Name' => 'required|string|max:255',
-            'Position_ID' => 'required|exists:positions,id',
+            'Position_ID' => 'required|exists:Positions,id',
         ]);
 
        $technician = new Technician();
