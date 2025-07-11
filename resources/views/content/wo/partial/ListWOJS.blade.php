@@ -7,6 +7,7 @@
         // Declare Route untuk Ke page Edit dan Detail WO
         const editWORoute = "{{ route('EditWO', ['wo_no' => 'PLACEHOLDER']) }}";
         const detailWORoute = "{{ route('WorkOrderDetail', ['wo_no' => 'PLACEHOLDER']) }}";
+        
         $(document).ready(function () {
             const baseUrl = "{{ url('/') }}"; 
 
@@ -154,6 +155,19 @@
                                             </i>
                                         </a>
                                     `;
+                                }
+
+                                if (row.PS_Name === "Creator" || row.PS_Name === "Approver") {
+                                    buttons += `
+                                        <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kasus ini?');">
+                                            <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
+                                            <button type="submit" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Delete Case">
+                                                <i class="ki-duotone ki-trash fs-2 text-danger">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </form>`;
                                 }
 
                                 // Tombol View (selalu muncul)

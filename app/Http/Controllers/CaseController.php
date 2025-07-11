@@ -541,6 +541,35 @@ class CaseController extends Controller
         }
     }
 
+    // Delete Case
+    public function DeleteCase($encoded_case_no)
+    {
+        $caseNo = base64_decode($encoded_case_no);
+        $case = Cases::where('Case_No', $caseNo)->firstOrFail();
+        $userName = Auth::user()->Fullname;
+
+        // $allowedRoles = ['SUPERADMINCREATOR', 'SUPERADMINAPPROVER'];
+
+        // if (!in_array(Auth::user()->role, $allowedRoles)) {
+        //     return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus case ini.');
+        // }
+
+        // Logs
+        DB::table('Logs')->insert([
+            'Logs_No' => Logs::generateLogsNo(),
+            'LOG_Type' => 'BA',
+            'LOG_RefNo' => $case->Case_No,
+            'LOG_Status' => 'DELETED CASE',
+            'LOG_User' => Auth::id(),
+            'LOG_Date' => now(),
+            'LOG_Desc' => $userName .' DELETE A CASE', 
+        ]);
+
+        $case->delete();
+        return redirect()->route('ViewCase')->with('success', 'Case berhasil dihapus.');
+    }
+
+
 
 // PAGE LIST CASE
     // Untuk Liat Page View Case

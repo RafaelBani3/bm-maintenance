@@ -5,7 +5,10 @@
         const routeCaseDetail = "{{ route('case.detail', ['case_no' => 'case_no']) }}";
         const canEditCase = @json(auth()->user()->can('view cr'));
         const routeExportPDF = "{{ route('case.exportPDF', 'case_no') }}";
-        const routeDeleteCase = "{{ route('DeleteCase', 'case_no') }}";
+        const routeDeleteCase = "{{ route('DeleteCase', ['encoded_case_no' => 'case_no']) }}";
+        const userPosition = @json(auth()->user()->position); 
+
+
 
         // Ambil parameter dari URL
         function getUrlParam(name) {
@@ -111,6 +114,7 @@
                             const editUrl = routeEditCase.replace('case_no', encoded);
                             const detailUrl = routeCaseDetail.replace('case_no', encoded);
                             const deleteUrl = routeDeleteCase.replace('case_no', encoded);
+                            
                             let buttons = '<div class="d-flex gap-2">';
                             if ((row.Case_Status === "OPEN" || row.Case_Status === "REJECT") && canEditCase) {
                                 buttons += `
@@ -135,16 +139,20 @@
                             }
 
                             // tombol Delete Case
-                            buttons += `
-                                <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kasus ini?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Delete Case">
-                                        <i class="ki-duotone ki-trash fs-2 text-danger">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </button>
-                                </form>`;
+                            console.log("User Position:", userPosition);
+
+                            if (row.PS_Name === "Creator" || row.PS_Name === "Approver") {
+                                buttons += `
+                                    <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kasus ini?');">
+                                        <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
+                                        <button type="submit" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Delete Case">
+                                            <i class="ki-duotone ki-trash fs-2 text-danger">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                    </form>`;
+                            }
 
                             // tombol View Case
                             buttons += `

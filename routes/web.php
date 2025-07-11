@@ -162,8 +162,10 @@ use Illuminate\Support\Facades\Route;
                 Route::get('/export-cases', [ExportController::class, 'exportCase'])->name('cases.export');
         
             // Delete Case
-            Route::get('/Case/Delete/{case_no}', [CaseController::class, 'deleteCase'])->name('DeleteCase');
-        // END LIST CASE
+            Route::post('/Case/Delete/{encoded_case_no}', [CaseController::class, 'deleteCase'])->name('DeleteCase');
+
+        
+            // END LIST CASE
 
         // Page List MR
             Route::get('/Material-Request/list', [MRController::class, 'PageListMR'])->name('ListMR');

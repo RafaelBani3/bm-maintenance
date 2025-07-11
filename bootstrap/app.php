@@ -11,10 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // $middleware->append([
-        //     \App\Http\Middleware\CatchUnauthorizedException::class, // tambahkan di sini sebagai global middleware
-        // ]);
-        // $middleware->prepend(\App\Http\Middleware\CatchUnauthorizedException::class);
+
+        $middleware->prepend(\App\Http\Middleware\DBMiddleware::class);
 
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,

@@ -20,8 +20,6 @@
 		<link href="{{ asset('assets/css/custom-style.css') }}" rel="stylesheet" type="text/css"/>		
 		<!--end::Global Stylesheets Bundle-->
 </head>
-
-
 	<!--begin::Body-->
 	<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center">
 		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
@@ -112,6 +110,14 @@
 										@enderror
 									</div>
 
+									<!-- Select Database -->
+									<div class="fv-row mb-3">
+										<select name="db" id="db">
+											<option value="bm_maintenance">LIVE</option>
+											<option value="dev_bm_maintenance">TRAINING</option>
+										</select>
+									</div>
+									
 									<!--begin::Submit button-->
 									<div class="d-grid mb-10">
 										<button type="submit" class="btn btn-primary">
@@ -161,7 +167,6 @@
 	</body>
 	<!--end::Body-->
 
-
 	<script>
 		document.querySelector('form').addEventListener('submit', function(e) {
 			let isValid = true;
@@ -185,7 +190,6 @@
 		});
 	</script>
 
-
 	@if (session('session_expired'))
 		<script>
 			window.onload = () => {
@@ -199,40 +203,39 @@
 		</script>
 	@endif
 
+	<script>
+		document.querySelector('form').addEventListener('submit', function (e) {
+			const form = this;
+			const username = form.querySelector('input[name="Username"]');
+			const password = form.querySelector('input[name="Password"]');
+			const button = form.querySelector('button[type="submit"]');
+			const indicatorLabel = button.querySelector('.indicator-label');
+			const indicatorProgress = button.querySelector('.indicator-progress');
 
-<script>
-	document.querySelector('form').addEventListener('submit', function (e) {
-		const form = this;
-		const username = form.querySelector('input[name="Username"]');
-		const password = form.querySelector('input[name="Password"]');
-		const button = form.querySelector('button[type="submit"]');
-		const indicatorLabel = button.querySelector('.indicator-label');
-		const indicatorProgress = button.querySelector('.indicator-progress');
+			// Validasi field kosong
+			if (!username.value.trim() || !password.value.trim()) {
+				e.preventDefault(); 
 
-		// Validasi field kosong
-		if (!username.value.trim() || !password.value.trim()) {
-			e.preventDefault(); 
+				Swal.fire({
+					icon: 'warning',
+					title: 'Form Tidak Lengkap',
+					text: 'Username dan Password tidak boleh kosong.',
+					confirmButtonText: 'Oke',
+				});
 
-			Swal.fire({
-				icon: 'warning',
-				title: 'Form Tidak Lengkap',
-				text: 'Username dan Password tidak boleh kosong.',
-				confirmButtonText: 'Oke',
-			});
+				button.disabled = false;
+				indicatorLabel.style.display = 'inline-block';
+				indicatorProgress.style.display = 'none';
 
-			button.disabled = false;
-			indicatorLabel.style.display = 'inline-block';
-			indicatorProgress.style.display = 'none';
+				return false;
+			}
 
-			return false;
-		}
-
-		// Aktifkan loading state
-		button.disabled = true;
-		indicatorLabel.style.display = 'none';
-		indicatorProgress.style.display = 'inline-block';
-	});
-</script>
+			// Aktifkan loading state
+			button.disabled = true;
+			indicatorLabel.style.display = 'none';
+			indicatorProgress.style.display = 'inline-block';
+		});
+	</script>
 
 
 </html>
