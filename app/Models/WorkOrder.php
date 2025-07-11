@@ -54,6 +54,12 @@ class WorkOrder extends Model
         return $this->belongsToMany(User::class, 'WO_DoneBy', 'WO_No', 'technician_id');
     }
 
+    public function technicians_woc()
+    {
+        return $this->belongsToMany(Technician::class, 'WO_DoneBy', 'WO_No', 'technician_id');
+    }
+
+
 
     public function position()
     {

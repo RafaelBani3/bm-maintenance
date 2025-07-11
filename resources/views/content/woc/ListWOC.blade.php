@@ -150,6 +150,7 @@
         const routeWocDetail = "{{ route('WocDetail', ['wo_no' => 'wo_no']) }}";
         
         const getWOCDataUrl = "{{ route('GetWOCData') }}";
+        const exportPDFRoute = "{{ route('ExportWOCPDF', 'PLACEHOLDER') }}";
 
         const canEditCase = @json(auth()->user()->can('view cr'));
 
@@ -286,8 +287,6 @@
                             if (!data) return '-';
 
                             const encodedWONo = btoa(data);
-
-                            // Replace placeholder with actual encoded WO_No
                             const editUrl = routeEditWOC.replace('wo_no', encodedWONo);
                             const detailUrl = routeWocDetail.replace('wo_no', encodedWONo);
 
@@ -307,6 +306,18 @@
                                         </i>
                                     </a>
                                 `;
+                            }
+
+                            // Tambahkan tombol Print PDF jika status DONE
+                            if (row.WO_Status === "DONE") {
+                                const exportPdfUrl = exportPDFRoute.replace('PLACEHOLDER', encodedWONo);
+                                buttons += `
+                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                        <i class="ki-duotone ki-printer fs-2 text-danger">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </a>`;
                             }
 
                             // Tombol View

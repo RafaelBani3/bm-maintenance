@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cases;
 use App\Models\MatReq;
+use App\Models\WorkOrder;
 use Illuminate\Support\Facades\View;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -35,6 +36,21 @@ class PDFController extends Controller
 
             return $pdf->download($fileName);
         } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
+        }
+    }   
+
+    public function exportWOCPDF($encodedWONo){
+        try{
+            $woNo = base64_decode($encodedWONo);
+            // $wo = WorkOrder::where('WO_No', $woNo)->firstOrFail();
+            $wo = WorkOrder::with('technicians_woc  ')->where('WO_No', $woNo)->firstOrFail();
+
+            $pdf = Pdf::loadView('content.woc.pdf.wocpdf', compact('wo'));
+            $fileName = 'Workorder_Completion' . str_replace('/', '-', $wo->WOC_No) . '.pdf';
+
+            return $pdf->download($fileName);
+        } catch (\Exception $e){
             return redirect()->back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
         }
     }

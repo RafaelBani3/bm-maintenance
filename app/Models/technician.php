@@ -24,6 +24,7 @@ class technician extends Model
     {
         return $this->belongsToMany(WorkOrder::class, 'WO_DoneBy', 'technician_id', 'WO_No');
     }
+    
 
     public function position()
     {

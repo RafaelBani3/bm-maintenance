@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Berita Acara - {{ $case->Case_No }}</title>
+        <title>Berita Acara Pekerjaan- {{ $wo->WOC_No }}</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
                 font-size: 12px;
-                margin: 30px;
             }
             header {
-                padding: 10px;
                 text-align: left;
                 border-bottom: 1px solid #ccc;
             }
@@ -80,120 +78,139 @@
                 content: counter(pages);
             }
 
-    </style>
+        </style>
 
-    <style>
-    .ttd {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: Arial, sans-serif;
-        font-size: 12px;
-        margin-top: 30px;
-    }
+        <style>
+            .ttd {
+                width: 100%;
+                border-collapse: collapse;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                margin-top: 30px;
+            }
 
-    .ttd td {
-        padding: 8px;
-        text-align: center;
-        vertical-align: middle;
-        border: 1px solid #ccc;
-    }
+            .ttd td {
+                padding: 8px;
+                text-align: center;
+                vertical-align: middle;
+                border: 1px solid #ccc;
+            }
 
-    .ttd-title {
-        font-weight: bold;
-        background-color: #f2f2f2;
-    }
+            .ttd-title {
+                font-weight: bold;
+                background-color: #f2f2f2;
+            }
 
-    .ttd-subtitle {
-        font-style: italic;
-        background-color: #fafafa;
-    }
+            .ttd-subtitle {
+                font-style: italic;
+                background-color: #fafafa;
+            }
 
-    .ttd b {
-        font-weight: bold;
-    }
+            .ttd b {
+                font-weight: bold;
+            }
 
-    .ttd-sign-space {
-        height: 60px;
-    }
-</style>
+            .ttd-sign-space {
+                height: 60px;
+            }
+        </style>
 
     </head>
 <body>
 
-<header>
-    <img src="{{ public_path('assets/media/LogoGamaTower.jpg') }}" alt="Logo">
-</header>
+    <header>
+        <img src="{{ public_path('assets/media/LogoGamaTower.jpg') }}" alt="Logo">
+    </header>
 
-<main>
-    <div class="header">
-        <h2>BERITA ACARA</h2>
-        <h3>{{ $case->Case_Name }}</h3>
-    </div>
-
-    <table>
-        <tr>
-            <td width="30%" style="font-weight: bold;">No. Ref.</td>
-            <td>: {{ $case->Case_No }}</td>
-        </tr>
-        <tr>
-            <td style="font-weight: bold;">Hari dan Tanggal</td>
-            <td>: {{ \Carbon\Carbon::parse($case->Case_Date)->translatedFormat('l, d F Y') }}</td>
-        </tr>   
-        <tr>
-            <td style="font-weight: bold;">Dibuat Oleh</td>
-            <td>: {{ $case->creator->Fullname }}</td>
-        </tr>
-        <tr>
-            <td style="font-weight: bold;">Departemen</td>
-            <td>: {{ $case->creator->position->PS_Name ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">I. KRONOLOGI</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Chronology }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">II. AKIBAT YANG TERJADI</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Outcome }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">III. SARAN</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Suggest }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">IV. AKSI</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Action }}</td>
-        </tr>
-    </table>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-right">
-                {{ $case->Case_No }}
-            </div>
-            <div class="footer-left">
-                Page <span class="pagenum"></span> of 2<br>
-                BERITA ACARA<br>
-                {{ $case->Case_Name }}
-            </div>
+    <main>
+        <div class="header">
+            <h2>BERITA ACARA PEKERJAAN</h2>
+            <h3>{{ $wo->case->Case_Name }}</h3>
         </div>
-    </footer>
-</main>
 
-<div class="page-break"></div>
+        <table>
+            <tr>
+                <td width="30%" style="font-weight: bold;">No. Ref.</td>
+                <td>: {{ $wo->WOC_No }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Hari dan Tanggal</td>
+                <td>: {{ \Carbon\Carbon::parse($wo->WO_CompDate)->translatedFormat('l, d F Y') }}</td>
+            </tr>   
+            <tr>
+                <td style="font-weight: bold;">Dibuat Oleh</td>
+                <td>: {{ $wo->creator->Fullname }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Departemen</td>
+                <td>: {{ $wo->creator->position->PS_Name ?? '-' }}</td>
+            </tr>
+        <tr>
+                <td style="font-weight: bold;">Mulai Pekerjaan</td>
+                <td>: 
+                    {{ $wo->WO_Start ? \Carbon\Carbon::parse($wo->WO_Start)->translatedFormat('l, d F Y') . ' Pukul ' . \Carbon\Carbon::parse($wo->WO_Start)->format('H:i') : '-' }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Selesai Pekerjaan</td>
+                <td>: 
+                    {{ $wo->WO_CompDate ? \Carbon\Carbon::parse($wo->WO_CompDate)->translatedFormat('l, d F Y') . ' Pukul ' . \Carbon\Carbon::parse($wo->WO_CompDate)->format('H:i') : '-' }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Status Pekerjaan</td>
+                <td>: {{ $wo->WO_Status ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Dikerjakan Oleh</td>
+                <td>:
+                    <ol style="padding-left: 15px; padding-top: 5px;">
+                        @foreach ($wo->technicians_woc as $tech)
+                            <li>
+                                {{ $tech->technician_Name }} 
+                                ( {{ $tech->position->PS_Name ?? '-' }} )
+                            </li>
+                        @endforeach
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Naratif Pekerjaan</td>
+                <td>: {{ $wo->WO_Narative }}</td>
+            </tr>
+        </table>
+
+        <footer>
+            <table style="width: 100%; font-size: 11px;">
+                <tr>
+                    <td style="text-align: left;">
+                        Page <span class="pagenum"></span> of <span class="totalpages"></span>
+                    </td>
+                    <td style="text-align: right; font-weight: bold;">
+                        {{ $wo->WOC_No }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left; font-weight: bold;">
+                        BERITA ACARA PEKERJAAN
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left;">
+                        {{ $wo->case->Case_Name }}
+                    </td>
+                </tr>
+            </table>
+        </footer>
+    </main>
+ 
+    <div class="page-break"></div>
 
     <main>
         <h3 style="text-align: center; font-weight: bold;">LAMPIRAN</h3>
 
-        @if($case->images && $case->images->isNotEmpty())
-            @php $chunkedImages = $case->images->chunk(2); @endphp
+        @if($wo->images && $wo->images->isNotEmpty())
+            @php $chunkedImages = $wo->images->chunk(2); @endphp
             <table width="100%" cellpadding="10" cellspacing="0" style="text-align: center;">
                 @foreach($chunkedImages as $rowImages)
                     <tr>
@@ -216,14 +233,11 @@
             <p style="text-align: center; font-style: italic; margin-top: 10px;">No image attachments available.</p>
         @endif
 
-        {{-- TTD --}}
-
         @php
             $maxStep = $case->Case_ApMaxStep ?? 0;
         @endphp
 
         <table class="ttd">
-            {{-- HEADER --}}
             <tr>
                 <td>-</td>
                 <td class="ttd-title">Dibuat oleh</td>
@@ -232,7 +246,6 @@
                 @endfor
             </tr>
 
-            {{-- DEPARTEMEN --}}
             <tr>
                 <td class="ttd-title">Departemen</td>
                 <td class="ttd-subtitle">{{ $case->creator->position->PS_Name ?? '-' }}</td>
@@ -243,7 +256,6 @@
                 @endfor
             </tr>
 
-            {{-- NAMA --}}
             <tr>
                 <td><b>Nama</b></td>
                 <td>{{ $case->creator->Fullname }}</td>
@@ -252,7 +264,6 @@
                 @endfor
             </tr>
 
-            {{-- TANGGAL --}}
             <tr>
                 <td><b>Tanggal</b></td>
                 <td>{{ \Carbon\Carbon::parse($case->CR_DT)->format('d-m-Y') }}</td>
@@ -265,12 +276,9 @@
                 @endfor
             </tr>
 
-            {{-- TANDA TANGAN --}}
             <tr class="ttd-sign-space">
                 <td class="ttd-subtitle">TTD</td>
-                <td class="ttd-subtitle">
-                    <img src="{{ public_path('assets/media/logoapv.png') }}" style="width: 100px; height: 100px; object-fit: cover;" alt="Logo">
-                </td>
+                <td class="ttd-subtitle"></td>
                 @for ($i = 1; $i <= $maxStep; $i++)
                     <td class="ttd-subtitle">
                         <img src="{{ public_path('assets/media/logoapv.png') }}" style="width: 100px; height: 100px; object-fit: cover;" alt="Logo">

@@ -111,7 +111,10 @@ use Illuminate\Support\Facades\Route;
         // Print MR PDR
         Route::get('/material-request/export-pdf/{encoded}', [PDFController::class, 'exportMRPDF'])->name('ExportMRPDF');
 
-        
+        // Print WOC PDR
+        Route::get('/WorkOrder-Completion/export-pdf/{encodedWONo}', [PDFController::class, 'exportWOCPDF'])->name('ExportWOCPDF');
+
+
         // All can Access
         Route::prefix('Dashboard')->group(function () {
             Route::get('/', [DashboardController::class, 'PageDashboard'])->name('Dashboard');

@@ -158,9 +158,9 @@ class WOController extends Controller
                 $users = User::where('Fullname', 'Aisyah Nuraini')->get();
                 break;
             case 'TR':
-                $users = User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia'])->get();
+                $users = User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia','Samuel Yugo Partomo'])->get();
                 break;
-            case 'Storekeeper':
+            case 'Store Keeper':
                 $users = User::where('Fullname', 'Rizqhan Fajar Pramudita')->get();
                 break;
             case 'Creator':
@@ -323,9 +323,9 @@ class WOController extends Controller
                 User::where('Fullname', 'Aisyah Nuraini')->get(),
     
             'TR' =>
-                User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia'])->get(),
+                User::whereIn('Fullname', ['Cece Bayu Muttaqin', 'Puti Amelia','Samuel Yugo Partomo'])->get(),
     
-            'Storekeeper' =>
+            'Store Keeper' =>
                 User::where('Fullname', 'Rizqhan Fajar Pramudita')->get(),
             
             'Creator' => 
