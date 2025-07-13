@@ -170,7 +170,7 @@ class WOController extends Controller
                 $users = User::where('Fullname', 'Naswan Nusih')->get();
                 break;
             case 'Housekeeping':
-                $users = User::where('Fullname', ['M Dina', 'Eni Novianti'])->get();
+                $users = User::where('Fullname', ['M. Dina', 'Eni Novianti'])->get();
                 break;
     
             default:
@@ -316,7 +316,7 @@ class WOController extends Controller
         Log::info('Fetching intended users for position: ' . $position . ' by user: ' . $user->Fullname);
     
         $users = match ($position) {
-            'Spv Engineering', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator' =>
+            'Spv Engineering', 'Adm Engineering', 'Security & Parking', 'HSE Koordinator','Finance','Fitout' =>
                 User::where('Fullname', 'Istifar Adi Saputra')->get(),
     
             'HR Admin' =>
@@ -335,7 +335,7 @@ class WOController extends Controller
                   User::where('Fullname', 'Naswan Nusih')->get(),
 
             'Housekeeping' =>
-                User::where('Fullname', ['M Dina', 'Eni Novianti'])->get(),
+                User::where('Fullname', ['M. Dina', 'Eni Novianti'])->get(),
     
             default => collect()
         };
