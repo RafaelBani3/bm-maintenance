@@ -47,18 +47,18 @@ class AuthController extends Controller
         // Log Validasi Berhasil
         Log::info('Validation Passed', ['Username' => $user]);
         if ($user) {
-            Log::info('User Found', ['id' => $user->id]);   
+            Log::info('User Found', ['id' => $user->id]);
         } else {
             Log::warning('User Not Found', ['Username' => $request->Username]);
         }
 
         if ($user && Hash::check($request->Password, $user->Password)) {
             $request->session()->regenerate();
-            
-            // session()->put('db', $request->db);
-            
-            Auth::guard('web')->login($user);   
-            
+
+            session()->put('db', $request->db);
+
+            Auth::guard('web')->login($user);
+
             Log::info('Login Success', ['id' => $user->id]);
 
             return redirect()->route('Dashboard');
@@ -148,7 +148,7 @@ class AuthController extends Controller
     //     return redirect()->route('CreateNewUser')->with('success', 'User berhasil ditambahkan.');
     // }
 
-    
+
     public function SaveNewUser(Request $request)
     {
         try {
@@ -187,7 +187,7 @@ class AuthController extends Controller
             $user->assignRole($validated['roles']);
 
             return redirect()->route('CreateNewUser')->with('success', 'User berhasil ditambahkan.');
-        
+
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->validator)
@@ -200,7 +200,7 @@ class AuthController extends Controller
     {
         $user = User::with('position', 'roles')->findOrFail($id);
         $positions = Position::select('id', 'PS_Name')->get();
-        $roles = Role::all(); 
+        $roles = Role::all();
 
         return view('content.auth.edituser', compact('user', 'positions', 'roles'));
     }
@@ -299,7 +299,7 @@ class AuthController extends Controller
         $matrix->AP2 = $request->AP2;
         $matrix->AP3 = $request->AP3;
         $matrix->AP4 = $request->AP4;
-        $matrix->AP5 = null; 
+        $matrix->AP5 = null;
         $matrix->save();
 
         return redirect()->route('CreateNewMatrix')->with('success', 'Matrix updated successfully.');
@@ -468,7 +468,7 @@ class AuthController extends Controller
         Cats::where('Cat_No', $id)->update([
             'Cat_Name' => $request->Cat_Name,
             'Cat_Desc' => $request->Cat_Desc,
-            'updated_at' => now(),  
+            'updated_at' => now(),
         ]);
 
         return redirect()->route('CategoryPage')->with('success', 'Category updated successfully.');
@@ -503,7 +503,7 @@ class AuthController extends Controller
 
         $newScatNo = Subcats::getIncrementScatNoGlobal();
 
-        Subcats::create([   
+        Subcats::create([
             'Scat_No' => $newScatNo,
             'Cat_No' => $request->Cat_No,
             'Scat_Name' => $request->Scat_Name,
@@ -624,7 +624,7 @@ class AuthController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to delete Technician.',
                 'error' => $e->getMessage()
-            ], 500); 
+            ], 500);
         }
     }
 

@@ -11,18 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-
-        // $middleware->prepend(\App\Http\Middleware\DBMiddleware::class);
+        $middleware->web(append: [
+            \App\Http\Middleware\DBMiddleware::class
+        ]);
 
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-            'usermiddleware' => \App\Http\Middleware\UserMiddleware::class, 
+            'usermiddleware' => \App\Http\Middleware\UserMiddleware::class,
             'CatchUnauthorizedException' => \App\Http\Middleware\CatchUnauthorizedException::class,
             'RoleCheck' => \App\Http\Middleware\RoleCheck::class,
             'auth' => \App\Http\Middleware\CustomAuthenticate::class,
-
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="en">
-	
+
 <head>
 		<title>Login BM-Maintenance</title>
-		<meta charset="utf-8" />	
+		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
-		
+
 
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
@@ -17,7 +17,7 @@
 		<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
 		<link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css"/>
 
-		<link href="{{ asset('assets/css/custom-style.css') }}" rel="stylesheet" type="text/css"/>		
+		<link href="{{ asset('assets/css/custom-style.css') }}" rel="stylesheet" type="text/css"/>
 		<!--end::Global Stylesheets Bundle-->
 </head>
 	<!--begin::Body-->
@@ -27,14 +27,14 @@
 
 		<!--begin::Root-->
 		<div class="d-flex flex-column flex-root" id="kt_app_root">
-			
+
             <!--begin::Page bg image-->
 			<style>body { background-image: url('assets/media/auth/bg10.jpeg'); } [data-bs-theme="dark"] body { background-image: url('assets/media/auth/bg10-dark.jpeg'); }</style>
 			<!--end::Page bg image-->
-			
+
             <!--begin::Authentication - Sign-in -->
 			<div class="d-flex flex-column flex-lg-row flex-column-fluid">
-				
+
                 <!--begin::Aside-->
 				<div class="d-flex flex-lg-row-fluid">
 					<!--begin::Content-->
@@ -43,7 +43,7 @@
 						<img class="theme-light-show mx-auto mw-200 w-250px w-lg-300px mb-10 mb-lg-20" src="assets/media/auth/agency.png" alt="" />
 						<img class="theme-dark-show mx-auto mw-200 w-250px w-lg-300px mb-10 mb-lg-20" src="assets/media/auth/agency-dark.png" alt="" />
 						<!--end::Image-->
-						
+
 						<!--begin::Title-->
 						<h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">BM-Maintenance System</h1>
 						<!--end::Title-->
@@ -93,7 +93,7 @@
 									@endif
 
 									<!-- Username -->
-									<div class="fv-row mb-8">
+									<div class="fv-row mb-7">
 										<label class="form-label fw-bold fs-6 mb-2">Username</label>
 										<input type="text" placeholder="Input Username" name="Username" value="{{ old('Username') }}" autocomplete="off" class="form-control bg-transparent @error('Username') is-invalid @enderror" />
 										@error('Username')
@@ -102,7 +102,7 @@
 									</div>
 
 									<!-- Password -->
-									<div class="fv-row mb-3">
+									<div class="fv-row mb-7">
 										<label class="form-label fw-bold fs-6 mb-2">Password</label>
 										<input type="password" placeholder="Input Password" name="Password" autocomplete="off" class="form-control bg-transparent @error('Password') is-invalid @enderror" />
 										@error('Password')
@@ -111,13 +111,17 @@
 									</div>
 
 									<!-- Select Database -->
-									{{-- <div class="fv-row mb-3">
-										<select name="db" id="db">
-											<option value="bm_maintenance">LIVE</option>
-											<option value="dev_bm_maintenance">TRAINING</option>
+									<div class="fv-row mb-7">
+                                        <label class="form-label fw-bold fs-6 mb-2">Database</label>
+										<select data-control="select2" data-placeholder="Select Database"
+                                            data-hide-search="true" name="db"
+                                            class="form-select"
+                                            data-table-filter="db">
+											<option @selected(old('db') == 'kpn_bm_maintenance') value="kpn_bm_maintenance">LIVE</option>
+											<option @selected(old('db') == 'kpn_dev_bm_maintenance') value="kpn_dev_bm_maintenance">TRAINING</option>
 										</select>
-									</div> --}}
-									
+									</div>
+
 									<!--begin::Submit button-->
 									<div class="d-grid mb-10">
 										<button type="submit" class="btn btn-primary">
@@ -126,7 +130,7 @@
 											<!--end::Indicator label-->
 
 											<!--begin::Indicator progress-->
-											<span class="indicator-progress">Please wait... 
+											<span class="indicator-progress">Please wait...
 											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 											<!--end::Indicator progress-->
 										</button>
@@ -157,7 +161,7 @@
 
 		<!--begin::Javascript-->
 		<script>var hostUrl = "assets/";</script>
-        
+
 		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
 		<script src="assets/plugins/global/plugins.bundle.js"></script>
 		<script src="assets/js/scripts.bundle.js"></script>
@@ -214,7 +218,7 @@
 
 			// Validasi field kosong
 			if (!username.value.trim() || !password.value.trim()) {
-				e.preventDefault(); 
+				e.preventDefault();
 
 				Swal.fire({
 					icon: 'warning',
