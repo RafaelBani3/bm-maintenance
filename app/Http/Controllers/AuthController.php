@@ -102,7 +102,6 @@ class AuthController extends Controller
             return back()->withErrors(['current_password' => 'Current password is incorrect']);
         }
 
-        // Update password langsung via DB query builder
         DB::table('users')
             ->where('id', $user->id)
             ->update(['Password' => Hash::make($request->new_password)]);
