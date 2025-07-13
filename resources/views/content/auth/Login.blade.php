@@ -111,16 +111,24 @@
 									</div>
 
 									<!-- Select Database -->
-									<div class="fv-row mb-7">
+									@php
+                                        $databases = [
+                                            'bm_maintenance' => 'LIVE',
+                                            'dev_bm_maintenance' => 'TRAINING',
+                                        ];
+                                    @endphp
+
+                                    <div class="fv-row mb-7">
                                         <label class="form-label fw-bold fs-6 mb-2">Database</label>
-										<select data-control="select2" data-placeholder="Select Database"
+                                        <select data-control="select2" data-placeholder="Select Database"
                                             data-hide-search="true" name="db"
                                             class="form-select"
                                             data-table-filter="db">
-											<option @selected(old('db') == 'kpn_bm_maintenance') value="kpn_bm_maintenance">LIVE</option>
-											<option @selected(old('db') == 'kpn_dev_bm_maintenance') value="kpn_dev_bm_maintenance">TRAINING</option>
-										</select>
-									</div>
+                                            @foreach ($databases as $value => $label)
+                                                <option @selected(old('db') == $value) value="{{ $value }}">{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
 
 									<!--begin::Submit button-->
 									<div class="d-grid mb-10">
