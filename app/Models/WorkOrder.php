@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\technician;
 
 class WorkOrder extends Model
 {
@@ -56,7 +57,7 @@ class WorkOrder extends Model
 
     public function technicians_woc()
     {
-        return $this->belongsToMany(Technician::class, 'WO_DoneBy', 'WO_No', 'technician_id');
+        return $this->belongsToMany(technician::class, 'WO_DoneBy', 'WO_No', 'technician_id');
     }
 
     public function position()

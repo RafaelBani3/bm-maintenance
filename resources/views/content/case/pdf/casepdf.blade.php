@@ -226,7 +226,7 @@
                                 $imagePath = public_path("storage/case_photos/{$folder}/{$image->IMG_Filename}");
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
-                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
+                                <img src="{{'data:image/png;base64,'.base64_encode(file_get_contents($imagePath))}}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
                             </td>
                         @endforeach
 
