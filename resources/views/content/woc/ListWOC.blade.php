@@ -349,7 +349,6 @@
                             }
 
 
-
                             // Tombol View
                             buttons += `
                                 <a href="${detailUrl}" 

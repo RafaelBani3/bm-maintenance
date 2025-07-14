@@ -115,79 +115,79 @@
     .ttd-sign-space {
         height: 60px;
     }
-</style>
+    </style>
 
     </head>
 <body>
 
-<header>
-    <img src="{{ public_path('assets/media/LogoGamaTower.jpg') }}" alt="Logo">
-</header>
+    <header>
+        <img src="{{ public_path('assets/media/LogoGamaTower.jpg') }}" alt="Logo">
+    </header>
 
-<main>
-    <div class="header">
-        <h2>BERITA ACARA</h2>
-        <h3>{{ $case->Case_Name }}</h3>
-    </div>
-
-    <table>
-        <tr>
-            <td width="30%" style="font-weight: bold;">No. Ref.</td>
-            <td>: {{ $case->Case_No }}</td>
-        </tr>
-        <tr>
-            <td style="font-weight: bold;">Hari dan Tanggal</td>
-            <td>: {{ \Carbon\Carbon::parse($case->Case_Date)->translatedFormat('l, d F Y') }}</td>
-        </tr>   
-        <tr>
-            <td style="font-weight: bold;">Dibuat Oleh</td>
-            <td>: {{ $case->creator->Fullname }}</td>
-        </tr>
-        <tr>
-            <td style="font-weight: bold;">Departemen</td>
-            <td>: {{ $case->creator->position->PS_Name ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">I. KRONOLOGI</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Chronology }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">II. AKIBAT YANG TERJADI</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Outcome }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">III. SARAN</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Suggest }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="section-title">IV. AKSI</td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Action }}</td>
-        </tr>
-    </table>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-right">
-                {{ $case->Case_No }}
-            </div>
-            <div class="footer-left">
-                Page <span class="pagenum"></span> of 2<br>
-                BERITA ACARA<br>
-                {{ $case->Case_Name }}
-            </div>
+    <main>
+        <div class="header">
+            <h2>BERITA ACARA</h2>
+            <h3>{{ $case->Case_Name }}</h3>
         </div>
-    </footer>
-</main>
 
-<div class="page-break"></div>
+        <table>
+            <tr>
+                <td width="30%" style="font-weight: bold;">No. Ref.</td>
+                <td>: {{ $case->Case_No }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Hari dan Tanggal</td>
+                <td>: {{ \Carbon\Carbon::parse($case->Case_Date)->translatedFormat('l, d F Y') }}</td>
+            </tr>   
+            <tr>
+                <td style="font-weight: bold;">Dibuat Oleh</td>
+                <td>: {{ $case->creator->Fullname }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Departemen</td>
+                <td>: {{ $case->creator->position->PS_Name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="section-title">I. KRONOLOGI</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Chronology }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="section-title">II. AKIBAT YANG TERJADI</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Outcome }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="section-title">III. SARAN</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Suggest }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="section-title">IV. AKSI</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid #ccc;">{{ $case->Case_Action }}</td>
+            </tr>
+        </table>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-right">
+                    {{ $case->Case_No }}
+                </div>
+                <div class="footer-left">
+                    Page <span class="pagenum"></span> of 2<br>
+                    BERITA ACARA<br>
+                    {{ $case->Case_Name }}
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <div class="page-break"></div>
 
     <main>
         <h3 style="text-align: center; font-weight: bold;">LAMPIRAN</h3>
@@ -199,7 +199,9 @@
                     <tr>
                         @foreach($rowImages as $image)
                             @php
-                                $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
+                                // $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
+                                $imagePath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename); // ✅
+
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
                                 <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
