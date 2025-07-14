@@ -192,16 +192,14 @@
     <main>
         <h3 style="text-align: center; font-weight: bold;">LAMPIRAN</h3>
 
-        @if($case->images && $case->images->isNotEmpty())
+        {{-- @if($case->images && $case->images->isNotEmpty())
             @php $chunkedImages = $case->images->chunk(2); @endphp
             <table width="100%" cellpadding="10" cellspacing="0" style="text-align: center;">
                 @foreach($chunkedImages as $rowImages)
                     <tr>
                         @foreach($rowImages as $image)
                             @php
-                                // $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
-                                $imagePath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename); // ✅
-
+                                $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
                                 <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
@@ -216,7 +214,33 @@
             </table>
         @else
             <p style="text-align: center; font-style: italic; margin-top: 10px;">No image attachments available.</p>
+        @endif --}}
+        @if($case->images && $case->images->isNotEmpty())
+            @php $chunkedImages = $case->images->chunk(2); @endphp
+            <table width="100%" cellpadding="10" cellspacing="0" style="text-align: center;">
+                @foreach($chunkedImages as $rowImages)
+                    <tr>
+                        @foreach($rowImages as $image)
+                            @php
+                                $folder = str_replace(['/', '\\'], '-', $case->Case_No); // Gunakan Case_No sebagai folder
+                                $imagePath = public_path("storage/case_photos/{$folder}/{$image->IMG_Filename}");
+                            @endphp
+                            <td width="50%" style="border: 1px solid #ccc;">
+                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
+                            </td>
+                        @endforeach
+
+                        {{-- Jika jumlah gambar di baris kurang dari 2, tambahkan kolom kosong --}}
+                        @for($i = $rowImages->count(); $i < 2; $i++)
+                            <td width="50%"></td>
+                        @endfor
+                    </tr>
+                @endforeach
+            </table>
+        @else
+            <p style="text-align: center; font-style: italic; margin-top: 10px;">No image attachments available.</p>
         @endif
+
 
         {{-- TTD --}}
 

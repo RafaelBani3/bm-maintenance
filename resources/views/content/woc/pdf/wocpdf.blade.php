@@ -217,8 +217,8 @@
                         @foreach($rowImages as $image)
                             @php
                                 // $imagePath = public_path('storage/woc_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
-                                $imagePath = asset('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename); // ✅
-
+                                $folder = str_replace(['/', '\\'], '-', $wo->WOC_No); // Gunakan Case_No sebagai folder
+                                $imagePath = public_path("storage/woc_photos/{$folder}/{$image->IMG_Filename}");
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
                                 <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 180px; object-fit: cover;"><br>

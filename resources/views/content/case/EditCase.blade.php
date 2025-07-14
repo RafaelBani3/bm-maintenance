@@ -228,6 +228,7 @@
                                                                 <!-- Gambar + Overlay -->
                                                                 <a class="d-block overlay position-relative rounded shadow-sm" data-fslightbox="lightbox-case-images" 
                                                                     href="{{ asset('storage/case_photos/' . str_replace(['/', '\\'], '-', $case->Case_No) . '/' . $image->IMG_Filename) }}">
+                                                                    
                                                                     <div class="overlay-wrapper card-rounded bgi-no-repeat bgi-position-center bgi-size-cover"
                                                                         style="background-image:url('{{ asset('storage/case_photos/' . str_replace(['/', '\\'], '-', $case->Case_No) . '/' . $image->IMG_Filename) }}'); width: 100px; height: 120px; border-radius: 0.65rem;">
                                                                     </div>
