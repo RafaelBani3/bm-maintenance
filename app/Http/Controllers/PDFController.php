@@ -41,19 +41,21 @@ class PDFController extends Controller
     }   
 
     public function exportWOCPDF($encodedWONo){
-        try{
+        try {
             $woNo = base64_decode($encodedWONo);
-            // $wo = WorkOrder::where('WO_No', $woNo)->firstOrFail();
-            $wo = WorkOrder::with('technicians_woc  ')->where('WO_No', $woNo)->firstOrFail();
+
+            $wo = WorkOrder::with('technicians_woc')->where('WO_No', $woNo)->firstOrFail();
 
             $pdf = Pdf::loadView('content.woc.pdf.wocpdf', compact('wo'));
             $fileName = 'Workorder_Completion' . str_replace('/', '-', $wo->WOC_No) . '.pdf';
 
             return $pdf->download($fileName);
+
         } catch (\Exception $e){
             return redirect()->back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
         }
     }
+
 
 
 

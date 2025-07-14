@@ -187,11 +187,11 @@
                             <div class="card-title d-flex align-items-center">
                                 <h3 class="fw-bold m-0 text-gray-800">@yield('title') - @yield('subtitle')</h3>
                             </div>
-                            <div class="card-toolbar">
+                            {{-- <div class="card-toolbar">
                                 <button type="button" class="btn btn-sm btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalCreatePosition">
                                     <i class="bi bi-plus-circle fs-5 me-2"></i> Add New Position
                                 </button>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!--begin::Table-->

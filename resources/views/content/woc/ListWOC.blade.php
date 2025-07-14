@@ -153,6 +153,8 @@
         const exportPDFRoute = "{{ route('ExportWOCPDF', 'PLACEHOLDER') }}";
 
         const canEditCase = @json(auth()->user()->can('view cr'));
+        const deleteWOCUrl = "{{ route('DeleteWOC', 'PLACEHOLDER') }}";
+        const userPosition = @json(auth()->user()->position->PS_Name ?? '');
 
          // Global variables for date range
         let startDate = null;
@@ -227,14 +229,22 @@
                         render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
                     },
                     {
+                        // data: "created_by.Fullname",
+                        // className: "text-center align-middle",
+                        // render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
                         data: "created_by.Fullname",
                         className: "text-center align-middle",
-                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
+                        render: function(data, type, row) {
+                            return `<span class="fw-bold fs-6">${row?.created_by?.Fullname ?? 'N/A'}</span>`;
+                        }
                     },
                     {
                         data: "created_by.position.PS_Name",
-                        className: "text-center align-middle",
-                        render: data => `<span class="fw-bold fs-6">${data ?? 'N/A'}</span>`
+                            className: "text-center align-middle",
+                            render: function(data, type, row) {
+                                const posName = row?.created_by?.position?.PS_Name ?? 'N/A';
+                                return `<span class="fw-bold fs-6">${posName}</span>`;
+                            }
                     },
                     {
                         data: "WO_CompDate",
@@ -312,13 +322,33 @@
                             if (row.WO_Status === "DONE") {
                                 const exportPdfUrl = exportPDFRoute.replace('PLACEHOLDER', encodedWONo);
                                 buttons += `
-                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
-                                        <i class="ki-duotone ki-printer fs-2 text-danger">
+                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-info d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                        <i class="ki-duotone ki-printer fs-2 text-info">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
                                     </a>`;
                             }
+
+                            // Tombol Delete (jika posisi Creator atau Approver)
+                            if (['Creator', 'Approver'].includes(userPosition)) {
+                                buttons += `
+                                    <button 
+                                        type="button" 
+                                        class="btn bg-light-danger delete-woc-btn d-flex align-items-center justify-content-center p-2" 
+                                        style="width: 40px; height: 40px;" 
+                                        data-id="${encodedWONo}" 
+                                        title="Delete WOC"
+                                    >
+                                        <i class="ki-duotone ki-trash fs-3 text-danger">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </button>
+                                `;
+                            }
+
+
 
                             // Tombol View
                             buttons += `
@@ -337,7 +367,7 @@
                             return buttons;
                         }
 
-                    }
+                    },
                 ],
                 destroy: true,
                 scrollY: "300px",
@@ -390,6 +420,50 @@
                 table.ajax.reload(null, false);
             }, 10000);
         });
+
+        // DELETE WOC
+        $(document).on('click', '.delete-woc-btn', function () {
+            const encodedWONo = $(this).data('id');
+            const deleteUrl = deleteWOCUrl.replace('PLACEHOLDER', encodedWONo);
+            const token = $('meta[name="csrf-token"]').attr('content');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': token
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: response.message
+                            });
+                            table.ajax.reload();
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: xhr.responseJSON?.message || 'Failed to delete the data.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
     </script>
 
     {{-- Script Export exportExcel --}}

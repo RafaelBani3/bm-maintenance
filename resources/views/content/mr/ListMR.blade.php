@@ -337,6 +337,8 @@
         const mrEditRoute = "{{ route('EditMR', ['mr_no' => 'PLACEHOLDER']) }}";
         const canEditMR = @json(auth()->user()->can('view mr'));
         const exportPDFRoute = "{{ route('ExportMRPDF', 'PLACEHOLDER') }}";
+        const userPosition = @json(auth()->user()->Position->PS_Name);
+        const deleteMRRoute = "{{ route('DeleteMR', 'PLACEHOLDER') }}"; 
 
 
         // Global variables for date range
@@ -443,6 +445,52 @@
                         className: "text-start",
                         render: data => data ?? '-'
                     },
+                    // {
+                    //     data: "MR_No",
+                    //     className: "",
+                    //     render: function (data, type, row) {
+                    //         const encoded = btoa(data);
+                    //         const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded);
+                    //         const editUrl = mrEditRoute.replace('PLACEHOLDER', encoded);
+
+                    //         let buttons = '<div class="d-flex gap-2">';
+                    //         if ((row.MR_Status === "OPEN" || row.MR_Status === "REJECT") && canEditMR) {
+                    //             buttons += `
+                    //                 <a href="${editUrl}" class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
+                    //                 style="width: 40px; height: 40px;" title="Edit Case">
+                    //                     <i class="ki-duotone ki-pencil fs-3 text-warning">
+                    //                         <span class="path1"></span>
+                    //                         <span class="path2"></span>
+                    //                     </i>
+                    //                 </a>`;
+                    //         }
+
+                    //          // Tambahkan tombol Print PDF jika status DONE
+                    //         if (row.MR_Status === "DONE") {
+                    //             const exportPdfUrl = exportPDFRoute.replace('PLACEHOLDER', encoded);
+                    //             buttons += `
+                    //                 <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                    //                     <i class="ki-duotone ki-printer fs-2 text-danger">
+                    //                         <span class="path1"></span>
+                    //                         <span class="path2"></span>
+                    //                     </i>
+                    //                 </a>`;
+                    //         }
+
+
+                    //         buttons += `
+                    //             <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
+                    //             style="width: 40px; height: 40px;" title="View Case">
+                    //                 <i class="ki-duotone ki-eye fs-3 text-primary">
+                    //                     <span class="path1"></span>
+                    //                     <span class="path2"></span>
+                    //                     <span class="path3"></span>
+                    //                 </i>
+                    //             </a>
+                    //         </div>`;
+                    //         return buttons;
+                    //     }
+                    // }
                     {
                         data: "MR_No",
                         className: "",
@@ -450,8 +498,12 @@
                             const encoded = btoa(data);
                             const detailUrl = mrDetailRoute.replace('PLACEHOLDER', encoded);
                             const editUrl = mrEditRoute.replace('PLACEHOLDER', encoded);
+                            const exportPdfUrl = exportPDFRoute.replace('PLACEHOLDER', encoded);
+                            const deleteUrl = deleteMRRoute.replace('PLACEHOLDER', encoded);
 
                             let buttons = '<div class="d-flex gap-2">';
+
+                            // Tombol edit jika status OPEN atau REJECT
                             if ((row.MR_Status === "OPEN" || row.MR_Status === "REJECT") && canEditMR) {
                                 buttons += `
                                     <a href="${editUrl}" class="btn bg-light-warning d-flex align-items-center justify-content-center p-2" 
@@ -463,19 +515,27 @@
                                     </a>`;
                             }
 
-                             // Tambahkan tombol Print PDF jika status DONE
+                            // Tombol export PDF jika DONE
                             if (row.MR_Status === "DONE") {
-                                const exportPdfUrl = exportPDFRoute.replace('PLACEHOLDER', encoded);
                                 buttons += `
-                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-danger d-flex align-items-center justify-content-center p-2" title="Export PDF">
-                                        <i class="ki-duotone ki-printer fs-2 text-danger">
+                                    <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-info d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                                        <i class="ki-duotone ki-printer fs-2 text-info">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
                                     </a>`;
                             }
 
+                            // Tombol delete jika PS_Name = Creator atau Approver
+                                if (userPosition === "Creator" || userPosition === "Approver") {
+                                    buttons += `
+                                        <button class="btn bg-light-danger d-flex align-items-center justify-content-center p-2 btn-delete-mr"
+                                            data-url="${deleteUrl}" style="width: 40px; height: 40px;" title="Delete MR">
+                                            <i class="ki-duotone ki-trash fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i>
+                                        </button>`;
+                                }
 
+                            // Tombol detail (selalu tampil)
                             buttons += `
                                 <a href="${detailUrl}" class="btn bg-light-primary d-flex align-items-center justify-content-center p-2" 
                                 style="width: 40px; height: 40px;" title="View Case">
@@ -486,9 +546,11 @@
                                     </i>
                                 </a>
                             </div>`;
+
                             return buttons;
                         }
                     }
+
                 ],
                 destroy: true,
                 scrollY: "300px",
@@ -542,7 +604,41 @@
                 }, 300);
             });
         });
+
+        // Konfirmasi Delete MR
+        $(document).on('click', '.btn-delete-mr', function () {
+            const deleteUrl = $(this).data('url');
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus MR ini?',
+                text: "Data yang sudah dihapus tidak bisa dikembalikan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.action = deleteUrl;
+                    form.method = 'POST';
+
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = $('meta[name="csrf-token"]').attr('content');
+
+                    form.appendChild(csrfInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+
+        
     </script>
+
 
     
 

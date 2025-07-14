@@ -760,6 +760,32 @@ class WocController extends Controller
 
         return view('content.woc.DetailWOC', compact('workOrder','logs','wocImages','approvalLogs','approvers'));
     }
+
+    public function DestroyWOC($encodedWONo)
+    {
+        try {
+            $woNo = base64_decode($encodedWONo);
+
+            DB::beginTransaction();
+            $wo = WorkOrder::where('WO_No', $woNo)->firstOrFail();
+
+            // Jika ada relasi anak (teknisi, dll), hapus juga jika perlu
+            // $wo->technicians_woc()->detach();
+            $wo->delete();
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Work Order Completion has been deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete WOC: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 // End List WOC
     
 

@@ -176,9 +176,12 @@ use Illuminate\Support\Facades\Route;
             // Mengarahkan user ke page Detail MR berdasarkan MR yang dipilih
             Route::get('/Material-Request/Detail/{encodedMRNo}', [MRController::class, 'detail'])->name('MaterialRequest.Detail');
         
-
             // EXPORT DATA MR
             Route::get('/Material-Request/Export', [ExportController::class, 'exportMR'])->name('matreq.export');
+
+            // Delete DATA MR (LIST PAGE)
+            Route::post('/Material-Request/Delete/{encoded}', [MRController::class, 'DestroyMR'])->name('DeleteMR');
+
         // end list MR
         
         // Page List WOC
@@ -191,7 +194,11 @@ use Illuminate\Support\Facades\Route;
             Route::get('/WorkOrder-Complition/Detail/{wo_no}', [WocController::class, 'showDetailWOC'])->name('WocDetail');
         
             Route::get('/WorkOrder-Complition/Export', [ExportController::class, 'exportWOC'])->name('woc.export');
-        // End List WOC
+        
+            // Delete  WOC
+            Route::delete('/WorkOrder-Complition/Delete/{wo_no}', [WocController::class, 'DestroyWOC'])->name('DeleteWOC');
+
+         // End List WOC
         
         
 

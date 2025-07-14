@@ -164,7 +164,7 @@
             <tr>
                 <td style="font-weight: bold;">Dikerjakan Oleh</td>
                 <td>:
-                    <ol style="padding-left: 15px; padding-top: 5px;">
+                    <ol style="padding-left: 15px; padding-top: 2px;">
                         @foreach ($wo->technicians_woc as $tech)
                             <li>
                                 {{ $tech->technician_Name }} 
@@ -184,7 +184,7 @@
             <table style="width: 100%; font-size: 11px;">
                 <tr>
                     <td style="text-align: left;">
-                        Page <span class="pagenum"></span> of <span class="totalpages"></span>
+                        Page <span class="pagenum"></span> of <span class="totalpages">2</span>
                     </td>
                     <td style="text-align: right; font-weight: bold;">
                         {{ $wo->WOC_No }}
@@ -216,10 +216,10 @@
                     <tr>
                         @foreach($rowImages as $image)
                             @php
-                                $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
+                                $imagePath = public_path('storage/woc_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
-                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 300px; object-fit: cover;"><br>
+                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 180px; object-fit: cover;"><br>
                             </td>
                         @endforeach
 
@@ -234,7 +234,7 @@
         @endif
 
         @php
-            $maxStep = $case->Case_ApMaxStep ?? 0;
+            $maxStep = $wo->WO_APMaxStep ?? 0;
         @endphp
 
         <table class="ttd">
@@ -248,29 +248,29 @@
 
             <tr>
                 <td class="ttd-title">Departemen</td>
-                <td class="ttd-subtitle">{{ $case->creator->position->PS_Name ?? '-' }}</td>
+                <td class="ttd-subtitle">{{ $wo->creator->position->PS_Name ?? '-' }}</td>
                 @for ($i = 1; $i <= $maxStep; $i++)
                     <td class="ttd-subtitle">
-                        {{ optional($case->{'approver'.$i}->position ?? null)->PS_Name ?? '-' }}
+                        {{ optional($wo->{'approver'.$i}->position ?? null)->PS_Name ?? '-' }}
                     </td>
                 @endfor
             </tr>
 
             <tr>
                 <td><b>Nama</b></td>
-                <td>{{ $case->creator->Fullname }}</td>
+                <td>{{ $wo->creator->Fullname }}</td>
                 @for ($i = 1; $i <= $maxStep; $i++)
-                    <td>{{ $case->{'approver'.$i}->Fullname ?? '-' }}</td>
+                    <td>{{ $wo->{'approver'.$i}->Fullname ?? '-' }}</td>
                 @endfor
             </tr>
 
             <tr>
                 <td><b>Tanggal</b></td>
-                <td>{{ \Carbon\Carbon::parse($case->CR_DT)->format('d-m-Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($wo->CR_DT)->format('d-m-Y') }}</td>
                 @for ($i = 1; $i <= $maxStep; $i++)
                     @php
-                        $approvalField = 'Case_AP' . $i;
-                        $date = ($case->$approvalField ?? false) ? \Carbon\Carbon::parse($case->Update_Date)->format('d-m-Y') : '-';
+                        $approvalField = 'WO_AP' . $i;
+                        $date = ($wo->$approvalField ?? false) ? \Carbon\Carbon::parse($wo->Update_Date)->format('d-m-Y') : '-';
                     @endphp
                     <td>{{ $date }}</td>
                 @endfor
@@ -278,7 +278,9 @@
 
             <tr class="ttd-sign-space">
                 <td class="ttd-subtitle">TTD</td>
-                <td class="ttd-subtitle"></td>
+                <td class="ttd-subtitle">
+                    <img src="{{ public_path('assets/media/logoapv.png') }}" style="width: 100px; height: 100px; object-fit: cover;" alt="Logo">
+                </td>
                 @for ($i = 1; $i <= $maxStep; $i++)
                     <td class="ttd-subtitle">
                         <img src="{{ public_path('assets/media/logoapv.png') }}" style="width: 100px; height: 100px; object-fit: cover;" alt="Logo">
@@ -289,16 +291,26 @@
 
 
         <footer>
-            <div class="footer-content">
-                <div class="footer-right">
-                    {{ $case->Case_No }}
-                </div>
-                <div class="footer-left">
-                    Page <span class="pagenum"></span> of 2<br>
-                    BERITA ACARA<br>
-                    {{ $case->Case_Name }}
-                </div>
-            </div>
+            <table style="width: 100%; font-size: 11px;">
+                <tr>
+                    <td style="text-align: left;">
+                        Page <span class="pagenum"></span> of <span class="totalpages">2</span>
+                    </td>
+                    <td style="text-align: right; font-weight: bold;">
+                        {{ $wo->WOC_No }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left; font-weight: bold;">
+                        BERITA ACARA PEKERJAAN
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left;">
+                        {{ $wo->case->Case_Name }}
+                    </td>
+                </tr>
+            </table>
         </footer>
     
     </main> 

@@ -535,6 +535,17 @@ class MRController extends Controller
         return response()->json($matReqs);
     }
 
+    // Delete MR Page List MR
+    public function DestroyMR($encoded)
+    {
+        $mrNo = base64_decode($encoded);
+        $mr = MatReq::where('MR_No', $mrNo)->firstOrFail();
+        $mr->delete();
+
+        return redirect()->back()->with('success', 'Material Request berhasil dihapus.');
+    }
+
+
 
 
     

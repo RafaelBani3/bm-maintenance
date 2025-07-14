@@ -170,8 +170,8 @@ class WOController extends Controller
                 $users = User::where('Fullname', 'Naswan Nusih')->get();
                 break;
             case 'Housekeeping':
-                $users = User::where('Fullname', ['M. Dina', 'Eni Novianti'])->get();
-                break;
+                $users = User::whereIn('Fullname', ['M. Dina', 'Eni Novianti'])->get();
+                break;                                                      
     
             default:
                 $users = collect();
@@ -335,7 +335,7 @@ class WOController extends Controller
                   User::where('Fullname', 'Naswan Nusih')->get(),
 
             'Housekeeping' =>
-                User::where('Fullname', ['M. Dina', 'Eni Novianti'])->get(),
+                User::whereIn('Fullname', ['M. Dina', 'Eni Novianti'])->get(),
     
             default => collect()
         };

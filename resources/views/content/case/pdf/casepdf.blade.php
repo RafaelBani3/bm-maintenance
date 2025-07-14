@@ -202,7 +202,7 @@
                                 $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
-                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 300px; object-fit: cover;"><br>
+                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
                             </td>
                         @endforeach
 

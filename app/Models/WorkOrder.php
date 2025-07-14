@@ -59,8 +59,6 @@ class WorkOrder extends Model
         return $this->belongsToMany(Technician::class, 'WO_DoneBy', 'WO_No', 'technician_id');
     }
 
-
-
     public function position()
     {
         return $this->belongsTo(Position::class, 'PS_ID');
@@ -147,6 +145,11 @@ class WorkOrder extends Model
     public function approver2()
     {
         return $this->belongsTo(User::class, 'WO_AP2', 'id'); 
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Imgs::class, 'IMG_RefNo', 'WOC_No');
     }
 
 }
