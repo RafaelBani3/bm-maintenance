@@ -221,7 +221,7 @@
                                 $imagePath = public_path("storage/woc_photos/{$folder}/{$image->IMG_Filename}");
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
-                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 180px; object-fit: cover;"><br>
+                                <img src="{{'data:image/png;base64,'.base64_encode(file_get_contents($imagePath))}}" alt="Lampiran" style="width: 100%; height: 180px; object-fit: cover;"><br>
                             </td>
                         @endforeach
 
