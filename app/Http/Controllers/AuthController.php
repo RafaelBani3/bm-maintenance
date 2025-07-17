@@ -219,13 +219,6 @@ class AuthController extends Controller
     }
 
 
-
-
-
-
-
-
-
 // MATRIX
     public function CreateNewMatrix()
     {

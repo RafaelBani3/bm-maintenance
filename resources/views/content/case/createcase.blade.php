@@ -131,48 +131,100 @@
                                                 <!--end::Input SubCategory-->
                                         
                                                 <!--begin::Input Chronology-->
-                                                <div class="row mb-10">
+                                                {{-- <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6">Chronology</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
                                                         <textarea class="form-control form-control-solid" rows="3" name="chronology" id="chronology" placeholder="Input Case Chronology"></textarea>
                                                     </div>
+                                                </div> --}}
+                                                <!--end::Input Chronology-->
+
+                                                {{-- Update 7/17/2025 --}}
+                                                <!--begin::Input Chronology-->
+                                                <div class="row mb-10">
+                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Chronology</label>
+                                                    <div class="col-lg-8 fv-row">
+                                                        <textarea class="form-control form-control-solid" rows="3" name="chronology" id="chronology" placeholder="Input Case Chronology" maxlength="255" oninput="updateCounter('chronology')"></textarea>
+                                                        <div class="text-end mt-1">
+                                                            <small id="chronologyCounter">0/255</small>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <!--end::Input Chronology-->
 
                                                 <!--begin::Input Outcome-->
-                                                <div class="row mb-10">
+                                                {{-- <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6">Outcome</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
                                                         <textarea class="form-control form-control-solid" rows="3" name="impact" id="impact" placeholder="Input Case Impact"></textarea>
                                                     </div>
+                                                </div> --}}
+                                                <!--end::Input Outcome-->
+
+                                                {{-- Update 17/7/2025 --}}
+                                                <!--begin::Input Outcome-->
+                                                <div class="row mb-10">
+                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Outcome</label>
+                                                    <div class="col-lg-8 fv-row">
+                                                        <textarea class="form-control form-control-solid" rows="3" name="impact" id="impact" placeholder="Input Case Impact" maxlength="255" oninput="updateCounter('impact')"></textarea>
+                                                        <div class="text-end mt-1">
+                                                            <small id="impactCounter">0/255</small>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <!--end::Input Outcome-->
 
                                                 <!--begin::Input Suggest-->
-                                                <div class="row mb-10">
+                                                {{-- <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6">Suggestion</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
                                                         <textarea class="form-control form-control-solid" rows="3" name="suggestion" id="suggestion" placeholder="Input Case suggestion"></textarea>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                                 <!--end::Input suggestion-->
 
-                                                <!--begin::Input action-->
+                                                {{-- Update 17/7/2026 --}}
+                                                <!--begin::Input Suggestion-->
                                                 <div class="row mb-10">
+                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Suggestion</label>
+                                                    <div class="col-lg-8 fv-row">
+                                                        <textarea class="form-control form-control-solid" rows="3" name="suggestion" id="suggestion" placeholder="Input Case suggestion" maxlength="255" oninput="updateCounter('suggestion')"></textarea>
+                                                        <div class="text-end mt-1">
+                                                            <small id="suggestionCounter">0/255</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--end::Input Suggestion-->
+
+                                                <!--begin::Input action-->
+                                                {{-- <div class="row mb-10">
                                                     <!--begin::Label-->
                                                     <label class="col-lg-4 col-form-label required fw-semibold fs-6">Action</label>
                                                     <!--end::Label-->
                                                     <div class="col-lg-8 fv-row">
                                                         <textarea class="form-control form-control-solid" rows="3" name="action" id="action" placeholder="Input Case action"></textarea>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                                 <!--end::Input action-->
+
+                                                {{-- Update 17/7/2025 --}}
+                                                <!--begin::Input Action-->
+                                                <div class="row mb-10">
+                                                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">Action</label>
+                                                    <div class="col-lg-8 fv-row">
+                                                        <textarea class="form-control form-control-solid" rows="3" name="action" id="action" placeholder="Input Case action" maxlength="255" oninput="updateCounter('action')"></textarea>
+                                                        <div class="text-end mt-1">
+                                                            <small id="actionCounter">0/255</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--end::Input Action-->
 
                                                 <!--begin::Input Image Dropzone-->
                                                 <div class="row mb-5">
@@ -265,4 +317,31 @@
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
+
+    {{-- Validasi Max Text chronology --}}
+    <script>
+        function updateCounter(id) {
+            const textarea = document.getElementById(id);
+            const counter = document.getElementById(id + 'Counter');
+            const length = textarea.value.length;
+
+            counter.textContent = `${length}/255`;
+
+            if (length >= 240) {
+                counter.style.color = 'red';
+            } else if (length >= 200) {
+                counter.style.color = 'orange';
+            } else {
+                counter.style.color = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCounter('chronology');
+            updateCounter('impact');
+            updateCounter('suggestion');
+            updateCounter('action');
+        });
+    </script>
+
 @endsection

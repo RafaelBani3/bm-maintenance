@@ -187,18 +187,40 @@
 
                                 </div>
                             </div>
-                            <!--end::Input assingned to-->
+                            <!--end::Input assigned to-->
 
                             <!--begin::Input Work Description-->
-                            <div class="fv-row row mb-10">
+                            {{-- <div class="fv-row row mb-10">
                                 <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label required fw-semibold fs-6 text-muted">Work Order Description</label>
                                 <!--end::Label-->
                                 <div class="col-lg-8 fv-row">
                                     <textarea class="form-control form-control-solid" rows="4" name="work_description" id="work_description" placeholder="Describe the work..."></textarea>
                                 </div>
-                            </div>
+                            </div> --}}
                             <!--end::Input Work Description-->
+
+                            {{-- Update 17/7/2025 --}}
+                            <!--begin::Input Work Description-->
+                            <div class="row mb-10">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-6">Work Order Description</label>
+                                <!--end::Label-->
+                                <div class="col-lg-8 fv-row">
+                                    <textarea 
+                                        class="form-control form-control-solid" 
+                                        rows="3" 
+                                        name="work_description" 
+                                        id="work_description" 
+                                        placeholder="Describe the work..."
+                                        maxlength="255" 
+                                        oninput="updateCounter()"
+                                    ></textarea>
+                                    <div class="text-end mt-1">
+                                        <small id="charCounter">0/255</small>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!--begin::Input Image Dropzone-->
                             <div class="row mb-5">
@@ -250,6 +272,24 @@
 
 
     @include('content.woc.partial.createwocjs')
+    
+    <script>
+        function updateCounter() {
+            const textarea = document.getElementById('work_description');
+            const counter = document.getElementById('charCounter');
+            const length = textarea.value.length;
+
+            counter.textContent = `${length}/255`;
+
+            if (length >= 240) {
+                counter.style.color = 'red';
+            } else {
+                counter.style.color = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCounter);
+    </script>
 
 
 @endsection
