@@ -222,15 +222,16 @@
                     <tr>
                         @foreach($rowImages as $image)
                             @php
-                                $folder = str_replace(['/', '\\'], '-', $case->Case_No); // Gunakan Case_No sebagai folder
-                                $imagePath = public_path("storage/case_photos/{$folder}/{$image->IMG_Filename}");
+                                // $imagePath = public_path('storage/case_photos/' . str_replace('/', '-', $image->IMG_RefNo) . '/' . $image->IMG_Filename);
+                                $folder = str_replace(['/', '\\'], '-', $case->Case_No);
+                                $imagePath = asset("storage/case_photos/{$folder}/{$image->IMG_Filename}");
                             @endphp
                             <td width="50%" style="border: 1px solid #ccc;">
-                                <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br>
+                                {{-- <img src="{{ $imagePath }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;"><br> --}}
+                                <img src="{{ public_path("storage/case_photos/{$folder}/{$image->IMG_Filename}") }}" alt="Lampiran" style="width: 100%; height: 250px; object-fit:contain;">
                             </td>
                         @endforeach
 
-                        {{-- Jika jumlah gambar di baris kurang dari 2, tambahkan kolom kosong --}}
                         @for($i = $rowImages->count(); $i < 2; $i++)
                             <td width="50%"></td>
                         @endfor

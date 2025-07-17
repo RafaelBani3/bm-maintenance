@@ -225,7 +225,7 @@
                             </td>
                         @endforeach
 
-                        @for($i = $rowImages->count(); $i < 2; $i++)
+                        @for($i = $rowImages->count(); $i < 2; $i++)    
                             <td width="50%"></td>
                         @endfor
                     </tr>

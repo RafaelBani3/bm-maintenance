@@ -63,6 +63,19 @@
                                     </button>
                                 </div>
                             </form>
+                               
+                            {{-- Reset Password --}}
+                            <div class="text-end mt-4">
+                                <button type="button" class="btn btn-warning" id="resetPasswordBtn">
+                                    <i class="bi bi-key"></i> Reset Password
+                                </button>
+
+                                <form id="resetPasswordForm" action="{{ route('ResetUserPassword', $user->id) }}" method="POST" style="display: none;">
+                                    @csrf
+                                    @method('PUT')
+                                </form>
+                            </div>
+
                         </div>
 
                     </div>
@@ -72,6 +85,25 @@
         </div>
     </div>
 
+    {{-- Reset Password --}}
+    <script>
+        document.getElementById('resetPasswordBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Reset Password?',
+                text: 'Are you sure you want to reset this user\'s password to "admin123"?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, reset it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('resetPasswordForm').submit();
+                }
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function() {

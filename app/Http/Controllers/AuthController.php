@@ -87,8 +87,7 @@ class AuthController extends Controller
         return view('content.auth.changepassword');
     }
 
-
-       public function changePassword(Request $request)
+    public function changePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required',
@@ -120,33 +119,6 @@ class AuthController extends Controller
 
         return view('content.auth.createnewuser', compact('roles', 'positions', 'users'));
     }
-
-    // public function SaveNewUser(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'Fullname' => 'required|string|max:255',
-    //         'Username' => 'required|string|max:255|unique:users,Username',
-    //         'Password' => 'nullable|string|min:6',
-    //         'roles' => 'required|array|min:1',
-    //         'roles.*' => 'string|exists:roles,name',
-    //         'PS_ID' => 'required|exists:Positions,id',
-    //     ]);
-
-    //     $user = User::create([
-    //         'Fullname' => $validated['Fullname'],
-    //         'Username' => $validated['Username'],
-    //         'Password' => Hash::make($validated['Password'] ?? 'admin123'),
-    //         'remember_token'=> Str::random(60),
-    //         'CR_DT' => now(),
-    //         'PS_ID' => $validated['PS_ID'],
-    //     ]);
-
-    //     // Assign multiple roles
-    //     $user->assignRole($validated['roles']);
-
-    //     return redirect()->route('CreateNewUser')->with('success', 'User berhasil ditambahkan.');
-    // }
-
 
     public function SaveNewUser(Request $request)
     {
@@ -233,6 +205,17 @@ class AuthController extends Controller
         $user->delete();
 
         return back()->with('success', 'User deleted successfully.');
+    }
+
+
+    // Reset Password
+    public function resetPassword($id)
+    {
+        $user = User::findOrFail($id);
+        $user->password = Hash::make('admin123');
+        $user->save();
+
+        return redirect()->back()->with('success', 'Password has been reset to "admin123".');
     }
 
 
