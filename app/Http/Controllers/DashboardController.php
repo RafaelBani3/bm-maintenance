@@ -763,7 +763,7 @@ class DashboardController extends Controller
                 ->get();
         } else {
             // tampilkan data berdasarkan user yang memiliki posisi sama
-            $userIds = User::where('position', $position)->pluck('id'); 
+            $userIds = User::where('PS_ID', $position)->pluck('id'); 
             $cases = Cases::with(['creator', 'workOrder.materialRequest'])
                 ->whereIn('CR_BY', $userIds) 
                 ->latest()
