@@ -36,4 +36,9 @@ class User extends Authenticatable
         return $this->belongsTo(Position::class, 'PS_ID');
     }
   
+
+    public function department() {
+        return $this->position?->department();
+    }
+
 }

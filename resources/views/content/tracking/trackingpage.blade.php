@@ -141,9 +141,11 @@
                                     <thead>
                                         <tr class="fw-semibold fs-6 text-gray-800 text-start">
                                             <th class="min-w-250px">Case No</th>
-                                            <th class="min-w-250px">Case Name</th>
-                                            <th class="min-w-150px">Status</th>
-                                            <th class="min-w-200px">Created Date</th>
+                                            <th class="min-w-200px">Case Name</th>
+                                            <th class="min-w-200px">Created By</th>
+                                            <th class="min-w-150px">Department</th>
+                                            <th class="min-w-100px">Status</th>
+                                            <th class="min-w-150px">Created Date</th>
                                             <th class="min-w-100px">Action</th>
                                         </tr>
                                     </thead>
@@ -152,6 +154,10 @@
                                             <tr>
                                                 <td class="text-start text-primary fw-semibold">{{ $case->Case_No }}</td>
                                                 <td class="fw-semibold">{{ $case->Case_Name }}</td>
+                                                <td class="fw-semibold">{{ $case->creator->Fullname }}</td>
+                                                <td class="fw-semibold">
+                                                    {{ $case->creator->position->department->dept_name ?? '-' }}
+                                                </td>
                                                 <td class="text-start">
                                                     <span class="badge 
                                                         @if(in_array($case->Case_Status, ['AP1', 'AP2', 'DONE'])) badge-success

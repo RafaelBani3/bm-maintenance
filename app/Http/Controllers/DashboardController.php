@@ -745,34 +745,32 @@ class DashboardController extends Controller
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        $user = Auth::user(); 
-        $position = $user->position;
+        $user = Auth::user();
+        $userPosition = $user->position?->PS_Name;
 
-        // Posisi yang boleh melihat SEMUA data
-        $allAccessPositions = [
+        // Posisi yang punya akses melihat SEMUA data
+        $fullAccessPositions = [
             'Head Of Building Management',
             'COO',
             'Creator',
-            'Approver'
+            'Approver',
         ];
 
-        if (in_array($position, $allAccessPositions)) {
-            // tampilkan semua data
-            $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+        if (in_array($userPosition, $fullAccessPositions)) {
+            // Tampilkan semua data cases
+            $cases = Cases::with(['creator.position.department', 'workOrder.materialRequest'])
                 ->latest()
                 ->get();
         } else {
-            // tampilkan data berdasarkan user yang memiliki posisi sama
-            $userIds = User::where('PS_ID', $position)->pluck('id'); 
+            // hanya tampilkan cases buatan sendiri
             $cases = Cases::with(['creator', 'workOrder.materialRequest'])
-                ->whereIn('CR_BY', $userIds) 
+                ->where('CR_BY', $user->id)
                 ->latest()
                 ->get();
         }
 
         return view('content.tracking.trackingpage', compact('cases'));
     }
-
 
 
 
