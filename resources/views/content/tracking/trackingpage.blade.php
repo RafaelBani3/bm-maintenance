@@ -5,66 +5,6 @@
 
 @section('content')
 {{-- Style Tracking --}}
-    {{-- <style>
-
-    .table-responsive::-webkit-scrollbar {
-        height: 8px;
-        width: 8px;
-    }
-    .table-responsive::-webkit-scrollbar-thumb {
-        background: #d1d1d1;
-        border-radius: 4px;
-    }
-    .table-responsive::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    .stepper-wrapper {
-        position: relative;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding: 0 10px;
-        gap: 0 !important;
-    }
-
-    .step-item {
-        position: relative;
-        z-index: 2;
-        min-width: 100px;
-    }
-
-    .step-circle {
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        border-radius: 50%;
-        background-color: #e0e0e0;
-        color: #999;
-        font-weight: bold;
-        font-size: 14px;
-    }
-
-    .step-circle.active {
-        background-color: #0d6efd;
-        color: #fff;
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
-    }
-
-    .step-circle.done {
-        background-color: #198754;
-        color: #fff;
-        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.2);
-    }
-
-    .step-line {
-        flex-grow: 1;
-        height: 2px;
-        background-color: #ccc;
-        margin: 0 4px;
-        z-index: 1;
-    }
-    </style>     --}}
-
     <style>
         .stepper-wrapper {
             position: relative;
@@ -241,9 +181,6 @@
                             </div>
                         </div>
                         <!--end::Table-->
-
-
-                     
                     </div>
                 </div>
             </div>
@@ -328,7 +265,7 @@
     {{-- Tracking Case berdasarkan data --}}
     <script>
         function showTracking(caseNo) {
-            const encodedCaseNo = btoa(caseNo); // Encode base64
+            const encodedCaseNo = btoa(caseNo); 
             const fetchUrl = "{{ route('track.case') }}?case=" + encodeURIComponent(encodedCaseNo);
 
             fetch(fetchUrl)
@@ -411,17 +348,17 @@
 
     <script>
         $(document).ready(function () {
-            const table = $('#kt_datatable_both_scrolls').DataTable({
-                scrollX: true,
-                pageLength: 10,
-                order: [[3, "asc"]],
-                language: {
-                    search: "",
-                    lengthMenu: "Show _MENU_ entries",
-                    info: "Showing _START_ to _END_ of _TOTAL_ cases",
-                },
-                dom: 'lrtip' 
-            });
+            // const table = $('#kt_datatable_both_scrolls').DataTable({
+            //     scrollX: true,
+            //     pageLength: 10,
+            //     order: [[3, "asc"]],
+            //     language: {
+            //         search: "",
+            //         lengthMenu: "Show _MENU_ entries",
+            //         info: "Showing _START_ to _END_ of _TOTAL_ cases",
+            //     },
+            //     dom: 'lrtip' 
+            // });
 
             // Search Case No
             $('#searchReport').on('keyup', function () {
@@ -440,7 +377,6 @@
             $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
                 $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
 
-                // Custom filter based on Created Date
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     const start = picker.startDate;
                     const end = picker.endDate;

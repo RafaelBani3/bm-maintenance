@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cases;
 use App\Models\MatReq;
+use App\Models\User;
 use App\Models\WorkOrder;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -724,19 +725,53 @@ class DashboardController extends Controller
         return view('content.dashboard.Dashboard', compact('cases'));
     }
 
+
+
     // TRACKING PAGE
-    public function trackingPage(){
+    // public function trackingPage(){
+    //     $now = Carbon::now();
+    //     $startOfMonth = $now->copy()->startOfMonth();
+    //     $endOfMonth = $now->copy()->endOfMonth();
+
+    //     $cases = Cases::with(['creator', 'workOrder.materialRequest'])                          
+    //         ->latest()
+    //         ->get();
+
+    //     return view('content.tracking.trackingpage',compact('cases'));
+    // }
+
+    public function trackingPage() {
         $now = Carbon::now();
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        $cases = Cases::with(['creator', 'workOrder.materialRequest'])                          
-            ->latest()
-            ->get();
+        $user = Auth::user(); 
+        $position = $user->position;
 
-        return view('content.tracking.trackingpage',compact('cases'));
+        // Posisi yang boleh melihat SEMUA data
+        $allAccessPositions = [
+            'Head Of Building Management',
+            'COO',
+            'Creator',
+            'Approver'
+        ];
+
+        if (in_array($position, $allAccessPositions)) {
+            // tampilkan semua data
+            $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+                ->latest()
+                ->get();
+        } else {
+            // tampilkan data berdasarkan user yang memiliki posisi sama
+            $userIds = User::where('position', $position)->pluck('id'); 
+            $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+                ->whereIn('CR_BY', $userIds) 
+                ->latest()
+                ->get();
+        }
+
+        return view('content.tracking.trackingpage', compact('cases'));
     }
-
 
 
 

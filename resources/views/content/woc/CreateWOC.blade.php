@@ -5,7 +5,7 @@
 
 @section('content')
     
-    <style>
+    <style>s
         .flatpickr-day.today {
             background: #979797 !important; 
             color: #fff !important;
