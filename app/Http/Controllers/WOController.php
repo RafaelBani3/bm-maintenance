@@ -718,7 +718,7 @@ class WOController extends Controller
             ->select('Logs.*', 'users.Fullname as user_name')
             ->where('LOG_Type', 'WO') 
             ->where('LOG_RefNo', $workOrder->WO_No)
-            ->orderBy('LOG_Date', 'desc')
+            ->orderBy('LOG_Date', 'asc')
             ->get();
 
         return view('content.wo.DetailWO', compact('workOrder','logs'));

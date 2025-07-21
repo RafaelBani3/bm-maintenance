@@ -260,7 +260,7 @@
                                                         <td>{{ $detail->Item_Name }}</td>
                                                         <td class="text-center fw-bold text-dark">{{ $detail->Item_Oty }}</td>
                                                         <td class="text-center text-dark    ">{{ $detail->Item_Stock }}</td>
-                                                        <td><span class="text-dark">{{ $detail->CR_ITEM_SATUAN }}</span></td>
+                                                        <td><span class="text-dark">{{ $detail->UOM_Name }}</span></td>
                                                         <td>{{ $detail->Remark }}</td>
                                                     </tr>
                                                 @empty
@@ -272,7 +272,6 @@
                                         </table>
                                     </div>
                                 </div>  
-
                             @endif
                             <!--end::Table mr-->
 
@@ -431,8 +430,6 @@
         const BASE_URL = "{{ url('/') }}";
     </script>
 
-    <meta name="base-url" content="{{ url('/') }}">
-
     {{-- Script API Item Code KPN --}}
     <script>
         $(document).ready(function() {
@@ -552,143 +549,6 @@
     </script>
 
     {{-- Approve & Reject MR --}}
-    {{-- <script>
-        // Declare Route Name
-        const approveRejectUrlTemplate = @json(route('MaterialRequest.ApproveReject', ['mr_no' => 'ENCODED_PLACEHOLDER']));
-        const approvalListUrl = "{{ route('ApprovalListMR') }}";
-
-        document.querySelectorAll('.approve-reject-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const action = this.getAttribute('data-action');
-                const actionText = action === 'approve' ? 'Approve' : 'Reject';
-                // const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}"; 
-                // const baseUrl = "BmMaintenance/public";
-                // const url = window.location.origin + `/BmMaintenance/public/material-request/approve/${mr_no_encoded}`;
-
-                const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}";
-                const url = approveRejectUrlTemplate.replace('ENCODED_PLACEHOLDER', mr_no_encoded);
-
-
-                const quillContentRaw = document.querySelector('#kt_docs_quill_basic .ql-editor')?.innerText.trim() || '';
-                const quillContentHTML = document.querySelector('#kt_docs_quill_basic .ql-editor')?.innerHTML || '';
-
-                if (!quillContentRaw || quillContentRaw === 'Input Your Remark or Notes Here') {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Remark Required',
-                        text: 'Please input your remark before continuing!',
-                    });
-                    return;
-                }
-
-                const rows = document.querySelectorAll('#material-body tr');
-                let isValid = true;
-
-                document.querySelectorAll('#material-body input, #material-body select').forEach(el => {
-                    el.classList.remove('is-invalid');
-                    const next = el.nextElementSibling;
-                    if (next && next.classList.contains('invalid-feedback')) {
-                        next.remove();
-                    }
-                });
-
-                rows.forEach((row, index) => {
-                    ['unit', 'code', 'name', 'stock', 'desc'].forEach(field => {
-                        const el = row.querySelector(`[name$="[${field}]"]`);
-                        if (el && el.value.trim() === '') {
-                            isValid = false;
-                            el.classList.add('is-invalid');
-
-                            if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('invalid-feedback')) {
-                                const error = document.createElement('div');
-                                error.className = 'invalid-feedback';
-                                error.innerText = 'This field is required';
-                                el.parentNode.appendChild(error);
-                            }
-                        }
-                    });
-                });
-
-                if (!isValid) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Incomplete Material Data',
-                        text: 'Please fill in all required fields before proceeding.',
-                    });
-                    return;
-                }
-
-                Swal.fire({
-                    title: `Are you sure you want to ${actionText}?`,
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: `Yes, ${actionText}`,
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true,
-                    customClass: { 
-                        confirmButtonText: "btn btn-primary",
-                        cancelButtonText: "btn btn-danger",
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const loader = document.getElementById('page_loader');
-                        loader.style.display = 'flex';
-                        loader.style.opacity = 0;
-                        setTimeout(() => loader.style.opacity = 1, 50);
-
-                        document.getElementById('approvalNotes').value = quillContentHTML;
-
-                        const formData = new FormData();
-                        formData.append('approvalNotes', quillContentHTML);
-                        formData.append('action', action);
-                        formData.append('_token', '{{ csrf_token() }}');
-
-                        rows.forEach((row, index) => {
-                            const prefix = `items[${index}]`;
-                            formData.append(`${prefix}[mr_line]`, row.querySelector('input[name$="[mr_line]"]').value);
-                            formData.append(`${prefix}[qty]`, row.querySelector('input[name$="[qty]"]').value);
-                            formData.append(`${prefix}[unit]`, row.querySelector('input[name$="[unit]"]').value);
-                            formData.append(`${prefix}[code]`, row.querySelector('select[name$="[code]"]').value);
-                            formData.append(`${prefix}[name]`, row.querySelector('input[name$="[name]"]').value);
-                            formData.append(`${prefix}[stock]`, row.querySelector('input[name$="[stock]"]').value);
-                            formData.append(`${prefix}[desc]`, row.querySelector('input[name$="[desc]"]').value);
-                        });
-
-                        setTimeout(() => {
-                            axios.post(url, formData)
-                                .then(response => {
-                                    loader.style.display = 'none';
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Success',
-                                        text: response.data.message,
-                                    }).then(() => {
-                                        // window.location.href = window.location.origin + `/BmMaintenance/public/Material-Request/List-Approval`;
-                                        window.location.href = approvalListUrl; 
-                                    });
-
-                                })
-                                .catch(error => {
-                                    loader.style.display = 'none';
-                                    let message = "An error occurred";
-                                    if (error.response && error.response.data && error.response.data.error) {
-                                        message = error.response.data.error;
-                                    }
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Failed',
-                                        text: message,
-                                    });
-                                });
-                        }, 1000);
-                    }
-                });
-            });
-        });
-    </script>    --}}
-
-
     <script>
         const approveRejectUrlTemplate = @json(route('MaterialRequest.ApproveReject', ['mr_no' => 'ENCODED_PLACEHOLDER']));
         const approvalListUrl = "{{ route('ApprovalListMR') }}";

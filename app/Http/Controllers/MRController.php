@@ -546,10 +546,6 @@ class MRController extends Controller
     }
 
 
-
-
-    
-    
 // PAGE Details MR 
     public function detail($encodedMRNo)
     {
@@ -892,6 +888,7 @@ class MRController extends Controller
                                     'UOM_Name' => $item['unit'] ?? null,
                                     'Item_Oty' => $item['qty'] ?? null,
                                     'Remark' => $item['desc'] ?? null,
+                                    'UOM_Code' => $item['unit_cd'] ?? '-',
                                 ]);
                         }
                     }
