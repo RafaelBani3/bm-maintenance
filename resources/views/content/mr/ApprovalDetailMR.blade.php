@@ -312,7 +312,22 @@
                                                     </td>
                                                     <td style="width: 230px"><input type="text" name="items[{{ $index }}][name]" class="form-control item-name" placeholder="Material's Name" readonly></td>
                                                     <td style="width: 120px"><input type="text" name="items[{{ $index }}][stock]" class="form-control item-stock" placeholder="Material's Stock"></td>
-                                                    <td><input type="text" name="items[{{ $index }}][desc]" class="form-control item-desc" placeholder="Material's Description" value=""></td>
+                                                    {{-- <td><input type="text" name="items[{{ $index }}][desc]" class="form-control item-desc" placeholder="Material's Description" value=""></td> --}}
+                                                    <td>
+                                                        <div class="position-relative">
+                                                            <input type="text"
+                                                                name="items[{{ $index }}][desc]"
+                                                                class="form-control item-desc"
+                                                                placeholder="Material's Description"
+                                                                maxlength="255"
+                                                                oninput="updateCharCount(this)"
+                                                            >
+                                                            <small class="text-muted d-block mt-1 text-end">
+                                                                <span class="char-count">0</span>/255
+                                                            </small>
+                                                        </div>
+                                                    </td>
+
                                                 </tr>
                                                 @endforeach
                                             </tbody>
@@ -429,6 +444,28 @@
     <script>
         const BASE_URL = "{{ url('/') }}";
     </script>
+
+    <script>
+        function updateCharCount(input) {
+            const maxLength = 255;
+            const currentLength = input.value.length;
+            const counter = input.closest('td').querySelector('.char-count');
+
+            counter.textContent = currentLength;
+
+            if (currentLength >= maxLength) {
+                input.value = input.value.substring(0, maxLength); // Prevents overflow (optional)
+            }
+        }
+
+        // Initialize existing values on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.item-desc').forEach(function(input) {
+                updateCharCount(input);
+            });
+        });
+    </script>
+
 
     {{-- Script API Item Code KPN --}}
     <script>

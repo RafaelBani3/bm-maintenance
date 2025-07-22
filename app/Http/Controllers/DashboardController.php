@@ -14,104 +14,7 @@ use Illuminate\Support\Facades\DB;
 class DashboardController extends Controller
 {
 
-    // public function PageDashboard(){
-                
-    //     $cases = Cases::with([
-    //         'creator',
-    //         'workOrder.materialRequest'
-    //     ])->get();
-
-    //     return view('content.dashboard.Dashboard', compact('cases'));
-    // }
-
 // PAGE DASHBOARD YANG UDAH BISA
-//     public function PageDashboard(Request $request) {
-//         $userId = Auth::id();
-//         $now = Carbon::now();
-
-//         $month = $request->get('month', now()->month);
-//         $year = $request->get('year', now()->year);
-
-//         if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-//             abort(403, 'Data bulan tersebut tidak tersedia.');
-//         }
-
-//         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-//         $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
-
-//         $cases = Cases::with(['creator', 'workOrder.materialRequest'])
-//             ->where('CR_BY', $userId)
-//             ->paginate(5);
-    
-//         $totalApproved = Cases::where('CR_BY', $userId)
-//             ->whereIn('Case_Status', ['AP2'])
-//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-//             ->count();
-
-//         $totalRejected = Cases::where('CR_BY', $userId)
-//             ->where('Case_Status', 'REJECT')
-//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-//             ->count();
-
-//         $totalWOtoMR = WorkOrder::where('WO_MR', $userId)
-//             ->where('WO_NeedMat', 'Y') 
-//             ->whereIn('WO_Status', ['SUBMIT']) 
-//             ->whereMonth('created_at', now()->month)
-//             ->whereYear('created_at', now()->year)
-//             ->count();
-
-//         $totalWOtoWOC = WorkOrder::whereNull('WO_MR')
-//             ->where('CR_BY', $userId)
-//             ->where('WO_NeedMat', 'N')
-//             ->where('WO_IsComplete', 'N')
-//             ->whereNull('WO_CompDate') 
-//             ->whereIn('WO_Status', ['INPROGRESS'])
-//             ->whereMonth('created_at', now()->month)
-//             ->whereYear('created_at', now()->year)
-//             ->count();
-
-//         // $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
-//         //     ->where('CR_BY', $userId)
-//         //     ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-//         //     ->count();
-
-//         $TotalMRapproved = MatReq::where('MR_Status', 'AP4')
-//             ->whereHas('workOrder', function ($q) use ($userId) {
-//                 $q->where('CR_BY', $userId);
-//             })
-//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-//             ->count();
-
-//         $TotalMRrejected = MatReq::where('MR_Status', 'REJECT')
-//             ->where('CR_BY', $userId)
-//             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-//             ->count();
-
-//         $rejectedWoc = WorkOrder::where('CR_BY', $userId)
-//             ->where('WO_Status', 'REJECT_COMPLETION')
-//             ->whereNotNull('WOC_No')
-//             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
-//             ->count();
-
-//         $doneWoc = WorkOrder::where('CR_BY', $userId)
-//             ->where('WO_Status', 'DONE')
-//             ->whereNotNull('WOC_No')
-//             ->whereBetween('CR_DT', [$startOfMonth, $endOfMonth])
-//             ->count();
-
-//         return view('content.dashboard.Dashboard', compact(
-//   'cases', 
-//  'totalApproved', 
-//             'totalRejected',
-//             'totalWOtoMR',
-//             'TotalMRapproved',
-//             'TotalMRrejected',
-//             'rejectedWoc',
-//             'doneWoc',
-//             'totalWOtoWOC'
-//         ));
-//     }
-
     public function PageDashboard(Request $request)
     {
         $userId = Auth::id();
@@ -197,6 +100,63 @@ class DashboardController extends Controller
     }
 
 
+    // public function trackCase(Request $request)
+    // {
+    //     $encodedCaseNo = $request->query('case');
+
+    //     if (!$encodedCaseNo) {
+    //         return response()->json(['error' => 'Case number not provided'], 400);
+    //     }
+
+    //     $caseNo = base64_decode($encodedCaseNo); 
+        
+    //     $case = Cases::with([
+    //         'workOrder.materialRequest'
+    //     ])->where('Case_No', $caseNo)->first();
+
+    //     if (!$case) {
+    //         return response()->json(['error' => 'Case not found'], 404);
+    //     }
+
+    //     // Logic untuk menentukan tracking step
+    //     $step = 1;
+    //     $skipMatReq = false;
+
+    //     if (in_array($case->Case_Status, ['AP2', 'INPROGRESS'])) {
+    //         $step = 2;
+    //     }
+
+    //     $wo = $case->workOrder;
+    //     if ($wo) {
+    //         $step = 3;
+    //         if ($wo->WO_NeedMat === 'Y') {
+    //             $step = 4;
+    //             if ($wo->materialRequest && in_array($wo->materialRequest->MR_Status, ['AP4', 'DONE', 'CLOSE'])) {
+    //                 $step = 5;
+    //             }
+    //         } else {
+    //             $skipMatReq = true;
+    //         }
+
+    //         if ($wo->WO_Status === 'SUBMIT_COMPLETION') {
+    //             $step = 6;
+    //         }
+
+    //         if ($wo->WO_Status === 'DONE') {
+    //             $step = 7;
+    //         }
+
+    //         if ($wo->WO_Status === 'DONE') {
+    //             $step = 8;
+    //         }
+    //     }
+
+    //     return response()->json([
+    //         'step' => $step,
+    //         'skip_mat_req' => $skipMatReq
+    //     ]);
+    // }
+
     public function trackCase(Request $request)
     {
         $encodedCaseNo = $request->query('case');
@@ -215,7 +175,7 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Case not found'], 404);
         }
 
-        // Logic untuk menentukan tracking step
+        // Logic menentukan step tracking
         $step = 1;
         $skipMatReq = false;
 
@@ -240,17 +200,35 @@ class DashboardController extends Controller
             }
 
             if ($wo->WO_Status === 'DONE') {
-                $step = 7;
-            }
-
-            if ($wo->WO_Status === 'DONE') {
-                $step = 8;
+                $step = 8; 
             }
         }
 
         return response()->json([
             'step' => $step,
-            'skip_mat_req' => $skipMatReq
+            'skip_mat_req' => $skipMatReq,
+
+            // Tambahan data approval
+            'case' => [
+                'created_by' => $case->CR_BY,
+                'ap1' => $case->Case_AP1,
+                'ap2' => $case->Case_AP2,
+            ],
+            'wo' => $wo ? [
+                'created_by' => $wo->CR_BY,
+                'ap1' => $wo->WO_AP1,
+                'ap2' => $wo->WO_AP2,
+                'status' => $wo->WO_Status,
+            ] : null,
+            'mr' => ($wo && $wo->materialRequest) ? [
+                'created_by' => $wo->materialRequest->MR_Created_By,
+                'ap1' => $wo->materialRequest->MR_AP1,
+                'ap2' => $wo->materialRequest->MR_AP2,
+                'ap3' => $wo->materialRequest->MR_AP3,
+                'ap4' => $wo->materialRequest->MR_AP4,
+                'ap5' => $wo->materialRequest->MR_AP5,
+                'status' => $wo->materialRequest->MR_Status,
+            ] : null,
         ]);
     }
 
@@ -279,83 +257,6 @@ class DashboardController extends Controller
 
 
     // Controller Case : Total Case & Chart Total Case By Category
-    // public function caseSummary()
-    // {
-    //     $userId = Auth::id();
-    //     $now = Carbon::now();
-    //     $startOfMonth = $now->copy()->startOfMonth();
-    //     $endOfMonth = $now->copy()->endOfMonth();
-
-    //     $startLastMonth = $now->copy()->subMonth()->startOfMonth();
-    //     $endLastMonth = $now->copy()->subMonth()->endOfMonth();
-
-    //     $totalCases = Cases::where('CR_BY', $userId)
-    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //         ->count();
-
-    //     $caseByCategory = DB::table('Cats')
-    //         ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
-    //             $join->on('Cats.Cat_No', '=', 'cases.Cat_No')
-    //                 ->where('cases.CR_BY', '=', $userId)
-    //                 ->whereBetween('cases.created_at', [$startOfMonth, $endOfMonth]);
-    //         })
-    //         ->select('Cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
-    //         ->groupBy('Cats.Cat_Name')
-    //         ->get();
-
-    //     return response()->json([
-    //         'totalCases' => $totalCases,
-    //         'categories' => $caseByCategory,
-    //     ]);
-    // }
-    
-    // public function caseSummary(Request $request)
-    // {
-    //     $userId = Auth::id();
-    //     $now = Carbon::now();
-    //     $month = $request->get('month', now()->month);
-    //     $year = $request->get('year', now()->year);
-
-    //     // Batasi agar tidak bisa lihat bulan di masa depan
-    //     if ($year > now()->year || ($year == now()->year && $month > now()->month)) {
-    //         abort(403, 'Data bulan tersebut tidak tersedia.');
-    //     }
-
-    //     $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-    //     $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth();
-
-    //     $totalCases = Cases::where('CR_BY', $userId)
-    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //         ->count();
-
-    //     $totalApproved = Cases::where('CR_BY', $userId)
-    //         ->where('Case_Status', ['AP2'])
-    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //         ->count();
-
-    //     $totalRejected = Cases::where('CR_BY', $userId)
-    //         ->where('Case_Status', 'REJECT')
-    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //         ->count();
-
-    //     $caseByCategory = DB::table('Cats')
-    //         ->leftJoin('cases', function($join) use ($userId, $startOfMonth, $endOfMonth) {
-    //             $join->on('Cats.Cat_No', '=', 'cases.Cat_No')
-    //                 ->where('cases.CR_BY', '=', $userId)
-    //                 ->whereBetween('cases.created_at', [$startOfMonth, $endOfMonth]);
-    //         })
-    //         ->select('Cats.Cat_Name', DB::raw('count(cases.Case_No) as total'))
-    //         ->groupBy('Cats.Cat_Name')
-    //         ->get();
-
-    //     return response()->json([
-    //         'totalCases' => $totalCases,
-    //         'totalApproved' => $totalApproved,
-    //         'totalRejected' => $totalRejected,
-    //         'categories' => $caseByCategory,
-    //     ]);
-    // }
-
     public function caseSummary(Request $request)
     {
         $userId = Auth::id();
@@ -399,7 +300,7 @@ class DashboardController extends Controller
             'categories' => $caseByCategory,
         ]);
     }
-
+// 
     // // Controller WO
     // public function GetWOSummary(Request $request)
     // {
@@ -728,18 +629,6 @@ class DashboardController extends Controller
 
 
     // TRACKING PAGE
-    // public function trackingPage(){
-    //     $now = Carbon::now();
-    //     $startOfMonth = $now->copy()->startOfMonth();
-    //     $endOfMonth = $now->copy()->endOfMonth();
-
-    //     $cases = Cases::with(['creator', 'workOrder.materialRequest'])                          
-    //         ->latest()
-    //         ->get();
-
-    //     return view('content.tracking.trackingpage',compact('cases'));
-    // }
-
     public function trackingPage() {
         $now = Carbon::now();
         $startOfMonth = $now->copy()->startOfMonth();
@@ -748,7 +637,6 @@ class DashboardController extends Controller
         $user = Auth::user();
         $userPosition = $user->position?->PS_Name;
 
-        // Posisi yang punya akses melihat SEMUA data
         $fullAccessPositions = [
             'Head Of Building Management',
             'COO',

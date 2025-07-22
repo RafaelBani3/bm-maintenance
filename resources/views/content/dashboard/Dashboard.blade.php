@@ -149,6 +149,81 @@
         margin: 0 4px;
         z-index: 1;
     }
+
+    .stepper-track::before {
+        content: '';
+        position: absolute;
+        top: 18px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #dee2e6;
+        z-index: 0;
+    }
+
+    .stepper-item {
+        z-index: 1;
+        position: relative;
+    }
+
+    .step-circle {
+        width: 36px;
+        height: 36px;
+        background: #e0e0e0;
+        color: #6c757d;
+        font-weight: bold;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+    }
+    .step-circle.active {
+        background: #0d6efd;
+        color: #fff;
+    }
+    .step-circle.done {
+        background: #198754;
+        color: #fff;
+    }
+
+    .info-card {
+        border-radius: 12px;
+        padding: 16px;
+        height: 100%;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        background-color: #fff;
+        transition: 0.3s ease;
+    }
+    .bg-soft-blue { background-color: #e9f2ff; }
+    .bg-soft-green { background-color: #e6f8ed; }
+    .bg-soft-yellow { background-color: #fff8e1; }
+
+    .info-header {
+        font-weight: 600;
+        font-size: 1.05rem;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 6px;
+    }
+
+    .info-body {
+        list-style: none;
+        padding-left: 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .info-body li span {
+        font-weight: 500;
+        color: #495057;
+        margin-right: 4px;
+        display: inline-block;
+        width: 100px;
+    }
+
     </style>
 
     <!--begin::Dashboard Creator-->
@@ -639,10 +714,108 @@
   
         </div>
         <!--end::Content-->
+        
+        <!-- Modal: Tracking Case -->
+        <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content rounded-4 shadow-lg border-0">
+
+                    <!-- Header -->
+                    <div class="modal-header bg-primary text-white py-3 px-4">
+                        <h5 class="modal-title fw-bold text-white  ">
+                            <i class="bi bi-search me-2"></i>Tracking Case Progress
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body p-4">
+
+                        {{-- Stepper --}}
+                        <div class="d-flex justify-content-between align-items-center position-relative mb-5 px-2 stepper-track">
+                            @php
+                                $steps = [
+                                    'Case Created', 'Case Approved', 'WO Created', 'Material Request',
+                                    'MR Approved', 'WOC Created', 'WOC Approved', 'Done'
+                                ];
+                            @endphp
+
+                            @foreach ($steps as $i => $label)
+                                <div class="text-center flex-fill stepper-item">
+                                    <div class="step-circle mx-auto mb-1" id="step-icon-{{ $i }}">
+                                        {{ $i + 1 }}
+                                    </div>
+                                    <small class="d-block text-muted fw-medium text-uppercase small">{{ $label }}</small>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Divider -->
+                        <hr class="my-4">
+
+                        <!-- Details Grid -->
+                        <div class="row g-4">
+                            <!-- Case Info -->
+                            <div class="col-md-4">
+                                <div class="info-card bg-soft-blue">
+                                    <div class="info-header text-primary">
+                                        <i class="bi bi-folder me-1"></i> Case Info
+                                    </div>
+                                    <ul class="info-body">
+                                        <li><span>Created By:</span> {{ $case->creator->Fullname }}</li>
+                                        <li><span>Case Status</span> {{ $case->Case_Status ?? '-' }}</li>
+                                        <li><span>AP1:</span> {{ $case->approver1->Fullname ?? '-' }}</li>
+                                        <li><span>AP2:</span> {{ $case->approver2->Fullname ?? '-' }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Work Order -->
+                            <div class="col-md-4">
+                                <div class="info-card bg-soft-green">
+                                    <div class="info-header text-success">
+                                        <i class="bi bi-gear me-1"></i> Work Order Completion
+                                    </div>
+                                    <ul class="info-body">
+                                        <li><span>Created By:</span> {{ $case->workOrder->creator->Fullname ?? '-' }}</li>
+                                        <li><span>Status:</span> {{ $case->workOrder->WO_Status ?? '-' }}</li>
+                                        <li><span>Need Material:</span> {{ $case->workOrder->WO_NeedMat == 'Y' ? 'Yes' : 'No' }}</li>
+                                        <li><span>AP1:</span> {{ $case->approver1->Fullname ?? '-' }}</li>
+                                        <li><span>AP2:</span> {{ $case->approver2->Fullname ?? '-' }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Material Request -->
+                            <div class="col-md-4">
+                                <div class="info-card bg-soft-yellow">
+                                    <div class="info-header text-warning">
+                                        <i class="bi bi-box-seam me-1"></i> Material Request
+                                    </div>
+                                    <ul class="info-body">
+                                        @php $mr = $case->workOrder->materialRequest ?? null; @endphp
+                                        @if ($mr)
+                                            <li><span>Created By:</span> {{ $mr->creator->Fullname }}</li>
+                                            <li><span>Status:</span> {{ $mr->MR_Status }}</li>
+                                            @foreach (range(1, $mr->MR_APMaxStep) as $n)
+                                                <li><span>AP{{ $n }}:</span> {{ $mr->{'approver'.$n}->Fullname ?? '-' }}</li>
+                                            @endforeach
+                                        @else
+                                            <li class="text-muted">No MR data</li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     @endif
 
     <!-- Tracking Case Modal -->    
-    <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
+    {{-- <div class="modal fade" id="trackModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow">
                 
@@ -685,11 +858,55 @@
                         @endforeach
 
                     </div>
+
+                    <!-- Tracking Detail -->
+                    <div class="mt-5">
+                        <h6 class="fw-bold mb-3">Approval Details</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="text-primary">Case Approval</h6>
+                                <ul class="list-unstyled small">
+                                    <li>Created By: <strong>{{ $case->Created_By }}</strong></li>
+                                    <li>AP1: {{ $case->Case_AP1 ?? '-' }}</li>
+                                    <li>AP2: {{ $case->Case_AP2 ?? '-' }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-success">Work Order</h6>
+                                @if ($case->workOrder)
+                                <ul class="list-unstyled small">
+                                    <li>Created By: <strong>{{ $case->workOrder->WO_Created_By }}</strong></li>
+                                    <li>AP1: {{ $case->workOrder->WO_AP1 ?? '-' }}</li>
+                                    <li>AP2: {{ $case->workOrder->WO_AP2 ?? '-' }}</li>
+                                    <li>Status: {{ $case->workOrder->WO_Status }}</li>
+                                </ul>
+                                @else
+                                    <p class="text-muted small">No Work Order</p>
+                                @endif
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-warning">Material Request</h6>
+                                @if ($case->workOrder && $case->workOrder->materialRequest)
+                                <ul class="list-unstyled small">
+                                    <li>Created By: <strong>{{ $case->workOrder->materialRequest->MR_Created_By }}</strong></li>
+                                    <li>AP1: {{ $case->workOrder->materialRequest->MR_AP1 ?? '-' }}</li>
+                                    <li>AP2: {{ $case->workOrder->materialRequest->MR_AP2 ?? '-' }}</li>
+                                    <li>AP3: {{ $case->workOrder->materialRequest->MR_AP3 ?? '-' }}</li>
+                                    <li>AP4: {{ $case->workOrder->materialRequest->MR_AP4 ?? '-' }}</li>
+                                    <li>AP5: {{ $case->workOrder->materialRequest->MR_AP5 ?? '-' }}</li>
+                                    <li>Status: {{ $case->workOrder->materialRequest->MR_Status }}</li>
+                                </ul>
+                                @else
+                                    <p class="text-muted small">No Material Request</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
         </div>
-    </div>
+    </div> --}}
 
     {{-- Script Table Tracking --}}
     <script>
@@ -903,22 +1120,6 @@
         </script>
 
         {{-- SCRIPT MR --}}
-        {{-- <script>
-            $(document).ready(function () {
-                $.ajax({
-                    url: "{{ route('Dashboard.MR.Summary') }}",
-                    type: "GET",
-                    success: function (data) {
-                        $("#mr-total").text(data.total || 0);
-                        $("#mr-approved").text(data.approved || 0);
-                        $("#mr-rejected").text(data.rejected || 0);
-                    },
-                    error: function (xhr) {
-                        console.error("Gagal mengambil data Material Request", xhr);
-                    }
-                });
-            });
-        </script> --}}
         <script>
             $(document).ready(function () {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -943,22 +1144,6 @@
         </script>
 
         {{-- SCRIPT WOC --}}
-        {{-- <script>
-            $(document).ready(function () {
-                $.ajax({
-                    url: "{{ route('WOC.Summary') }}", 
-                    type: 'GET',
-                    success: function (response) {
-                        $('#woc-total').text(response.total ?? 0);
-                        $('#woc-done').text(response.doneWoc ?? 0);
-                        $('#woc-reject').text(response.rejectedWoc ?? 0); 
-                    },
-                    error: function () {
-                        console.error('Failed to load WOC Summary');
-                    }
-                });
-            });
-        </script> --}}
         <script>
             $(document).ready(function () {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -981,7 +1166,6 @@
                 });
             });
         </script>
-
 
         {{-- Tracking Case berdasarkan data --}}
         <script>
@@ -1031,10 +1215,12 @@
 
         {{-- Script Tracking untuk modal --}}
         <script>
-            function highlightSteps(step, skipMatReq = false) {
+            function highlightSteps(step, skipMatReq = false, approvalData = null) {
                 const totalSteps = 8;
                 for (let i = 0; i < totalSteps; i++) {
                     const icon = document.getElementById(`step-icon-${i}`);
+                    if (!icon) continue;
+
                     icon.classList.remove('active', 'done');
                     icon.style.backgroundColor = '#e0e0e0';
                     icon.style.color = '#999';
@@ -1051,6 +1237,52 @@
                     } else if (i === 3) {
                         icon.closest('.step-item').style.display = '';
                     }
+                }
+
+                // Inject approval detail if available
+                const detailSection = document.getElementById("approval-detail-section");
+                if (approvalData && detailSection) {
+                    const caseInfo = approvalData.case || {};
+                    const woInfo = approvalData.wo || {};
+                    const mrInfo = approvalData.mr || {};
+
+                    detailSection.classList.remove("d-none");
+                    detailSection.innerHTML = `
+                        <h6 class="fw-bold mb-3">Approval Details</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="text-primary">Case Approval</h6>
+                                <ul class="list-unstyled small">
+                                    <li>Created By: <strong>${caseInfo.created_by || '-'}</strong></li>
+                                    <li>AP1: ${caseInfo.ap1 || '-'}</li>
+                                    <li>AP2: ${caseInfo.ap2 || '-'}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-success">Work Order</h6>
+                                ${woInfo.created_by ? `
+                                <ul class="list-unstyled small">
+                                    <li>Created By: <strong>${woInfo.created_by}</strong></li>
+                                    <li>AP1: ${woInfo.ap1 || '-'}</li>
+                                    <li>AP2: ${woInfo.ap2 || '-'}</li>
+                                    <li>Status: ${woInfo.status || '-'}</li>
+                                </ul>` : `<p class="text-muted small">No Work Order</p>`}
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-warning">Material Request</h6>
+                                ${mrInfo.created_by ? `
+                                <ul class="list-unstyled small">
+                                    <li>Created By: <strong>${mrInfo.created_by}</strong></li>
+                                    <li>AP1: ${mrInfo.ap1 || '-'}</li>
+                                    <li>AP2: ${mrInfo.ap2 || '-'}</li>
+                                    <li>AP3: ${mrInfo.ap3 || '-'}</li>
+                                    <li>AP4: ${mrInfo.ap4 || '-'}</li>
+                                    <li>AP5: ${mrInfo.ap5 || '-'}</li>
+                                    <li>Status: ${mrInfo.status || '-'}</li>
+                                </ul>` : `<p class="text-muted small">No Material Request</p>`}
+                            </div>
+                        </div>
+                    `;
                 }
 
                 new bootstrap.Modal(document.getElementById('trackModal')).show();
@@ -1256,7 +1488,5 @@
             });
         </script>
     @endif
-
-
 
 @endsection
