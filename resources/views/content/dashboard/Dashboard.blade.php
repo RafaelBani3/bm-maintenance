@@ -224,6 +224,14 @@
         width: 100px;
     }
 
+    .bg-light {
+        background-color: #f9f9f9 !important;
+    }
+    .card-hover:hover {
+        box-shadow: 0 0 0 2px rgba(13,110,253,.25);
+    }
+
+
     </style>
 
     <!--begin::Dashboard Creator-->
@@ -731,7 +739,7 @@
                     <!-- Body -->
                     <div class="modal-body p-4">
 
-                        {{-- Stepper --}}
+                        <!-- Stepper -->
                         <div class="d-flex justify-content-between align-items-center position-relative mb-5 px-2 stepper-track">
                             @php
                                 $steps = [
@@ -750,63 +758,81 @@
                             @endforeach
                         </div>
 
-                        <!-- Divider -->
-                        <hr class="my-4">
+                        {{-- <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Case No:</strong> <span id="case-no">-</span></p>
+                                <p><strong>Created By:</strong> <span id="created-by">-</span></p>
+                                <p><strong>Case Status:</strong> <span id="case-status">-</span></p>
+                                <p><strong>Case AP1:</strong> <span id="case_ap1">-</span></p>
+                                <p><strong>Case AP2:</strong> <span id="case_ap2">-</span></p>
 
-                        <!-- Details Grid -->
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>WO No:</strong> <span id="wo-no">-</span></p>
+                                <p><strong>WO Status:</strong> <span id="wo-status">-</span></p>
+                                <p><strong>WO CR BY:</strong> <span id="wo-created_by">-</span></p>
+                                <p><strong>Need Material:</strong> <span id="need_mat">-</span></p>    
+                                <p><strong>WOC AP1</strong> <span id="woc_ap1">-</span></p>
+                                <p><strong>WOC AP2:</strong> <span id="woc_ap2">-</span></p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>MR No:</strong> <span id="mr-no">-</span></p>
+                                <p><strong>MR Status:</strong> <span id="mr-status">-</span></p>    
+                                <p><strong>MR AP1:</strong> <span id="mr_ap1">-</span></p>    
+                                <p><strong>MR AP2:</strong> <span id="mr_ap2">-</span></p>    
+                                <p><strong>MR AP3:</strong> <span id="mr_ap3">-</span></p>    
+                                <p><strong>MR AP4:</strong> <span id="mr_ap4">-</span></p>    
+                                <p><strong>MR AP5:</strong> <span id="mr_ap5">-</span></p>    
+                            </div>
+                        </div> --}}
+                        <!-- Detail Info -->
                         <div class="row g-4">
-                            <!-- Case Info -->
+                            <!-- CASE INFO -->
                             <div class="col-md-4">
-                                <div class="info-card bg-soft-blue">
-                                    <div class="info-header text-primary">
-                                        <i class="bi bi-folder me-1"></i> Case Info
-                                    </div>
-                                    <ul class="info-body">
-                                        <li><span>Created By:</span> {{ $case->creator->Fullname }}</li>
-                                        <li><span>Case Status</span> {{ $case->Case_Status ?? '-' }}</li>
-                                        <li><span>AP1:</span> {{ $case->approver1->Fullname ?? '-' }}</li>
-                                        <li><span>AP2:</span> {{ $case->approver2->Fullname ?? '-' }}</li>
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-bold text-primary mb-3">📄 Case Info</h6>
+                                    <ul class="list-unstyled mb-0 small lh-lg">
+                                        <li><strong>Case No:</strong> <span id="case-no" class="text-dark">-</span></li>
+                                        <li><strong>Created By:</strong> <span id="created-by" class="text-dark">-</span></li>
+                                        <li><strong>Case Status:</strong> <span id="case-status" class="text-dark">-</span></li>
+                                        <li><strong>Case AP1:</strong> <span id="case_ap1" class="text-dark">-</span></li>
+                                        <li><strong>Case AP2:</strong> <span id="case_ap2" class="text-dark">-</span></li>
                                     </ul>
                                 </div>
                             </div>
 
-                            <!-- Work Order -->
+                            <!-- WORK ORDER -->
                             <div class="col-md-4">
-                                <div class="info-card bg-soft-green">
-                                    <div class="info-header text-success">
-                                        <i class="bi bi-gear me-1"></i> Work Order Completion
-                                    </div>
-                                    <ul class="info-body">
-                                        <li><span>Created By:</span> {{ $case->workOrder->creator->Fullname ?? '-' }}</li>
-                                        <li><span>Status:</span> {{ $case->workOrder->WO_Status ?? '-' }}</li>
-                                        <li><span>Need Material:</span> {{ $case->workOrder->WO_NeedMat == 'Y' ? 'Yes' : 'No' }}</li>
-                                        <li><span>AP1:</span> {{ $case->approver1->Fullname ?? '-' }}</li>
-                                        <li><span>AP2:</span> {{ $case->approver2->Fullname ?? '-' }}</li>
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-bold text-primary mb-3">🛠️ Work Order</h6>
+                                    <ul class="list-unstyled mb-0 small lh-lg">
+                                        <li><strong>WO No:</strong> <span id="wo-no" class="text-dark">-</span></li>
+                                        <li><strong>WO Status:</strong> <span id="wo-status" class="text-dark">-</span></li>
+                                        <li><strong>WO CR BY:</strong> <span id="wo-created_by" class="text-dark">-</span></li>
+                                        <li><strong>Need Material:</strong> <span id="need_mat" class="text-dark">-</span></li>
+                                        <li><strong>WOC AP1:</strong> <span id="woc_ap1" class="text-dark">-</span></li>
+                                        <li><strong>WOC AP2:</strong> <span id="woc_ap2" class="text-dark">-</span></li>
                                     </ul>
                                 </div>
                             </div>
 
-                            <!-- Material Request -->
+                            <!-- MATERIAL REQUEST -->
                             <div class="col-md-4">
-                                <div class="info-card bg-soft-yellow">
-                                    <div class="info-header text-warning">
-                                        <i class="bi bi-box-seam me-1"></i> Material Request
-                                    </div>
-                                    <ul class="info-body">
-                                        @php $mr = $case->workOrder->materialRequest ?? null; @endphp
-                                        @if ($mr)
-                                            <li><span>Created By:</span> {{ $mr->creator->Fullname }}</li>
-                                            <li><span>Status:</span> {{ $mr->MR_Status }}</li>
-                                            @foreach (range(1, $mr->MR_APMaxStep) as $n)
-                                                <li><span>AP{{ $n }}:</span> {{ $mr->{'approver'.$n}->Fullname ?? '-' }}</li>
-                                            @endforeach
-                                        @else
-                                            <li class="text-muted">No MR data</li>
-                                        @endif
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-bold text-primary mb-3">📦 Material Request</h6>
+                                    <ul class="list-unstyled mb-0 small lh-lg">
+                                        <li><strong>MR No:</strong> <span id="mr-no" class="text-dark">-</span></li>
+                                        <li><strong>MR Status:</strong> <span id="mr-status" class="text-dark">-</span></li>
+                                        <li><strong>MR AP1:</strong> <span id="mr_ap1" class="text-dark">-</span></li>
+                                        <li><strong>MR AP2:</strong> <span id="mr_ap2" class="text-dark">-</span></li>
+                                        <li><strong>MR AP3:</strong> <span id="mr_ap3" class="text-dark">-</span></li>
+                                        <li><strong>MR AP4:</strong> <span id="mr_ap4" class="text-dark">-</span></li>
+                                        <li><strong>MR AP5:</strong> <span id="mr_ap5" class="text-dark">-</span></li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -1167,7 +1193,7 @@
             });
         </script>
 
-        {{-- Tracking Case berdasarkan data --}}
+        {{-- Script Tracking Case (Step+Detail) --}}
         <script>
             function showTracking(caseNo) {
                 const encodedCaseNo = btoa(caseNo);
@@ -1205,6 +1231,31 @@
                             if (icon3) icon3.style.display = 'none';
                             if (icon4) icon4.style.display = 'none';
                         }
+
+                        // Detail Data
+                            // Case
+                            document.getElementById('case-no').textContent = data.case_no           || '-';
+                            document.getElementById('created-by').textContent = data.created_by     || '-';
+                            document.getElementById('case-status').textContent = data.case_status   || '-';
+                            document.getElementById('case_ap1').textContent = data.case_ap1         || '-';
+                            document.getElementById('case_ap2').textContent = data.case_ap2         || '-';
+
+                            // WO/WOC
+                            document.getElementById('wo-no').textContent = data.wo_no                   || '-';
+                            document.getElementById('wo-status').textContent = data.wo_status           || '-';
+                            document.getElementById('wo-created_by').textContent = data.wo_created_by   || '-';
+                            document.getElementById('woc_ap1').textContent = data.woc_ap1               || '-';
+                            document.getElementById('woc_ap2').textContent = data.woc_ap2               || '-';
+
+                            // MR
+                            document.getElementById('mr-no').textContent = data.mr_no || '-';
+                            document.getElementById('mr-status').textContent = data.mr_status || '-';
+                            document.getElementById('need_mat').textContent = data.need_mat     || '-';
+                            document.getElementById('mr_ap1').textContent = data.mr_ap1         || '-';
+                            document.getElementById('mr_ap2').textContent = data.mr_ap2         || '-';
+                            document.getElementById('mr_ap3').textContent = data.mr_ap3         || '-';
+                            document.getElementById('mr_ap4').textContent = data.mr_ap4         || '-';
+                            document.getElementById('mr_ap5').textContent = data.mr_ap5         || '-';
                     })
                     .catch(err => {
                         alert('Error loading tracking data');
@@ -1213,8 +1264,9 @@
             }
         </script>
 
-        {{-- Script Tracking untuk modal --}}
-        <script>
+        {{-- Script CSS untuk Modal Tracking --}}
+        {{-- Yang udah ada detail --}}
+        {{-- <script>
             function highlightSteps(step, skipMatReq = false, approvalData = null) {
                 const totalSteps = 8;
                 for (let i = 0; i < totalSteps; i++) {
@@ -1283,6 +1335,33 @@
                             </div>
                         </div>
                     `;
+                }
+
+                new bootstrap.Modal(document.getElementById('trackModal')).show();
+            }
+        </script> --}}
+
+        <script>
+            function highlightSteps(step, skipMatReq = false) {
+                const totalSteps = 8;
+                for (let i = 0; i < totalSteps; i++) {
+                    const icon = document.getElementById(`step-icon-${i}`);
+                    icon.classList.remove('active', 'done');
+                    icon.style.backgroundColor = '#e0e0e0';
+                    icon.style.color = '#999';
+
+                    if (i < step - 1) {
+                        icon.classList.add('done');
+                    } else if (i === step - 1) {
+                        icon.classList.add('active');
+                    }
+
+                    // Optional: hide MR step if skipped
+                    if (skipMatReq && i === 3) {
+                        icon.closest('.step-item').style.display = 'none';
+                    } else if (i === 3) {
+                        icon.closest('.step-item').style.display = '';
+                    }
                 }
 
                 new bootstrap.Modal(document.getElementById('trackModal')).show();

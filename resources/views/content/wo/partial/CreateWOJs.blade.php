@@ -100,6 +100,23 @@
                 e.preventDefault();
     
                 validator.validate().then(function (status) {
+                    const checkbox = document.getElementById('require_material_checkbox');
+                    const intendedFor = document.getElementById('intended_for');
+
+                    // Validasi tambahan: jika checkbox dicentang, dropdown harus tidak kosong
+                    if (checkbox.checked && !intendedFor.value) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Incomplete Input",
+                            text: "Please select a user in the 'Intended for' field.",
+                            confirmButtonText: "OK",
+                            customClass: {
+                                confirmButton: "btn btn-warning"
+                            }
+                        });
+                        return;
+                    }
+                    
                     if (status === 'Valid') {
                         const loadingEl = document.createElement("div");
                         loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25");
@@ -167,6 +184,8 @@
         });
     </script>
     
+
+
     {{-- Case No / Reference No --}}
     <script>
         $(document).ready(function () {

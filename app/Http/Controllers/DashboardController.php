@@ -100,6 +100,87 @@ class DashboardController extends Controller
     }
 
 
+    public function trackCase(Request $request)
+    {
+        $encodedCaseNo = $request->query('case');
+
+        if (!$encodedCaseNo) {
+            return response()->json(['error' => 'Case number not provided'], 400);
+        }
+
+        $caseNo = base64_decode($encodedCaseNo); 
+        
+        $trackingcase = Cases::with([
+            'workOrder.materialRequest'
+        ])->where('Case_No', $caseNo)->first();
+
+        if (!$trackingcase) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+
+        // Logic untuk menentukan tracking step
+        $step = 1;
+        $skipMatReq = false;
+
+        if (in_array($trackingcase->Case_Status, ['AP2', 'INPROGRESS'])) {
+            $step = 2;
+        }
+
+        $wo = $trackingcase->workOrder;
+        if ($wo) {
+            $step = 3;
+            if ($wo->WO_NeedMat === 'Y') {
+                $step = 4;
+                if ($wo->materialRequest && in_array($wo->materialRequest->MR_Status, ['AP4', 'DONE', 'CLOSE'])) {
+                    $step = 5;
+                }
+            } else {
+                $skipMatReq = true;
+            }
+
+            if ($wo->WO_Status === 'SUBMIT_COMPLETION') {
+                $step = 6;
+            }
+
+            if ($wo->WO_Status === 'DONE') {
+                $step = 7;
+            }
+
+            if ($wo->WO_Status === 'DONE') {
+                $step = 8;
+            }
+        }
+
+        return response()->json([
+            'step' => $step,
+            'skip_mat_req' => $skipMatReq,
+            // Detail Data
+                // Case
+                'case_no'       => $trackingcase->Case_No             ?? '-',
+                'created_by'    => $trackingcase->creator->Fullname   ?? '-',
+                'case_status'   => $trackingcase->Case_Status         ?? '-',
+                'case_ap1'      => $trackingcase->approver1->Fullname ?? '-',
+                'case_ap2'      => $trackingcase->approver2->Fullname ?? '-',
+
+                // WOc
+                'wo_no'         => $wo?->WO_No               ?? '-',
+                'wo_status'     => $wo?->WO_Status           ?? '-',
+                'wo_created_by' => $wo?->creator->Fullname   ?? '-',
+                'woc_ap1'       => $wo?->approver1->Fullname ?? '-',
+                'woc_ap2'       => $wo?->approver2->Fullname ?? '-',
+
+                // MR
+                'need_mat'      => $wo?->WO_NeedMat                   ?? '-',
+                'mr_no'         => $wo?->materialRequest?->MR_No      ?? '-',
+                'mr_status'     => $wo?->materialRequest?->MR_Status  ?? '-',
+                'mr_ap1'        => $wo?->materialRequest?->approver1->Fullname  ?? '-',
+                'mr_ap2'        => $wo?->materialRequest?->approver2->Fullname  ?? '-',
+                'mr_ap3'        => $wo?->materialRequest?->approver3->Fullname  ?? '-',
+                'mr_ap4'        => $wo?->materialRequest?->approver4->Fullname  ?? '-',
+                'mr_ap5'        => $wo?->materialRequest?->approver5->Fullname  ?? '-',
+        ]);
+    }
+
     // public function trackCase(Request $request)
     // {
     //     $encodedCaseNo = $request->query('case');
@@ -118,7 +199,7 @@ class DashboardController extends Controller
     //         return response()->json(['error' => 'Case not found'], 404);
     //     }
 
-    //     // Logic untuk menentukan tracking step
+    //     // Logic menentukan step tracking
     //     $step = 1;
     //     $skipMatReq = false;
 
@@ -143,94 +224,37 @@ class DashboardController extends Controller
     //         }
 
     //         if ($wo->WO_Status === 'DONE') {
-    //             $step = 7;
-    //         }
-
-    //         if ($wo->WO_Status === 'DONE') {
-    //             $step = 8;
+    //             $step = 8; 
     //         }
     //     }
 
     //     return response()->json([
     //         'step' => $step,
-    //         'skip_mat_req' => $skipMatReq
+    //         'skip_mat_req' => $skipMatReq,
+
+    //         // Tambahan data approval
+    //         'case' => [
+    //             'created_by' => $case->CR_BY,
+    //             'ap1' => $case->Case_AP1,
+    //             'ap2' => $case->Case_AP2,
+    //         ],
+    //         'wo' => $wo ? [
+    //             'created_by' => $wo->CR_BY,
+    //             'ap1' => $wo->WO_AP1,
+    //             'ap2' => $wo->WO_AP2,
+    //             'status' => $wo->WO_Status,
+    //         ] : null,
+    //         'mr' => ($wo && $wo->materialRequest) ? [
+    //             'created_by' => $wo->materialRequest->CR_BY,
+    //             'ap1' => $wo->materialRequest->MR_AP1,
+    //             'ap2' => $wo->materialRequest->MR_AP2,
+    //             'ap3' => $wo->materialRequest->MR_AP3,
+    //             'ap4' => $wo->materialRequest->MR_AP4,
+    //             'ap5' => $wo->materialRequest->MR_AP5,
+    //             'status' => $wo->materialRequest->MR_Status,
+    //         ] : null,
     //     ]);
     // }
-
-    public function trackCase(Request $request)
-    {
-        $encodedCaseNo = $request->query('case');
-
-        if (!$encodedCaseNo) {
-            return response()->json(['error' => 'Case number not provided'], 400);
-        }
-
-        $caseNo = base64_decode($encodedCaseNo); 
-        
-        $case = Cases::with([
-            'workOrder.materialRequest'
-        ])->where('Case_No', $caseNo)->first();
-
-        if (!$case) {
-            return response()->json(['error' => 'Case not found'], 404);
-        }
-
-        // Logic menentukan step tracking
-        $step = 1;
-        $skipMatReq = false;
-
-        if (in_array($case->Case_Status, ['AP2', 'INPROGRESS'])) {
-            $step = 2;
-        }
-
-        $wo = $case->workOrder;
-        if ($wo) {
-            $step = 3;
-            if ($wo->WO_NeedMat === 'Y') {
-                $step = 4;
-                if ($wo->materialRequest && in_array($wo->materialRequest->MR_Status, ['AP4', 'DONE', 'CLOSE'])) {
-                    $step = 5;
-                }
-            } else {
-                $skipMatReq = true;
-            }
-
-            if ($wo->WO_Status === 'SUBMIT_COMPLETION') {
-                $step = 6;
-            }
-
-            if ($wo->WO_Status === 'DONE') {
-                $step = 8; 
-            }
-        }
-
-        return response()->json([
-            'step' => $step,
-            'skip_mat_req' => $skipMatReq,
-
-            // Tambahan data approval
-            'case' => [
-                'created_by' => $case->CR_BY,
-                'ap1' => $case->Case_AP1,
-                'ap2' => $case->Case_AP2,
-            ],
-            'wo' => $wo ? [
-                'created_by' => $wo->CR_BY,
-                'ap1' => $wo->WO_AP1,
-                'ap2' => $wo->WO_AP2,
-                'status' => $wo->WO_Status,
-            ] : null,
-            'mr' => ($wo && $wo->materialRequest) ? [
-                'created_by' => $wo->materialRequest->MR_Created_By,
-                'ap1' => $wo->materialRequest->MR_AP1,
-                'ap2' => $wo->materialRequest->MR_AP2,
-                'ap3' => $wo->materialRequest->MR_AP3,
-                'ap4' => $wo->materialRequest->MR_AP4,
-                'ap5' => $wo->materialRequest->MR_AP5,
-                'status' => $wo->materialRequest->MR_Status,
-            ] : null,
-        ]);
-    }
 
 
     public function getWaitingCounts()
@@ -651,7 +675,7 @@ class DashboardController extends Controller
                 ->get();
         } else {
             // hanya tampilkan cases buatan sendiri
-            $cases = Cases::with(['creator', 'workOrder.materialRequest'])
+            $cases = Cases::with(['creator.position.department', 'workOrder.materialRequest'])
                 ->where('CR_BY', $user->id)
                 ->latest()
                 ->get();
