@@ -773,7 +773,7 @@ class MRController extends Controller
                 ->where(function($q) use ($userId) {
                     $q->where(function($sub) use ($userId) {
                         $sub->where('Mat_Req.MR_APStep', 1)
-                            ->where('Mat_Req.MR_Status', 'SUBMIT')
+                            ->whereIn('Mat_Req.MR_Status', ['SUBMIT', 'SAVE_DRAFT'])
                             ->where('Mat_Req.MR_AP1', $userId);
                     })
                     ->orWhere(function($sub) use ($userId) {
@@ -869,6 +869,49 @@ class MRController extends Controller
         $user = Auth::user();
         $notes = $request->input('approvalNotes');
         $action = $request->input('action');
+
+        if ($action === 'save_draft') {
+            if ($mr->MR_APStep != 1 || !in_array($mr->MR_Status, ['SUBMIT', 'OPEN'])) {
+                return response()->json(['error' => 'Draft only allowed at step 1 with SUBMIT/OPEN status'], 400);
+            }
+
+            if ($request->has('items')) {
+                foreach ($request->items as $item) {
+                    if (isset($item['mr_line']) && isset($item['code'])) {
+                        // MatReqChild::updateOrCreate(
+                        //     ['MR_No' => $mr_no, 'MR_Line' => $item['mr_line']],
+                        //     [
+                        //         'Item_Code' => $item['code'] ?? null,
+                        //         'Item_Name' => $item['name'] ?? null,
+                        //         'Item_Stock' => $item['stock'] ?? null,
+                        //         'UOM_Name' => $item['unit'] ?? null,
+                        //         'Item_Oty' => $item['qty'] ?? null,
+                        //         'Remark' => $item['desc'] ?? null,
+                        //         'UOM_Code' => $item['unit_cd'] ?? '-',
+                        //     ]
+                        // );
+                        MatReqChild::where('MR_No', $mr_no)
+                            ->where('MR_Line', $item['mr_line'])
+                            ->update([
+                                'Item_Code' => $item['code'] ?? null,
+                                'Item_Name' => $item['name'] ?? null,
+                                'Item_Stock' => $item['stock'] ?? null,
+                                'UOM_Name' => $item['unit'] ?? null,
+                                'Item_Oty' => $item['qty'] ?? null,
+                                'Remark' => $item['desc'] ?? null,
+                                'UOM_Code' => $item['unit_cd'] ?? '-',
+                            ]);
+                    }
+                }
+            }
+
+            $mr->MR_Status = 'SAVE_DRAFT';
+            $mr->MR_RMK1 = $notes;
+            $mr->save();
+
+            return response()->json(['message' => 'Draft saved successfully.']);
+        }
+
     
         if ($action == 'approve') {
             if ($mr->MR_APStep == 1) {
@@ -1007,9 +1050,8 @@ class MRController extends Controller
             } else {
                 return response()->json(['error' => 'Invalid approval step'], 400);
             }
-    
             $mr->save();
-    
+
             return response()->json(['message' => 'Material Request Approved Successfully']);
         } else {
             if ($mr->MR_APStep == 1) {
@@ -1177,8 +1219,6 @@ class MRController extends Controller
             return response()->json(['message' => 'Material Request Rejected']);
         }
     }
-
-    
 
 
 }

@@ -334,6 +334,74 @@
                                         </table>
                                     </div>
                                 </div>
+                            @elseif($materialRequest->MR_APStep == 1 && $materialRequest->MR_Status == 'SAVE_DRAFT' && !is_null($materialRequest->MR_RMK1))
+                                {{-- Show saved material list for approver after draft with remark --}}
+                                <div class="row mb-5">
+                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                        Saved Material List
+                                    </label>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-rounded table-striped border gy-7 gs-7" id="material-table">
+                                            <thead>
+                                                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                    <th>No</th>
+                                                    <th>Quantity</th>
+                                                    <th>Unit</th>
+                                                    <th>Item Code</th>
+                                                    <th>Item Name</th>
+                                                    <th>Stock</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="material-body">
+                                                @foreach($details as $index => $detail)
+                                                <tr>
+                                                    <td class="text-center">{{ $detail->MR_Line }}</td>
+
+                                                    <td>
+                                                        <input type="hidden" name="items[{{ $index }}][mr_line]" value="{{ $detail->MR_Line }}">
+                                                        <input style="width: 80px" type="number" name="items[{{ $index }}][qty]" class="form-control" value="{{ $detail->Item_Oty }}" readonly>
+                                                    </td>
+
+                                                    <td style="width: 130px">
+                                                        <input type="text" name="items[{{ $index }}][unit]" class="form-control uom-name" value="{{ $detail->UOM_Name }}" readonly>
+                                                    </td>
+
+                                                    <td style="width: 230px">
+                                                        <select name="items[{{ $index }}][code]" class="form-control item-code">
+                                                            <option value="{{ $detail->Item_Code }}" selected>{{ $detail->Item_Code }}</option>
+                                                        </select>
+                                                    </td>
+
+                                                    <td style="width: 230px">
+                                                        <input type="text" name="items[{{ $index }}][name]" class="form-control item-name" value="{{ $detail->Item_Name }}" readonly>
+                                                    </td>
+
+                                                    <td style="width: 120px">
+                                                        <input type="text" name="items[{{ $index }}][stock]" class="form-control item-stock" value="{{ $detail->Item_Stock }}">
+                                                    </td>
+
+                                                    <td>
+                                                        <div class="position-relative">
+                                                            <input type="text"
+                                                                name="items[{{ $index }}][desc]"
+                                                                class="form-control item-desc"
+                                                                value="{{ $detail->Remark }}"
+                                                                maxlength="255"
+                                                                oninput="updateCharCount(this)">
+                                                            <small class="text-muted d-block mt-1 text-end">
+                                                                <span class="char-count">{{ strlen($detail->Remark) }}</span>/255
+                                                            </small>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
                             @endif
 
                             {{-- Approval --}}
@@ -354,8 +422,6 @@
                                     ];
                                     
                                     $userId = Auth::id();
-                                
-
                                 @endphp
 
                                 @foreach($approvalSteps as $step => $info)
@@ -418,6 +484,10 @@
                                                         <div id="kt_docs_quill_basic" name="kt_docs_quill_basic" style="height: 100px">
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-4">
+                                                            {{-- <button type="button" class="btn btn-warning me-2 save_draft" data-action="save_draft">Save Draft</button> --}}
+                                                            @if($materialRequest->MR_APStep == 1 && in_array($materialRequest->MR_Status, ['SUBMIT', 'OPEN']))
+                                                                <button type="button" class="btn btn-warning me-2 approve-reject-btn" data-action="save_draft">Save Draft</button>
+                                                            @endif
                                                             <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
                                                             <button type="button" class="btn btn-danger approve-reject-btn" data-action="reject">Reject</button>
                                                         </div>
@@ -593,7 +663,7 @@
         document.querySelectorAll('.approve-reject-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const action = this.getAttribute('data-action');
-                const actionText = action === 'approve' ? 'Approve' : 'Reject';
+                const actionText = action === 'approve' ? 'Approve' : 'Reject' ;
                 const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}";
                 const url = approveRejectUrlTemplate.replace('ENCODED_PLACEHOLDER', mr_no_encoded);
 
@@ -612,7 +682,71 @@
                     }
                 });
 
-                // === VALIDASI ===
+                // // === VALIDASI ===
+                // if (action === 'reject') {
+                //     // Wajib remark
+                //     if (!quillContentRaw || quillContentRaw === 'Input Your Remark or Notes Here') {
+                //         Swal.fire({
+                //             icon: 'warning',
+                //             title: 'Remark Required',
+                //             text: 'Please input your remark before rejecting!',
+                //         });
+                //         return;
+                //     }
+                // } else if (action === 'approve') {
+                //     // Wajib isi data material
+                //     rows.forEach((row, index) => {
+                //         ['unit', 'code', 'name', 'stock', 'desc'].forEach(field => {
+                //             const el = row.querySelector(`[name$="[${field}]"]`);
+                //             if (el && el.value.trim() === '') {
+                //                 isValid = false;
+                //                 el.classList.add('is-invalid');
+                //                 if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('invalid-feedback')) {
+                //                     const error = document.createElement('div');
+                //                     error.className = 'invalid-feedback';
+                //                     error.innerText = 'This field is required';
+                //                     el.parentNode.appendChild(error);
+                //                 }
+                //             }
+                //         });
+                //     });
+
+                //     if (!isValid) {
+                //         Swal.fire({
+                //             icon: 'warning',
+                //             title: 'Incomplete Material Data',
+                //             text: 'Please fill in all required fields before approving.',
+                //         });
+                //         return;
+                //     }
+                // } elseif(){
+                //     rows.forEach((row, index) => {
+                //         ['unit', 'code', 'name', 'stock', 'desc'].forEach(field => {
+                //             const el = row.querySelector(`[name$="[${field}]"]`);
+                //             if (el && el.value.trim() === '') {
+                //                 isValid = false;
+                //                 el.classList.add('is-invalid');
+                //                 if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('invalid-feedback')) {
+                //                     const error = document.createElement('div');
+                //                     error.className = 'invalid-feedback';
+                //                     error.innerText = 'This field is required';
+                //                     el.parentNode.appendChild(error);
+                //                 }
+                //             }
+                //         });
+                //     });
+
+                //     if (!isValid) {
+                //         Swal.fire({
+                //             icon: 'warning',
+                //             title: 'Incomplete Material Data',
+                //             text: 'Please fill in all required fields before saving.',
+                //         });
+                //         return;
+                //     }
+                // }
+
+                // PERBAIKAN SAVE DRAFT
                 if (action === 'reject') {
                     // Wajib remark
                     if (!quillContentRaw || quillContentRaw === 'Input Your Remark or Notes Here') {
@@ -624,6 +758,7 @@
                         return;
                     }
                 } else if (action === 'approve') {
+                    
                     // Wajib isi data material
                     rows.forEach((row, index) => {
                         ['unit', 'code', 'name', 'stock', 'desc'].forEach(field => {
@@ -649,12 +784,39 @@
                         });
                         return;
                     }
-                    // Remark boleh kosong saat approve → tidak dicek
+                } else if (action === 'save_draft') {
+                    // Validasi sama dengan approve
+                    // rows.forEach((row, index) => {
+                    //     ['unit', 'code', 'name', 'stock', 'desc'].forEach(field => {
+                    //         const el = row.querySelector(`[name$="[${field}]"]`);
+                    //         if (el && el.value.trim() === '') {
+                    //             isValid = false;
+                    //             el.classList.add('is-invalid');
+                    //             if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('invalid-feedback')) {
+                    //                 const error = document.createElement('div');
+                    //                 error.className = 'invalid-feedback';
+                    //                 error.innerText = 'This field is required';
+                    //                 el.parentNode.appendChild(error);
+                    //             }
+                    //         }
+                    //     });
+                    // });
+
+                    // if (!isValid) {
+                    //     Swal.fire({
+                    //         icon: 'warning',
+                    //         title: 'Incomplete Material Data',
+                    //         text: 'Please fill in all required fields before saving.',
+                    //     });
+                    //     return;
+                    // }
                 }
+
 
                 // === KONFIRMASI ===
                 Swal.fire({
-                    title: `Are you sure you want to ${actionText}?`,
+                    // title: `Are you sure you want to ${actionText}?`,
+                    title: action === 'save_draft' ? 'Save your draft?' : `Are you sure you want to ${actionText}?`,
                     text: "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
