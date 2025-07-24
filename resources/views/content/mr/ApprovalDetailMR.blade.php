@@ -485,7 +485,7 @@
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-4">
                                                             {{-- <button type="button" class="btn btn-warning me-2 save_draft" data-action="save_draft">Save Draft</button> --}}
-                                                            @if($materialRequest->MR_APStep == 1 && in_array($materialRequest->MR_Status, ['SUBMIT', 'OPEN']))
+                                                            @if($materialRequest->MR_APStep == 1 && in_array($materialRequest->MR_Status, ['SUBMIT', 'SAVE_DRAFT']))
                                                                 <button type="button" class="btn btn-warning me-2 approve-reject-btn" data-action="save_draft">Save Draft</button>
                                                             @endif
                                                             <button type="button" class="btn btn-success me-2 approve-reject-btn" data-action="approve">Approve</button>
@@ -663,7 +663,14 @@
         document.querySelectorAll('.approve-reject-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const action = this.getAttribute('data-action');
-                const actionText = action === 'approve' ? 'Approve' : 'Reject' ;
+                // const actionText = action === 'approve' ? 'Approve' : 'Reject' ;
+                const actionText = action === 'approve'
+                    ? 'Approve'
+                    : action === 'reject'
+                    ? 'Reject'
+                    : 'Save Draft';
+
+
                 const mr_no_encoded = "{{ base64_encode($materialRequest->MR_No) }}";
                 const url = approveRejectUrlTemplate.replace('ENCODED_PLACEHOLDER', mr_no_encoded);
 

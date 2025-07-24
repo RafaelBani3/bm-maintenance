@@ -871,7 +871,7 @@ class MRController extends Controller
         $action = $request->input('action');
 
         if ($action === 'save_draft') {
-            if ($mr->MR_APStep != 1 || !in_array($mr->MR_Status, ['SUBMIT', 'OPEN'])) {
+            if ($mr->MR_APStep != 1 || !in_array($mr->MR_Status, ['SUBMIT', 'SAVE_DRAFT'])) {
                 return response()->json(['error' => 'Draft only allowed at step 1 with SUBMIT/OPEN status'], 400);
             }
 
