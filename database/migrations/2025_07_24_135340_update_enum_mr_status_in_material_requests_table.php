@@ -13,7 +13,7 @@ return new class extends Migration
      */
      public function up(): void
     {
-        DB::statement("ALTER TABLE material_requests MODIFY COLUMN MR_Status ENUM('OPEN','SUBMIT','AP1','AP2','AP3','AP4','AP5','CLOSE','REJECT','INPROGRESS','DONE','SAVE_DRAFT') NOT NULL");
+        DB::statement("ALTER TABLE Mat_Req MODIFY COLUMN MR_Status ENUM('OPEN','SUBMIT','AP1','AP2','AP3','AP4','AP5','CLOSE','REJECT','INPROGRESS','DONE','SAVE_DRAFT') NOT NULL");
     }
 
     /**
@@ -21,6 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE material_requests MODIFY COLUMN MR_Status ENUM('OPEN','SUBMIT','AP1','AP2','AP3','AP4','AP5','CLOSE','REJECT','INPROGRESS','DONE','SAVE_DRAFT') NOT NULL");
+        DB::statement("ALTER TABLE Mat_Req MODIFY COLUMN MR_Status ENUM('OPEN','SUBMIT','AP1','AP2','AP3','AP4','AP5','CLOSE','REJECT','INPROGRESS','DONE','SAVE_DRAFT') NOT NULL");
     }
 };
