@@ -51,7 +51,7 @@
     </script>
 
     {{-- Validation & Save Work Order--}}
-    <script>
+    {{-- <script>
         $(function () {
             const form = document.getElementById('kt_docs_formvalidation_text');
             const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
@@ -182,10 +182,225 @@
                 });
             });
         });
+    </script> --}}
+    <script>
+        $(function () {
+            const form = document.getElementById('kt_docs_formvalidation_text');
+            const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+
+            if (!form || !submitButton) return;
+
+            // === Dropzone Setup ===
+            const id = "#kt_dropzonejs_example_3";
+            const dropzone = document.querySelector(id);
+
+            let myDropzone;
+
+            if (dropzone) {
+                Dropzone.autoDiscover = false;
+
+                // Template setup
+                let previewNode = dropzone.querySelector(".dropzone-item");
+                previewNode.id = "";
+                let previewTemplate = previewNode.parentNode.innerHTML;
+                previewNode.parentNode.removeChild(previewNode);
+
+                // Initialize Dropzone
+                myDropzone = new Dropzone(id, {
+                    url: "{{ route('SaveWO') }}",
+                    autoProcessQueue: false,
+                    maxFilesize: 2,
+                    maxFiles: 1,
+                    acceptedFiles: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf,image/jpeg',
+                    previewTemplate: previewTemplate,
+                    previewsContainer: id + " .dropzone-items",
+                    clickable: id + " .dropzone-select",
+                    addRemoveLinks: true,
+                    dictDefaultMessage: 'Drop file here or click to upload.',
+                    dictMaxFilesExceeded: 'Only 1 file is allowed.',
+                    init: function () {
+                        this.on("addedfile", function (file) {
+                            if (this.files.length > 1) {
+                                this.removeFile(this.files[0]);
+                            }
+
+                            const allowedTypes = [
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/pdf',
+                                'image/jpeg'
+                            ];
+
+                            if (!allowedTypes.includes(file.type)) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "Invalid File Type",
+                                    text: "Only Excel, PDF, and JPEG files are allowed.",
+                                    confirmButtonText: "OK",
+                                    customClass: { confirmButton: "btn btn-warning" }
+                                });
+                            }
+
+                            if (file.size > 2 * 1024 * 1024) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "File Too Large",
+                                    text: "Max file size is 2MB.",
+                                    confirmButtonText: "OK",
+                                    customClass: { confirmButton: "btn btn-warning" }
+                                });
+                            }
+
+                            const items = dropzone.querySelectorAll('.dropzone-item');
+                            items.forEach(item => item.style.display = '');
+                        });
+                    }
+                });
+
+                myDropzone.on("totaluploadprogress", function (progress) {
+                    dropzone.querySelectorAll('.progress-bar').forEach(pb => pb.style.width = progress + "%");
+                });
+
+                myDropzone.on("sending", function () {
+                    dropzone.querySelectorAll('.progress-bar').forEach(pb => pb.style.opacity = "1");
+                });
+
+                myDropzone.on("complete", function () {
+                    setTimeout(() => {
+                        dropzone.querySelectorAll('.dz-complete .progress-bar, .dz-complete .progress').forEach(el => el.style.opacity = "0");
+                    }, 300);
+                });
+            }
+
+            // === Form Validation Setup ===
+            const validator = FormValidation.formValidation(form, {
+                fields: {
+                    'reference_number': {
+                        validators: {
+                            notEmpty: { message: 'Reference No. is required' }
+                        }
+                    },
+                    'start_date': {
+                        validators: {
+                            notEmpty: { message: 'Start Date is required' }
+                        }
+                    },
+                    'end_date': {
+                        validators: {
+                            notEmpty: { message: 'End Date is required' }
+                        }
+                    },
+                    'assigned_to[]': {
+                        validators: {
+                            notEmpty: { message: 'Assigned To is required' }
+                        }
+                    },
+                    'work_description': {
+                        validators: {
+                            notEmpty: { message: 'Work Description is required' }
+                        }
+                    }
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            });
+
+            // === Submit Handler ===
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                validator.validate().then(function (status) {
+                    const checkbox = document.getElementById('require_material_checkbox');
+                    const intendedFor = document.getElementById('intended_for');
+
+                    if (checkbox.checked && !intendedFor.value) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Incomplete Input",
+                            text: "Please select a user in the 'Intended for' field.",
+                            confirmButtonText: "OK",
+                            customClass: { confirmButton: "btn btn-warning" }
+                        });
+                        return;
+                    }
+
+                    if (status === 'Valid') {
+                        const loadingEl = document.createElement("div");
+                        loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25");
+                        loadingEl.innerHTML = `
+                            <span class="spinner-border text-primary" role="status"></span>
+                            <span class="text-white fs-6 fw-semibold mt-5">Loading...</span>
+                        `;
+                        document.body.prepend(loadingEl);
+                        KTApp.showPageLoading();
+
+                        let formData = new FormData(form);
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+
+                        // Append file from Dropzone
+                        if (myDropzone && myDropzone.files.length > 0) {
+                            formData.append('wo_attachment', myDropzone.files[0]);
+                        }
+
+                        $.ajax({
+                            url: "{{ route('SaveWO') }}",
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                submitButton.removeAttribute('data-kt-indicator');
+                                KTApp.hidePageLoading();
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success!",
+                                    text: "Work Order has been saved successfully.",
+                                    confirmButtonText: "OK",
+                                    customClass: { confirmButton: "btn btn-primary" }
+                                }).then(() => {
+                                    let encodedWoNo = btoa(response.wo_no);
+                                    let url = "{{ route('EditWO', ['wo_no' => '__WONO__']) }}".replace('__WONO__', encodedWoNo);
+                                    window.location.href = url;
+                                });
+                            },
+                            error: function (xhr) {
+                                submitButton.removeAttribute('data-kt-indicator');
+                                KTApp.hidePageLoading();
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error!",
+                                    text: xhr.responseJSON?.message || "Something went wrong. Please try again.",
+                                    confirmButtonText: "OK",
+                                    customClass: { confirmButton: "btn btn-danger" }
+                                });
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Validation Error",
+                            text: "Please fill in all required fields.",
+                            confirmButtonText: "OK",
+                            customClass: { confirmButton: "btn btn-danger" }
+                        });
+                    }
+                });
+            });
+        });
     </script>
+
+
+
+
     
-
-
     {{-- Case No / Reference No --}}
     <script>
         $(document).ready(function () {
@@ -276,7 +491,7 @@
 
     </script>
     
-    {{-- Assigned To --}}
+    {{-- Assigned To (Teknisi) --}}
     <script>
         $(document).ready(function () {
              $('#assigned_to').select2({
@@ -407,13 +622,15 @@
         });
     </script>
 
-    {{-- Form Ditujukan Oleh --}}
+
+    {{-- Form Ditunjukan untuk --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const checkbox = document.getElementById('require_material_checkbox');
             const loader = document.getElementById('material_loader');
             const intendedForSection = document.getElementById('intended_for_section');
             const intendedForSelect = document.getElementById('intended_for');
+            const woAttachmentSection = document.getElementById('wo_attachment_section');
 
             checkbox.addEventListener('change', function () {
                 if (this.checked) {
@@ -436,13 +653,18 @@
                                 loader.classList.add('d-none');
                                 loader.classList.remove('d-flex');
                                 intendedForSection.classList.remove('d-none');
+                                woAttachmentSection.classList.remove('d-none');
                             });
                     }, 1000);
                 } else {
                     intendedForSection.classList.add('d-none');
                     intendedForSelect.innerHTML = '<option value="">Choose User</option>';
+                    woAttachmentSection.classList.add('d-none');
                 }
             });
         });
     </script>
+
+
+
 

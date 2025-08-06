@@ -220,7 +220,69 @@
                             <!--end::Input intended for-->
                         </div>
                         <!--end::Card body-->
-                
+
+
+                        {{-- WO Attachment --}}
+                        <div id="wo_attachment_section" class="fv-row row mb-10 d-none">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                <span class="required">WorkOrder Attachment</span>
+                            </label>                                                
+                            <!--end::Label-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Dropzone-->
+                                <div name="wo_attachment" class="dropzone dropzone-queue mb-2" id="kt_dropzonejs_example_3">
+                                    <!--begin::Controls-->
+                                    <div class="dropzone-panel mb-lg-0 mb-2">
+                                        <a class="dropzone-select btn btn-sm btn-primary me-2">Attach files</a>
+                                        <a class="dropzone-remove-all btn btn-sm btn-light-primary">Remove All</a>
+                                    </div>
+                                    <!--end::Controls-->
+
+                                    <!--begin::Items-->
+                                    <div class="dropzone-items wm-200px">
+                                        <div class="dropzone-item" style="display:none">
+                                            <!--begin::File-->
+                                            <div class="dropzone-file">
+                                                <div class="dropzone-filename" title="some_image_file_name.jpg">
+                                                    <span data-dz-name>some_image_file_name.jpg</span>
+                                                    <strong>(<span data-dz-size>340kb</span>)</strong>
+                                                </div>
+
+                                                <div class="dropzone-error" data-dz-errormessage></div>
+                                            </div>
+                                            <!--end::File-->
+
+                                            <!--begin::Progress-->
+                                            <div class="dropzone-progress">
+                                                <div class="progress">
+                                                    <div
+                                                        class="progress-bar bg-primary"
+                                                        role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--end::Progress-->
+
+                                            <!--begin::Toolbar-->
+                                            <div class="dropzone-toolbar">
+                                                <span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+                                            </div>
+                                            <!--end::Toolbar-->
+                                        </div>
+                                    </div>
+                                    <!--end::Items-->
+                                </div>
+                                <!--end::Dropzone-->
+
+                                <!--begin::Hint-->
+                                <span class="form-text text-muted">
+                                    Max file size is <strong>2MB</strong>. Only <code>.xls, .xlsx, .pdf, .jpg, .jpeg</code> files are allowed.
+                                </span>
+                                <!--end::Hint-->
+                            </div>
+                        </div>
+
                         <!-- Submit Button -->
                         <div class="card-footer d-flex justify-content-end py-6 px-9">
                             <button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">

@@ -24,6 +24,82 @@
         });
     </script>
 
+    <script>
+        let myDropzone;
+            let dropzoneInitialized = false;
+
+            function initDropzoneIfNeeded() {
+                const dropzoneElement = document.querySelector("#kt_dropzonejs_example_3");
+                if (!dropzoneElement || dropzoneInitialized) return;
+
+                Dropzone.autoDiscover = false;
+
+                const previewNode = dropzoneElement.querySelector(".dropzone-item");
+                previewNode.id = "";
+                const previewTemplate = previewNode.parentNode.innerHTML;
+                previewNode.parentNode.removeChild(previewNode);
+
+                myDropzone = new Dropzone("#kt_dropzonejs_example_3", {
+                    url: "#", // Dummy placeholder
+                    autoProcessQueue: false,
+                    maxFilesize: 2,
+                    maxFiles: 1,
+                    acceptedFiles: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf,image/jpeg',
+                    previewTemplate: previewTemplate,
+                    previewsContainer: "#kt_dropzonejs_example_3 .dropzone-items",
+                    clickable: "#kt_dropzonejs_example_3 .dropzone-select",
+                    addRemoveLinks: true,
+                    dictDefaultMessage: 'Drop file here or click to upload.',
+                    dictMaxFilesExceeded: 'Only 1 file is allowed.',
+                    init: function () {
+                        this.on("addedfile", function (file) {
+                            if (this.files.length > 1) {
+                                this.removeFile(this.files[0]);
+                            }
+
+                            const allowedTypes = [
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/pdf',
+                                'image/jpeg'
+                            ];
+
+                            if (!allowedTypes.includes(file.type)) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "Invalid File Type",
+                                    text: "Only Excel, PDF, and JPEG files are allowed.",
+                                    confirmButtonText: "OK",
+                                    customClass: { confirmButton: "btn btn-warning" }
+                                });
+                            }
+
+                            if (file.size > 2 * 1024 * 1024) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "File Too Large",
+                                    text: "Max file size is 2MB.",
+                                    confirmButtonText: "OK",
+                                    customClass: { confirmButton: "btn btn-warning" }
+                                });
+                            }
+
+                            const items = dropzoneElement.querySelectorAll('.dropzone-item');
+                            items.forEach(item => item.style.display = '');
+                        });
+
+                        this.disable(); // Disable until edit clicked
+                    }
+                });
+
+                dropzoneInitialized = true;
+            }
+
+    </script>
+
+
     @php
         $currentUserId = auth()->user()->id;
         $userPermissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
@@ -35,217 +111,395 @@
         const woMRUserId = {{ $wo->WO_MR ?? 'null' }}; 
     </script>
 
+
+
+    {{-- dropzone Attachment --}}
+    <script>
+        let myDropzone;
+            const id = "#kt_dropzonejs_example_3";
+            const dropzone = document.querySelector(id);
+
+            if (dropzone) {
+                Dropzone.autoDiscover = false;
+
+                let previewNode = dropzone.querySelector(".dropzone-item");
+                previewNode.id = "";
+                let previewTemplate = previewNode.parentNode.innerHTML;
+                previewNode.parentNode.removeChild(previewNode);
+
+                myDropzone = new Dropzone(id, {
+                    url: "{{ route('SaveWO') }}", // hanya digunakan kalau kamu mau pakai AJAX langsung
+                    autoProcessQueue: false, // kita proses manual di tombol Save
+                    maxFilesize: 2,
+                    maxFiles: 1,
+                    acceptedFiles: '.xls,.xlsx,.pdf,.jpg,.jpeg',
+                    previewTemplate: previewTemplate,
+                    previewsContainer: id + " .dropzone-items",
+                    clickable: id + " .dropzone-select",
+                    addRemoveLinks: true,
+                    dictDefaultMessage: 'Drop file here or click to upload.',
+                    dictMaxFilesExceeded: 'Only 1 file is allowed.',
+                    init: function () {
+                        this.on("addedfile", function (file) {
+                            if (this.files.length > 1) {
+                                this.removeFile(this.files[0]);
+                            }
+
+                            const allowedTypes = [
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/pdf',
+                                'image/jpeg'
+                            ];
+
+                            if (!allowedTypes.includes(file.type)) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "Invalid File Type",
+                                    text: "Only Excel, PDF, and JPEG files are allowed.",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+
+                            if (file.size > 2 * 1024 * 1024) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "File Too Large",
+                                    text: "Max file size is 2MB.",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+
+                            const items = dropzone.querySelectorAll('.dropzone-item');
+                            items.forEach(item => item.style.display = '');
+                        });
+                    }
+                });
+
+                // Handle progress bar
+                myDropzone.on("totaluploadprogress", function (progress) {
+                    dropzone.querySelectorAll('.progress-bar').forEach(pb => pb.style.width = progress + "%");
+                });
+
+                myDropzone.on("sending", function () {
+                    dropzone.querySelectorAll('.progress-bar').forEach(pb => pb.style.opacity = "1");
+                });
+
+                myDropzone.on("complete", function () {
+                    setTimeout(() => {
+                        dropzone.querySelectorAll('.dz-complete .progress-bar, .dz-complete .progress').forEach(el => el.style.opacity = "0");
+                    }, 300);
+                });
+            }
+    </script>
+
     {{-- Script Validation dan Update WO --}}
     <script>
-    $(document).ready(function () {
-        const form = $('#kt_docs_formvalidation_text');
-        const btnEdit = $('#btnEditWO');
-        const btnSave = $('#kt_docs_formvalidation_text_save');
-        const btnSubmit = $('#kt_docs_formvalidation_text_submit');
+        $(document).ready(function () {
+            const form = $('#kt_docs_formvalidation_text');
+            const btnEdit = $('#btnEditWO');
+            const btnSave = $('#kt_docs_formvalidation_text_save');
+            const btnSubmit = $('#kt_docs_formvalidation_text_submit');
 
-        const requiredFields = [
-            { selector: '#reference_number', message: 'Reference Number is required' },
-            { selector: '#start_date', message: 'Start Date is required' },
-            { selector: '#end_date', message: 'End Date is required' },
-            { selector: 'textarea[name="work_description"]', message: 'Work Description is required' }
-        ];
+            const requiredFields = [
+                { selector: '#reference_number', message: 'Reference Number is required' },
+                { selector: '#start_date', message: 'Start Date is required' },
+                { selector: '#end_date', message: 'End Date is required' },
+                { selector: 'textarea[name="work_description"]', message: 'Work Description is required' }
+            ];
 
-        // Initial State
-        form.find('input, textarea, select').not('.exclude-disable, [type="hidden"], .readonly-select, .readonly-checkbox').prop('disabled', true);
+            // Initial State
+            form.find('input, textarea, select').not('.exclude-disable, [type="hidden"], .readonly-select, .readonly-checkbox').prop('disabled', true);
 
-        // Simulasikan readonly untuk select
-        form.find('.readonly-select').each(function () {
-            $(this).on('mousedown', function (e) {
-                e.preventDefault(); 
-                this.blur();       
-            }).addClass('select-readonly');
-        });
+            // Simulasikan readonly untuk select
+            form.find('.readonly-select').each(function () {
+                $(this).on('mousedown', function (e) {
+                    e.preventDefault(); 
+                    this.blur();       
+                }).addClass('select-readonly');
+            });
 
-        form.find('.readonly-checkbox').each(function () {
-            $(this).on('click.readonly', function (e) {
-                e.preventDefault();
-                return false;
-            }).addClass('checkbox-readonly');
-        });
+            form.find('.readonly-checkbox').each(function () {
+                $(this).on('click.readonly', function (e) {
+                    e.preventDefault();
+                    return false;
+                }).addClass('checkbox-readonly');
+            });
 
-        btnSave.addClass('d-none');
-        btnEdit.removeClass('d-none');
-        btnSubmit.removeClass('d-none');
+            btnSave.addClass('d-none');
+            btnEdit.removeClass('d-none');
+            btnSubmit.removeClass('d-none')
 
-        // ===== HANDLE EDIT CASE =====
-        btnEdit.on('click', function () {
-            let isEmpty = false;
+            // ===== HANDLE EDIT CASE =====
+            btnEdit.on('click', function () {
+                let isEmpty = false;
 
-            form.find('.invalid-feedback').remove();
-            form.find('.is-invalid').removeClass('is-invalid');
+                form.find('.invalid-feedback').remove();
+                form.find('.is-invalid').removeClass('is-invalid');
 
-            requiredFields.forEach(field => {
-                const input = $(field.selector);
-                const container = input.closest('.fv-row');
-                if (!input.val()) {
-                    isEmpty = true;
-                    input.addClass('is-invalid');
-                    if (container.find('.invalid-feedback').length === 0) {
-                        container.append(`<div class="invalid-feedback d-block">${field.message}</div>`);
+                requiredFields.forEach(field => {
+                    const input = $(field.selector);
+                    const container = input.closest('.fv-row');
+                    if (!input.val()) {
+                        isEmpty = true;
+                        input.addClass('is-invalid');
+                        if (container.find('.invalid-feedback').length === 0) {
+                            container.append(`<div class="invalid-feedback d-block">${field.message}</div>`);
+                        }
                     }
-                }
-            });
-
-            if (isEmpty) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text: 'There are required fields that are still empty. Please complete them before editing.',
-                    confirmButtonText: 'OK'
                 });
-                return;
-            }
 
-            const loadingEl = document.createElement("div");
-            loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
-            loadingEl.innerHTML = `
-                <span class="spinner-border text-primary" role="status"></span>
-                <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
-            `;
-            document.body.prepend(loadingEl);
-
-            setTimeout(() => {
-                loadingEl.remove();
-                form.find('input, textarea, select').not('.exclude-disable, [type="hidden"]').prop('disabled', false);
-                form.find('.readonly-select').off('mousedown').removeClass('select-readonly');
-                form.find('.readonly-checkbox').off('click.readonly').removeClass('checkbox-readonly');
-
-                btnSave.removeClass('d-none');
-                btnEdit.addClass('d-none');
-                btnSubmit.addClass('d-none');
-            }, 800);
-        });
-
-        // ===== HANDLE SAVE CASE =====
-        btnSave.on('click', function (e) {
-            e.preventDefault();
-            handleSaveWO($(this));
-        });
-
-        // ===== HANDLE SUBMIT CASE =====
-        btnSubmit.on('click', function (e) {
-            e.preventDefault();
-
-            Swal.fire({
-                title: 'Submit Work Order?',
-                text: "Make sure all information is correct before submitting this Work Order.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Submit WO',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    submitWorkOrder();
-                } else if (result.isDenied) {
-                    handleSaveWO(btnSave);
+                if (isEmpty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'There are required fields that are still empty. Please complete them before editing.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
                 }
-            });
-        });
 
-        // ====== SAVE WO FUNCTION ======
-        function handleSaveWO($btn) {
-        $btn.attr("data-kt-indicator", "on");
-        $btn.prop("disabled", true);
-
-        let isValid = true;
-
-        // Reset error state
-        form.find('.invalid-feedback').remove();
-        form.find('.is-invalid').removeClass('is-invalid');
-
-        requiredFields.forEach(field => {
-            const input = $(field.selector);
-            const container = input.closest('.fv-row');
-            if (!input.val()) {
-                isValid = false;
-                input.addClass('is-invalid');
-                if (container.find('.invalid-feedback').length === 0) {
-                    container.append(`<div class="invalid-feedback d-block">${field.message}</div>`);
-                }
-            }
-        });
-
-        if (!isValid) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Validation Error!',
-                text: 'Please complete all required fields before saving.',
-                confirmButtonText: 'OK'
-            });
-            $btn.removeAttr("data-kt-indicator");
-            $btn.prop("disabled", false);
-            return;
-        }
-
-        // Konfirmasi sebelum menyimpan
-        Swal.fire({
-            title: 'Save Work Order?',
-            text: "Are you sure you want to save the changes?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Save',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Show loader
                 const loadingEl = document.createElement("div");
                 loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
                 loadingEl.innerHTML = `
                     <span class="spinner-border text-primary" role="status"></span>
-                    <span class="text-gray-800 fs-6 fw-semibold mt-5">Saving...</span>
+                    <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
                 `;
                 document.body.prepend(loadingEl);
 
                 setTimeout(() => {
-                    $.ajax({
-                        url: "{{ route('WorkOrder.SaveDraft') }}",
-                        type: "POST",
-                        data: form.serialize(),
-                        success: function (response) {
-                            loadingEl.remove();
+                    loadingEl.remove();
+                    form.find('input, textarea, select').not('.exclude-disable, [type="hidden"]').prop('disabled', false);
+                    form.find('.readonly-select').off('mousedown').removeClass('select-readonly');
+                    form.find('.readonly-checkbox').off('click.readonly').removeClass('checkbox-readonly');
 
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Saved!',
-                                    text: response.message,
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    location.reload(); 
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Failed!',
-                                    text: response.message
-                                });
-                                $btn.removeAttr("data-kt-indicator");
-                                $btn.prop("disabled", false);
+                    btnSave.removeClass('d-none');
+                    btnEdit.addClass('d-none');
+                    btnSubmit.addClass('d-none');
+                    $('#btn-attach-file').removeClass('d-none');
+
+
+                    // ✅ Inisialisasi dan aktifkan Dropzone
+                    initDropzoneIfNeeded();
+                    if (myDropzone) {
+                        myDropzone.enable();
+                    }
+                }, 800);
+            });
+
+
+            // ===== HANDLE SAVE CASE =====
+            btnSave.on('click', function (e) {
+                e.preventDefault();
+                handleSaveWO($(this));
+            });
+
+            // ===== HANDLE SUBMIT CASE =====
+            btnSubmit.on('click', function (e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Submit Work Order?',
+                    text: "Make sure all information is correct before submitting this Work Order.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Submit WO',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        submitWorkOrder();
+                    } else if (result.isDenied) {
+                        handleSaveWO(btnSave);
+                    }
+                });
+            });
+
+            // Dropzone Attachment
+            let myDropzone;
+            const id = "#kt_dropzonejs_example_3";
+            const dropzone = document.querySelector(id);
+
+            if (dropzone) {
+                Dropzone.autoDiscover = false;
+
+                let previewNode = dropzone.querySelector(".dropzone-item");
+                previewNode.id = "";
+                let previewTemplate = previewNode.parentNode.innerHTML;
+                previewNode.parentNode.removeChild(previewNode);
+
+                myDropzone = new Dropzone(id, {
+                    url: "{{ route('SaveWO') }}", // tidak digunakan langsung karena kita proses manual
+                    autoProcessQueue: false,
+                    maxFilesize: 2,
+                    maxFiles: 1,
+                    acceptedFiles: '.xls,.xlsx,.pdf,.jpg,.jpeg',
+                    previewTemplate: previewTemplate,
+                    previewsContainer: id + " .dropzone-items",
+                    clickable: id + " .dropzone-select",
+                    addRemoveLinks: true,
+                    dictDefaultMessage: 'Drop file here or click to upload.',
+                    dictMaxFilesExceeded: 'Only 1 file is allowed.',
+                    init: function () {
+                        this.on("addedfile", function (file) {
+                            if (this.files.length > 1) {
+                                this.removeFile(this.files[0]);
                             }
-                        },
-                        error: function (xhr) {
-                            loadingEl.remove();
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: xhr.responseJSON?.message || 'Something went wrong.'
-                            });
-                            $btn.removeAttr("data-kt-indicator");
-                            $btn.prop("disabled", false);
-                        }
-                    });
-                }, 500);
-            } else {
-                $btn.removeAttr("data-kt-indicator");
-                $btn.prop("disabled", false);
+
+                            const allowedTypes = [
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/pdf',
+                                'image/jpeg'
+                            ];
+
+                            if (!allowedTypes.includes(file.type)) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "Invalid File Type",
+                                    text: "Only Excel, PDF, and JPEG files are allowed.",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+
+                            if (file.size > 2 * 1024 * 1024) {
+                                this.removeFile(file);
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "File Too Large",
+                                    text: "Max file size is 2MB.",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+
+                            dropzone.querySelectorAll('.dropzone-item').forEach(item => item.style.display = '');
+                        });
+                    }
+                });
+
+                myDropzone.on("totaluploadprogress", function (progress) {
+                    dropzone.querySelectorAll('.progress-bar').forEach(pb => pb.style.width = progress + "%");
+                });
+
+                myDropzone.on("sending", function () {
+                    dropzone.querySelectorAll('.progress-bar').forEach(pb => pb.style.opacity = "1");
+                });
+
+                myDropzone.on("complete", function () {
+                    setTimeout(() => {
+                        dropzone.querySelectorAll('.dz-complete .progress-bar, .dz-complete .progress').forEach(el => el.style.opacity = "0");
+                    }, 300);
+                });
             }
-        });
-    }
+            
+            // ====== SAVE WO FUNCTION ======
+            function handleSaveWO($btn) {
+                $btn.attr("data-kt-indicator", "on");
+                $btn.prop("disabled", true);
+
+                let isValid = true;
+
+                form.find('.invalid-feedback').remove();
+                form.find('.is-invalid').removeClass('is-invalid');
+
+                requiredFields.forEach(field => {
+                    const input = $(field.selector);
+                    const container = input.closest('.fv-row');
+                    if (!input.val()) {
+                        isValid = false;
+                        input.addClass('is-invalid');
+                        if (container.find('.invalid-feedback').length === 0) {
+                            container.append(`<div class="invalid-feedback d-block">${field.message}</div>`);
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Validation Error!',
+                        text: 'Please complete all required fields before saving.',
+                        confirmButtonText: 'OK'
+                    });
+                    $btn.removeAttr("data-kt-indicator");
+                    $btn.prop("disabled", false);
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Save Work Order?',
+                    text: "Are you sure you want to save the changes?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Save',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const loadingEl = document.createElement("div");
+                        loadingEl.classList.add("page-loader", "flex-column", "bg-dark", "bg-opacity-25", "position-fixed", "w-100", "h-100", "top-0", "start-0", "d-flex", "justify-content-center", "align-items-center");
+                        loadingEl.innerHTML = `
+                            <span class="spinner-border text-primary" role="status"></span>
+                            <span class="text-gray-800 fs-6 fw-semibold mt-5">Saving...</span>
+                        `;
+                        document.body.prepend(loadingEl);
+
+                        setTimeout(() => {
+                            const formElement = form[0]; // native form DOM
+                            const formData = new FormData(formElement);
+
+                            // Tambahkan file Dropzone jika ada
+                            if (myDropzone.getAcceptedFiles().length > 0) {
+                                formData.append('wo_attachment', myDropzone.getAcceptedFiles()[0]);
+                            }
+
+                            $.ajax({
+                                url: "{{ route('WorkOrder.SaveDraft') }}",
+                                type: "POST",
+                                data: formData,
+                                processData: false, // penting
+                                contentType: false, // penting
+                                success: function (response) {
+                                    loadingEl.remove();
+                                    if (response.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Saved!',
+                                            text: response.message,
+                                            confirmButtonText: 'OK'
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Failed!',
+                                            text: response.message
+                                        });
+                                        $btn.removeAttr("data-kt-indicator");
+                                        $btn.prop("disabled", false);
+                                    }
+                                },
+                                error: function (xhr) {
+                                    loadingEl.remove();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: xhr.responseJSON?.message || 'Something went wrong.'
+                                    });
+                                    $btn.removeAttr("data-kt-indicator");
+                                    $btn.prop("disabled", false);
+                                }
+                            });
+
+                        }, 500);
+                    } else {
+                        $btn.removeAttr("data-kt-indicator");
+                        $btn.prop("disabled", false);
+                    }
+                });
+            }
 
         // ====== SUBMIT WO FUNCTION ======
         function submitWorkOrder() {
@@ -329,8 +583,10 @@
     });
     </script>
 
+
+
     {{-- Checkbox Ditujukan Oleh --}}
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function () {
             const checkbox = document.getElementById('require_material_checkbox');
             const loader = document.getElementById('material_loader');
@@ -352,7 +608,45 @@
                 }, 1000);
             });
         });
+    </script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkbox = document.getElementById('require_material_checkbox');
+            const loader = document.getElementById('material_loader');
+            const intendedForSection = document.getElementById('intended_for_section');
+            const woAttachmentSection = document.getElementById('wo_attachment_section');
+
+            // Fungsi handler utama
+            function handleCheckboxChange() {
+                loader.classList.remove('d-none');
+                loader.classList.add('d-flex');
+
+                setTimeout(() => {
+                    loader.classList.add('d-none');
+                    loader.classList.remove('d-flex');
+
+                    const isChecked = checkbox.checked;
+
+                    // Tampilkan atau sembunyikan "Intended For"
+                    if (isChecked) {
+                        intendedForSection.classList.remove('d-none');
+                        woAttachmentSection.classList.remove('d-none');
+                    } else {
+                        intendedForSection.classList.add('d-none');
+                        woAttachmentSection.classList.add('d-none');
+                    }
+                }, 1000);
+            }
+
+            // Attach listener
+            checkbox.addEventListener('change', handleCheckboxChange);
+
+            // Trigger default saat load (jika checkbox sudah dicentang di halaman edit)
+            handleCheckboxChange();
+        });
     </script>
+
 
     {{-- Hapus Teknisi yang sudah dipipilih/Tersimpan didatabase --}}
     <script>

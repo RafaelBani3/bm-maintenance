@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
 
 class MRController extends Controller
 {
@@ -32,27 +34,13 @@ class MRController extends Controller
     {
         $userId = $request->user_id;
 
-        // $data = DB::table('Work_Orders as wo')
-        //     ->join('users as u', 'wo.CR_BY', '=', 'u.id')
-        //     ->leftJoin('Positions as p', 'u.PS_ID', '=', 'p.id')
-        //     ->select(
-        //         'wo.Case_No',
-        //         'wo.WO_No',
-        //         'u.Fullname as created_by',
-        //         'p.PS_Name as department'
-        //     )
-        //     ->where('wo.CR_BY', $userId)
-        //     ->where('wo.WO_Status', 'SUBMIT')
-        //     ->where('wo.WO_NeedMat','Y')
-        //     ->groupBy('wo.Case_No', 'wo.WO_No', 'u.Fullname', 'p.PS_Name')
-        //     ->get();
-
         $data = DB::table('Work_Orders as wo')
             ->join('users as u', 'wo.CR_BY', '=', 'u.id')
             ->leftJoin('Positions as p', 'u.PS_ID', '=', 'p.id')
             ->select(
                 'wo.Case_No',
                 'wo.WO_No',
+                'wo.WO_Narative',
                 'u.Fullname as created_by',
                 'p.PS_Name as department'
             )
@@ -62,9 +50,8 @@ class MRController extends Controller
             })
             ->where('wo.WO_Status', 'SUBMIT')
             ->where('wo.WO_NeedMat', 'Y')
-            ->groupBy('wo.Case_No', 'wo.WO_No', 'u.Fullname', 'p.PS_Name')
+            ->groupBy('wo.Case_No', 'wo.WO_No', 'wo.WO_Narative' ,'u.Fullname', 'p.PS_Name')
             ->get();
-
 
         return response()->json($data);
     }
@@ -79,14 +66,25 @@ class MRController extends Controller
             ->leftJoin('Positions as p', 'u.PS_ID', '=', 'p.id')
             ->leftJoin('cases as c', 'wo.Case_No', '=', 'c.Case_No')
             ->select(
-                'wo.WO_No',
+       'wo.WO_No',
                 'wo.Case_No',
-                 'c.Case_Name',
+                'wo.WO_Narative',
+                'wo.WO_Filename',
+                'wo.WO_Realname',
+                'c.Case_Name',
                 'u.Fullname as created_by',
                 'p.PS_Name as department'
             )
+
             ->where('wo.WO_No', $woNo)
             ->first();
+
+            if ($data && $data->WO_Filename) {
+                $folder = str_replace(['/', '\\'], '-', $data->WO_No); 
+
+                $data->file_exists = Storage::disk('public')->exists('wo_attachments/' . $folder . '/' . $data->WO_Filename);
+                $data->file_url = asset('storage/wo_attachments/' . $folder . '/' . $data->WO_Filename);
+            }
 
         return response()->json($data);
     }

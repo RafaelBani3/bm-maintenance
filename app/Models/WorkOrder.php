@@ -17,7 +17,7 @@ class WorkOrder extends Model
     
     protected $fillable = [
         'WO_No', 'Case_No', 'WOC_No', 'CR_BY', 'CR_DT',
-        'WO_Start', 'WO_End', 'WO_Status', 'WO_Narative',
+        'WO_Start', 'WO_End', 'WO_Status', 'WO_Narative ',
         'WO_NeedMat', 'WO_MR', 'WO_IsComplete', 'WO_CompDate',
         'WO_CompBy', 'WO_IsReject', 'WO_RejGroup', 'WO_RejBy',
         'WO_RejDate', 'WO_RMK1', 'WO_RMK2', 'WO_RMK3',

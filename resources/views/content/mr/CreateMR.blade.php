@@ -122,6 +122,35 @@
                                                 </div>
                                                 <!--end::Input Case Name-->
 
+                                                {{-- WO Attachment --}}
+                                                <div id="wo_attachment_section" class="row mb-10" style="display: none;">
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                                        <span class="required">WorkOrder Attachment</span>
+                                                    </label>                                                
+                                                    <div class="col-lg-8 fv-row">
+                                                        <div id="wo_attachment_content"></div> <!-- Kontainer untuk isi dynamic -->
+                                                    </div>
+                                                </div>
+                                                {{-- End WO Attachment --}}
+
+
+                                                 <!--begin:: WO Descrtion-->
+                                                <div class="row mb-10">
+                                                    <!--begin::Label-->
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                                        <span>Workorder Description</span>
+                                                    </label>
+                                                    <!--end::Label-->
+                                                    
+                                                    <div class="col-lg-8">
+                                                        <div class="col-lg-20 fv-row">
+                                                           <textarea name="wo_desc" id="wo_desc" class="form-control form-control-solid" 
+                                                            rows="4" placeholder="WO Description" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--end::WO Description-->
+                                                
                                                 <!--begin::Input Created By-->
                                                 <div class="row mb-10">
                                                     <!--begin::Label-->
@@ -377,9 +406,6 @@
             });
         });
     </script>
-
-
-
 
     @include('content.mr.partial.CreateMRJS')
 

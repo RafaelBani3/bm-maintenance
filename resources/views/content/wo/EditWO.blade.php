@@ -282,6 +282,122 @@
                                                     </div>
                                                 </div>
                                                 <!--end::Input Itended For-->
+
+                                                {{-- WO Attachment --}}
+                                                <div id="wo_attachment_section" class="fv-row row mb-10 d-none">
+                                                    <!--begin::Label-->
+                                                    <label class="col-lg-4 col-form-label fw-semibold fs-5 text-muted">
+                                                        <span class="required">WorkOrder Attachment</span>
+                                                    </label>                                                
+                                                    <!--end::Label-->
+                                                    <div class="col-lg-8 fv-row">
+                                                        <!--begin::Dropzone-->
+                                                        <div name="wo_attachment" class="dropzone dropzone-queue mb-2" id="kt_dropzonejs_example_3">
+                                                            
+                                                            @php
+                                                                // Normalisasi nama folder dari WO_No
+                                                                $folder = str_replace(['/', '\\'], '-', $wo->WO_No);
+                                                                $filePath = 'wo_attachments/' . $folder . '/' . $wo->WO_Filename;
+                                                            @endphp
+
+                                                            @if (!empty($wo->WO_Filename) && Storage::disk('public')->exists($filePath))
+                                                                <div class="d-flex flex-column gap-3 mt-5 mb-5">
+                                                                    <label class="fw-semibold fs-6 text-muted">Current Attachment</label>
+
+                                                                    <div class="d-flex align-items-center p-4 border rounded bg-light shadow-sm">
+                                                                        <div class="symbol symbol-50px me-4">
+                                                                            @php
+                                                                                $ext = strtolower(pathinfo($wo->WO_Filename, PATHINFO_EXTENSION));
+                                                                                $icon = match($ext) {
+                                                                                    'pdf' => 'bi bi-file-earmark-pdf-fill text-danger',
+                                                                                    'xls', 'xlsx' => 'bi bi-file-earmark-excel-fill text-success',
+                                                                                    'jpg', 'jpeg', 'png' => 'bi bi-file-earmark-image-fill text-primary',
+                                                                                    default => 'bi bi-file-earmark-fill text-secondary',
+                                                                                };
+                                                                            @endphp
+                                                                            <i class="{{ $icon }} fs-2x"></i>
+                                                                        </div>
+                                                                        <div class="flex-grow-1">
+                                                                            <div class="fw-bold text-dark">{{ $wo->WO_Realname }}</div>
+                                                                            <a href="{{ asset('storage/' . $filePath) }}"
+                                                                            class="btn btn-sm btn-light-primary mt-2"
+                                                                            download>
+                                                                                <i class="bi bi-download me-1"></i> Download
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @elseif(!empty($wo->WO_Filename))
+                                                                <div class="alert alert-warning d-flex align-items-center p-4 mt-4">
+                                                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-2x me-3"></i>
+                                                                    <div>
+                                                                        <strong>File tidak ditemukan.</strong><br>
+                                                                        Pastikan file attachment <code>{{ $wo->WO_Filename }}</code> masih ada di folder <code>storage/app/public/wo_attachments/{{ $folder }}/</code>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+
+                                                            <!--begin::Controls-->
+                                                            <div class="dropzone-panel mb-lg-0 mb-2">
+                                                                {{-- <a class="dropzone-select btn btn-sm btn-primary me-2">Attach files</a> --}}
+                                                                <a id="btn-attach-file" class="dropzone-select btn btn-sm btn-primary me-2 d-none">Attach files</a>
+                                                                <a class="dropzone-remove-all btn btn-sm btn-light-primary">Remove All</a>
+                                                            </div>
+                                                            <!--end::Controls-->
+
+                                                            <!--begin::Items-->
+                                                            <div class="dropzone-items wm-200px">
+                                                                <div class="dropzone-item" style="display:none">
+                                                                    <!--begin::File-->
+                                                                    <div class="dropzone-file">
+                                                                        <div class="dropzone-filename" title="some_image_file_name.jpg">
+                                                                            <span data-dz-name>some_image_file_name.jpg</span>
+                                                                            <strong>(<span data-dz-size>340kb</span>)</strong>
+                                                                        </div>
+
+                                                                        <div class="dropzone-error" data-dz-errormessage></div>
+                                                                    </div>
+                                                                    <!--end::File-->
+
+                                                                    <!--begin::Progress-->
+                                                                    <div class="dropzone-progress">
+                                                                        <div class="progress">
+                                                                            <div
+                                                                                class="progress-bar bg-primary"
+                                                                                role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!--end::Progress-->
+
+                                                                    <!--begin::Toolbar-->
+                                                                    <div class="dropzone-toolbar">
+                                                                        <span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+                                                                    </div>
+                                                                    <!--end::Toolbar-->
+                                                                </div>
+                                                            </div>
+                                                            <!--end::Items-->
+                                                        </div>
+                                                        <!--end::Dropzone-->
+                                                        <input type="hidden" name="replace_attachment" id="replace_attachment" value="0">
+
+
+                                                        <!--begin::Hint-->
+                                                        <span class="form-text text-muted">
+                                                            Max file size is <strong>2MB</strong>. Only <code>.xls, .xlsx, .pdf, .jpg, .jpeg</code> files are allowed.
+                                                        </span>                                                        
+                                                        <!--end::Hint-->
+                                                    </div>
+                                                </div>
+
+
+
+
+
+
+
+
                                             </div>
                                             <!--end::Card body-->
                                             

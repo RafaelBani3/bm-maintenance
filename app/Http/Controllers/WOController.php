@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -187,83 +188,112 @@ class WOController extends Controller
     {
         try {
             $request->validate([
-            'reference_number' => 'required|string',
-            'start_date' => 'required|date_format:d/m/Y H:i',
-            'end_date' => 'required|date_format:d/m/Y H:i|after_or_equal:start_date',
-            'work_description' => 'required|string|max:255',
-            'assigned_to' => 'nullable|array',
-        ]);
+                'reference_number' => 'required|string',
+                'start_date' => 'required|date_format:d/m/Y H:i',
+                'end_date' => 'required|date_format:d/m/Y H:i|after_or_equal:start_date',
+                'work_description' => 'required|string|max:255',
+                'assigned_to' => 'nullable|array',
+                'wo_attachment' => 'nullable|file|max:2048|mimes:jpeg,jpg,xlsx,xls',
+            ]);
 
-        $user = Auth::user(); 
-        $woNumber = (new WorkOrder)->getIncrementWONo();
+            $user = Auth::user(); 
+            $woNumber = (new WorkOrder)->getIncrementWONo();
 
-        $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
-        $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
+            $startDate = Carbon::createFromFormat('d/m/Y H:i', $request->start_date)->format('Y-m-d H:i:s');
+            $endDate = Carbon::createFromFormat('d/m/Y H:i', $request->end_date)->format('Y-m-d H:i:s');
 
-        Log::info('The Work Order creation process is initiated by the user ID:' . $user->id);
+            Log::info('The Work Order creation process is initiated by the user ID:' . $user->id);
 
-        $workOrder = new WorkOrder();
-        $workOrder->WO_No = $woNumber;
-        $workOrder->Case_No = $request->reference_number;
-        $workOrder->WO_Start = $startDate;
-        $workOrder->WO_End = $endDate;
-        $workOrder->WO_Status = 'OPEN';
-        $workOrder->WO_Narative = $request->work_description;
-        $workOrder->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
-        $workOrder->WO_MR = $request->intended_for;
-        $workOrder->WO_IsComplete = 'N';
-        $workOrder->CR_BY = $user->id;
-        $workOrder->CR_DT = now();
-        $workOrder->Update_Date = now();
-        $workOrder->save();
+            $workOrder = new WorkOrder();
+            $workOrder->WO_No = $woNumber;
+            $workOrder->Case_No = $request->reference_number;
+            $workOrder->WO_Start = $startDate;
+            $workOrder->WO_End = $endDate;
+            $workOrder->WO_Status = 'OPEN';
+            $workOrder->WO_Narative = $request->work_description;
+            $workOrder->WO_NeedMat = $request->require_material === 'yes' ? 'Y' : 'N';
+            $workOrder->WO_MR = $request->intended_for;
+            $workOrder->WO_IsComplete = 'N';
+            $workOrder->CR_BY = $user->id;
+            $workOrder->CR_DT = now();
+            $workOrder->Update_Date = now();
 
-        $case = Cases::where('Case_No', $request->reference_number)->first();
-            if ($case) {
-                $case->Case_Status = 'INPROGRESS';
-                $case->save();
-                Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
-            
-                Logs::create([
-                    'Logs_No' => Logs::generateLogsNo(),
-                    'LOG_Type' => 'BA',
-                    'LOG_RefNo' => $request->reference_number,
-                    'LOG_Status' => 'INPROGRESS',
-                    'LOG_User' => $user->id,
-                    'LOG_Date' => now(),
-                    'LOG_Desc' => 'Sent and Case Inprogress.',
-                ]);
-        
+
+            // Handle file upload (if available)
+            if ($request->hasFile('wo_attachment')) {
+                $file = $request->file('wo_attachment');
+
+                // Validasi mime dan ukuran tambahan (opsional untuk keamanan server-side)
+                $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+                $maxSize = 2048 * 1024; // 2MB dalam byte
+
+                if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+                    throw new \Exception('Unsupported file type uploaded.');
+                }
+
+                if ($file->getSize() > $maxSize) {
+                    throw new \Exception('File size exceeds 2MB limit.');
+                }
+
+                // Simpan file ke storage
+                $sanitizedNo = str_replace(['/', '\\'], '-', $woNumber);
+                $storedFileName = 'WO_Attachment' . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('wo_attachments/' . $sanitizedNo, $storedFileName, 'public');
+
+                // Update Work Order dengan nama file
+                $workOrder->WO_Filename = $storedFileName;
+                $workOrder->WO_Realname = $file->getClientOriginalName();
             }
 
-        Session::put('latest_wo_no', $woNumber);
+            $workOrder->save();
 
-        if ($request->has('assigned_to') && is_array($request->assigned_to)) {
-            foreach ($request->assigned_to as $technicianId) {
-                $exists = DB::table('WO_DoneBy')
-                    ->where('WO_No', $woNumber)
-                    ->where('technician_id', $technicianId)
-                    ->exists();
-            
-                if (!$exists) {
-                    DB::table('WO_DoneBy')->insert([
-                        'WO_No' => $woNumber,
-                        'technician_id' => $technicianId,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-            
+            $case = Cases::where('Case_No', $request->reference_number)->first();
+                if ($case) {
+                    $case->Case_Status = 'INPROGRESS';
+                    $case->save();
+                    Log::info("Case {$request->reference_number} status updated to INPROGRESS by user ID: {$user->id}");
+                
                     Logs::create([
                         'Logs_No' => Logs::generateLogsNo(),
-                        'LOG_Type' => 'WO',
-                        'LOG_RefNo' => $woNumber,
-                        'LOG_Status' => 'TECH_ASSIGNED',
+                        'LOG_Type' => 'BA',
+                        'LOG_RefNo' => $request->reference_number,
+                        'LOG_Status' => 'INPROGRESS',
                         'LOG_User' => $user->id,
                         'LOG_Date' => now(),
-                        'LOG_Desc' => "Technician ID $technicianId was assigned to Work Order.",
+                        'LOG_Desc' => 'Sent and Case Inprogress.',
                     ]);
+            
+                }
+
+            Session::put('latest_wo_no', $woNumber);
+
+            if ($request->has('assigned_to') && is_array($request->assigned_to)) {
+                foreach ($request->assigned_to as $technicianId) {
+                    $exists = DB::table('WO_DoneBy')
+                        ->where('WO_No', $woNumber)
+                        ->where('technician_id', $technicianId)
+                        ->exists();
+                
+                    if (!$exists) {
+                        DB::table('WO_DoneBy')->insert([
+                            'WO_No' => $woNumber,
+                            'technician_id' => $technicianId,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                
+                        Logs::create([
+                            'Logs_No' => Logs::generateLogsNo(),
+                            'LOG_Type' => 'WO',
+                            'LOG_RefNo' => $woNumber,
+                            'LOG_Status' => 'TECH_ASSIGNED',
+                            'LOG_User' => $user->id,
+                            'LOG_Date' => now(),
+                            'LOG_Desc' => "Technician ID $technicianId was assigned to Work Order.",
+                        ]);
+                    }
                 }
             }
-        }
 
             Logs::create([
                 'Logs_No' => Logs::generateLogsNo(),                
@@ -299,6 +329,7 @@ class WOController extends Controller
             ], 500);
         }
     }
+
 
     // View Page Edit WO
     public function EditWO($wo_no)
@@ -386,6 +417,8 @@ class WOController extends Controller
             'work_description' => 'required|string',
             'assigned_to' => 'nullable|array',
             'require_material' => 'nullable|string',
+            'wo_attachment' => 'nullable|file|max:2048|mimes:xls,xlsx,pdf,jpg,jpeg,png',
+
         ]);
 
         try {
@@ -410,10 +443,47 @@ class WOController extends Controller
                 $wo->WO_Status = 'OPEN';
             }
 
+            // --- Handle Attachment ---
+            // --- Handle Attachment ---
+            if ($request->hasFile('wo_attachment')) {
+                $file = $request->file('wo_attachment');
+
+                $allowedMimeTypes = [
+                    'image/jpeg', 'image/jpg',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/vnd.ms-excel', 'application/pdf'
+                ];
+                $maxSize = 2048 * 1024; // 2MB
+
+                if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+                    throw new \Exception('Unsupported file type uploaded.');
+                }
+
+                if ($file->getSize() > $maxSize) {
+                    throw new \Exception('File size exceeds 2MB limit.');
+                }
+
+                $sanitizedNo = str_replace(['/', '\\'], '-', $wo->WO_No);
+
+                // DELETE FILE LAMA jika ada
+                if ($wo->WO_Filename) {
+                    $oldPath = 'wo_attachments/' . $sanitizedNo . '/' . $wo->WO_Filename;
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+
+                // Simpan FILE BARU
+                $storedFileName = 'WO_Attachment_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('wo_attachments/' . $sanitizedNo, $storedFileName, 'public');
+
+                // Update kolom DB
+                $wo->WO_Filename = $storedFileName;
+                $wo->WO_Realname = $file->getClientOriginalName();
+            }
+
+            // Pastikan semua perubahan disimpan
             $wo->save();
-
-
-            
 
             // Handle Teknisi
             if ($request->has('assigned_to')) {
@@ -701,6 +771,8 @@ class WOController extends Controller
                 'Work_Orders.WO_RMK4',
                 'Work_Orders.WO_RMK5',
                 'Work_Orders.Update_Date',
+                'Work_Orders.WO_Filename',
+                'Work_Orders.WO_Realname',
                 'cr.Fullname as Creator_Name',
                 'mr.Fullname as MR_Requestor'
             )

@@ -173,6 +173,7 @@ class DashboardController extends Controller
                 'need_mat'      => $wo?->WO_NeedMat                   ?? '-',
                 'mr_no'         => $wo?->materialRequest?->MR_No      ?? '-',
                 'mr_status'     => $wo?->materialRequest?->MR_Status  ?? '-',
+                "mr_cr_by"      => $wo?->materialRequest?->creator->Fullname ?? '-',
                 'mr_ap1'        => $wo?->materialRequest?->approver1->Fullname  ?? '-',
                 'mr_ap2'        => $wo?->materialRequest?->approver2->Fullname  ?? '-',
                 'mr_ap3'        => $wo?->materialRequest?->approver3->Fullname  ?? '-',

@@ -171,19 +171,100 @@
                                 <!--end::Col-->
                             </div>
                             <!--end::Row Need Material-->
-                            
-                            <!--begin::Row WO Completed Date-->
+
+                            {{-- WO Attachment --}}
+                            <div id="wo_attachment_section" class="row mb-7 pb-4">
+                                <label class="col-lg-2 col-form-label fw-semibold fs-5 text-muted">
+                                    <span class="required">WorkOrder Attachment</span>
+                                </label>                                                
+                                <div class="col-lg-10 fv-row">
+                                    <div name="wo_attachment" class="dropzone dropzone-queue mb-2" id="kt_dropzonejs_example_3">
+                                        
+                                        @php
+                                            $folder = str_replace(['/', '\\'], '-', $workOrder->WO_No);
+                                            $filePath = 'wo_attachments/' . $folder . '/' . $workOrder->WO_Filename;
+                                        @endphp
+
+                                        @if (!empty($workOrder->WO_Filename))
+                                            @if (Storage::disk('public')->exists($filePath))
+                                                <div class="d-flex flex-column gap-3 mt-5 mb-5">
+                                                    <div class="d-flex align-items-center p-4 border rounded bg-light shadow-sm">
+                                                        <div class="symbol symbol-50px me-4">
+                                                            @php
+                                                                $ext = strtolower(pathinfo($workOrder->WO_Filename, PATHINFO_EXTENSION));
+                                                                $icon = match($ext) {
+                                                                    'pdf' => 'bi bi-file-earmark-pdf-fill text-danger',
+                                                                    'xls', 'xlsx' => 'bi bi-file-earmark-excel-fill text-success',
+                                                                    'jpg', 'jpeg', 'png' => 'bi bi-file-earmark-image-fill text-primary',
+                                                                    default => 'bi bi-file-earmark-fill text-secondary',
+                                                                };
+                                                            @endphp
+                                                            <i class="{{ $icon }} fs-2x"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-bold text-dark">{{ $workOrder->WO_Realname }}</div>
+                                                            <a href="{{ asset('storage/' . $filePath) }}" class="btn btn-sm btn-light-primary mt-2" download>
+                                                                <i class="bi bi-download me-1"></i> Download
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="alert alert-warning d-flex align-items-center p-4 mt-4">
+                                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-2x me-3"></i>
+                                                    <div>
+                                                        <strong>File tidak ditemukan.</strong><br>
+                                                        File <code>{{ $workOrder->WO_Filename }}</code> tidak ada di <code>storage/app/public/wo_attachments/{{ $folder }}/</code>.
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- End WO Attachment --}}
+
+                            <!--begin::Row WO Need Mat?-->
                             <div class="row mb-7 pb-4">
                                 <!--begin::Label-->
-                                <label class="col-lg-2 fw-semibold text-muted fs-5">Completion Date</label>
+                                <label class="col-lg-2 fw-semibold text-muted fs-5">Material Required?</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-10">
-                                    <span class="fw-bold fs-5 text-dark">{{ $workOrder->WO_CompDate }}</span>
+                                    @if ($workOrder->WO_NeedMat == 'Y')
+                                        <span class="badge badge-light-danger fs-6 fw-bold">Yes – Material is required for this work</span>
+                                    @elseif ($workOrder->WO_NeedMat == 'N')
+                                        <span class="badge badge-light-success fs-6 fw-bold">No – Work does not require material</span>
+                                    @else
+                                        <span class="badge badge-light-warning fs-6 fw-bold">Unknown</span>
+                                    @endif
                                 </div>
                                 <!--end::Col-->
                             </div>
-                            <!--end::Row WO Completed-->
+                            <!--end::Row WO Need Mat?-->
+
+
+                            <!--begin::Row WO Completed Date-->
+                        <div class="row mb-7 pb-4">
+                            <!--begin::Label-->
+                            <label class="col-lg-2 fw-semibold text-muted fs-5">Completion Status</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-10">
+                                @if ($workOrder->WO_CompDate)
+                                    <span class="badge badge-light-primary fs-6 fw-bold">
+                                        Completed on {{ \Carbon\Carbon::parse($workOrder->WO_CompDate)->format('d M Y, H:i') }}
+                                    </span>
+                                @else
+                                    <span class="badge badge-light-warning fs-6 fw-bold">Not yet completed</span>
+                                @endif
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Row WO Completed Date-->
+
+
+                           
                         </div>
                         {{-- End Detail Work Order  --}}
                     </div>

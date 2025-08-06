@@ -279,11 +279,59 @@
                         type: 'GET',
                         data: { wo_no: woNo }, 
                         success: function (data) {
-                            $('#case_no').val(data.Case_No ?? '');
-                            $('#case_name').val(data.Case_Name ?? '');
-                            $('#created_by').val(data.created_by ?? '');
-                            $('#department').val(data.department ?? '');
-                        },
+                        $('#case_no').val(data.Case_No ?? '');
+                        $('#case_name').val(data.Case_Name ?? '');
+                        $('#wo_desc').val(data.WO_Narative ?? ''); 
+                        $('#created_by').val(data.created_by ?? '');
+                        $('#department').val(data.department ?? '');
+
+                        // Tangani WO Attachment
+                        const attachmentSection = $('#wo_attachment_section');
+                        const attachmentContent = $('#wo_attachment_content');
+                        
+                        if (data.WO_Filename) {
+                            const folder = data.WO_No.replace(/[\/\\]/g, '-');
+                            const ext = data.WO_Filename.split('.').pop().toLowerCase();
+                            let iconClass = 'bi bi-file-earmark-fill text-secondary';
+                            
+                            if (ext === 'pdf') iconClass = 'bi bi-file-earmark-pdf-fill text-danger';
+                            else if (['xls', 'xlsx'].includes(ext)) iconClass = 'bi bi-file-earmark-excel-fill text-success';
+                            else if (['jpg', 'jpeg', 'png'].includes(ext)) iconClass = 'bi bi-file-earmark-image-fill text-primary';
+
+                            const filePath = data.file_url;
+
+                            const html = `
+                                <div class="d-flex flex-column gap-3 mt-5 mb-5">
+                                    <div class="d-flex align-items-center p-4 border rounded bg-light shadow-sm">
+                                        <div class="symbol symbol-50px me-4">
+                                            <i class="${iconClass} fs-2x"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-dark">${data.WO_Realname ?? data.WO_Filename}</div>
+                                            <a href="${filePath}" class="btn btn-sm btn-light-primary mt-2" download>
+                                                <i class="bi bi-download me-1"></i> Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+
+                            attachmentContent.html(html);
+                            attachmentSection.show();
+                            console.log(data.file_exists, data.file_url);
+
+                        } else {
+                            // Tampilkan pesan jika tidak ada file
+                            const html = `
+                                <div class="alert alert-info mt-4">
+                                    <i class="bi bi-info-circle-fill me-2"></i> Tidak ada file lampiran untuk WO ini.
+                                </div>
+                            `;
+                            attachmentContent.html(html);   
+                            attachmentSection.show();
+                        }
+                    },
                         error: function () {
                             alert('Gagal mengambil detail WO!');
                         },

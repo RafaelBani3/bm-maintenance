@@ -149,7 +149,7 @@
                 <tbody>
                     @foreach($mr->children as $detail)
                     <tr>
-                        <td>{{ $detail->MR_No }}</td>
+                        <td>{{ $detail->MR_Line }}</td>
                         <td>{{ $detail->Item_Oty }}</td>
                         <td>{{ $detail->UOM_Name }}</td>
                         <td>{{ $detail->Item_Code }}</td>
