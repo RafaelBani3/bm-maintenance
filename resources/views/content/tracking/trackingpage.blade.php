@@ -462,6 +462,7 @@
                                 <ul class="list-unstyled mb-0 small lh-lg">
                                     <li><strong>MR No:</strong> <span id="mr-no" class="text-dark">-</span></li>
                                     <li><strong>MR Status:</strong> <span id="mr-status" class="text-dark">-</span></li>
+                                    <li><strong>MR CR BY:</strong> <span id="mr-created_by" class="text-dark">-</span></li>
                                     <li><strong>MR AP1:</strong> <span id="mr_ap1" class="text-dark">-</span></li>
                                     <li><strong>MR AP2:</strong> <span id="mr_ap2" class="text-dark">-</span></li>
                                     <li><strong>MR AP3:</strong> <span id="mr_ap3" class="text-dark">-</span></li>
@@ -609,6 +610,7 @@
                         document.getElementById('mr-no').textContent = data.mr_no || '-';
                         document.getElementById('mr-status').textContent = data.mr_status || '-';
                         document.getElementById('need_mat').textContent = data.need_mat     || '-';
+                        document.getElementById('mr-created_by').textContent = data.mr_cr_by || '-';
                         document.getElementById('mr_ap1').textContent = data.mr_ap1         || '-';
                         document.getElementById('mr_ap2').textContent = data.mr_ap2         || '-';
                         document.getElementById('mr_ap3').textContent = data.mr_ap3         || '-';

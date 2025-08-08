@@ -127,7 +127,23 @@
                             }
 
                             // Tambahkan tombol Print PDF jika status DONE
-                            if (row.Case_Status === "DONE") {
+                            console.log('Step:', row.Case_ApStep, 'Max:', row.Case_ApMaxStep, 'Equal?', Number(row.Case_ApStep) === Number(row.Case_ApMaxStep));
+                            // if (row.Case_Status === "DONE") {
+                            //     const exportPdfUrl = routeExportPDF.replace('case_no', encoded);
+                            //     buttons += `
+                            //         <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-info d-flex align-items-center justify-content-center p-2" title="Export PDF">
+                            //             <i class="ki-duotone ki-printer fs-2 text-info">
+                            //                 <span class="path1"></span>
+                            //                 <span class="path2"></span>
+                            //             </i>
+                            //         </a>`;
+                            // }
+
+                            if (
+                                row.Case_ApStep != null &&
+                                row.Case_ApMaxStep != null &&
+                                Number(row.Case_ApStep) === Number(row.Case_ApMaxStep)
+                            ) {
                                 const exportPdfUrl = routeExportPDF.replace('case_no', encoded);
                                 buttons += `
                                     <a href="${exportPdfUrl}" target="_blank" class="btn bg-light-info d-flex align-items-center justify-content-center p-2" title="Export PDF">
@@ -139,7 +155,7 @@
                             }
 
                             // tombol Delete Case
-                            console.log("User Position:", userPosition);
+                            // console.log("User Position:", userPosition);
 
                             if (row.PS_Name === "Creator" || row.PS_Name === "Approver") {
                                 buttons += `

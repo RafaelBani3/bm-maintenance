@@ -205,7 +205,7 @@
                 let previewTemplate = previewNode.parentNode.innerHTML;
                 previewNode.parentNode.removeChild(previewNode);
 
-                // Initialize Dropzone
+                // Initialize Dropzone Attachemnt
                 myDropzone = new Dropzone(id, {
                     url: "{{ route('SaveWO') }}",
                     autoProcessQueue: false,

@@ -616,7 +616,9 @@ class CaseController extends Controller
                 'users.Fullname as User',
                 'cases.Case_Status',
                 'users.PS_ID',
-                'Positions.PS_Name'
+                'Positions.PS_Name',
+                'cases.Case_ApStep',
+                'cases.Case_ApMaxStep'
             )
             ->leftJoin('Cats', 'cases.Cat_No', '=', 'Cats.Cat_No')
             ->leftJoin('users', 'cases.CR_BY', '=', 'users.id')

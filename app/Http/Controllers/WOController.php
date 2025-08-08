@@ -330,7 +330,6 @@ class WOController extends Controller
         }
     }
 
-
     // View Page Edit WO
     public function EditWO($wo_no)
     {
@@ -723,9 +722,7 @@ class WOController extends Controller
         return redirect()->back()->with('success', 'Work Order berhasil dihapus.');
     }
 
-
-
-
+    
     // Get WO NO    
     public function GetWorkOrderNo(Request $request)
     {
