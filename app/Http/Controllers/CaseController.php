@@ -586,7 +586,8 @@ class CaseController extends Controller
         $userId = Auth::id();
         $user = Auth::user();
         $status = $request->query('status');
-        $sortColumn = $request->query('sortColumn', 'Case_No');
+        // $sortColumn = $request->query('sortColumn', 'Case_No');
+        $sortColumn = $request->query('sortColumn', 'Case_Date');
         $sortDirection = $request->query('sortDirection', 'DESC');
 
         $validColumns = ['Case_No', 'Case_Date'];

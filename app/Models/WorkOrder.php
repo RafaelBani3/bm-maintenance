@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\technician;
+use Illuminate\Support\Facades\Auth;
 
 class WorkOrder extends Model
 {
@@ -109,6 +110,13 @@ class WorkOrder extends Model
         return "$newNumber/WO/$romanMonth/$currentYear";
     }
 
+
+
+
+
+
+    // WOC NO 
+
     public function getIncrementWOCNo()
     {
         $currentMonth = date('n'); 
@@ -120,17 +128,27 @@ class WorkOrder extends Model
         ];
         $romanMonth = $monthRoman[$currentMonth];
 
+        $userId = Auth::id();
+        $positionId = User::find($userId)?->PS_ID;
+
+        $deptCode = optional(
+            Position::with('department')->find($positionId)
+        )->department->dept_code ?? 'XXX';
+
         $lastNumber = $this
-        ->whereYear('CR_DT', $currentYear)
-        ->whereMonth('CR_DT', $currentMonth)
+        ->whereYear('created_at', $currentYear)
+        ->whereMonth('created_at', $currentMonth)
         ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(WOC_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
         ->first()
         ->max_n;
 
         $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
 
-        return "$newNumber/BMGT/ENG-BAP/$romanMonth/$currentYear";
+        return "$newNumber/BMGT/{$deptCode}-BAP/$romanMonth/$currentYear";
     }
+
+
+
 
     // App\Models\WorkOrder.php
     public function materialRequests()
