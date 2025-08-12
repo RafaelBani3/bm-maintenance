@@ -16,7 +16,7 @@
                         <div class="card-header card-header-stretch">
                         <!--begin::Title-->
                             <div class="card-title d-flex justify-content-between align-items-center w-100">
-                                <h3 class="fw-bold m-0 text-primary">Work Order Detail : {{ $workOrder->WO_No }} </h3>
+                                <h3 class="fw-bold m-0 text-primary">Work Order Completion Detail : {{ $workOrder->WOC_No }} </h3>
                                 
                                 {{-- Button Log + Revisi --}}
                                 <div class="d-flex gap-2">

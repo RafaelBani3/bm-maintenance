@@ -100,7 +100,6 @@ class WorkOrder extends Model
     
         $lastNumber = DB::table($this->getTable())
             ->whereYear('CR_DT', $currentYear)
-            ->whereMonth('CR_DT', $currentMonth)
             ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(WO_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
             ->first()
             ->max_n;
@@ -137,7 +136,6 @@ class WorkOrder extends Model
 
         $lastNumber = $this
         ->whereYear('created_at', $currentYear)
-        ->whereMonth('created_at', $currentMonth)
         ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(WOC_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
         ->first()
         ->max_n;

@@ -109,8 +109,7 @@ class MatReq extends Model
         $romanMonth = $monthRoman[$currentMonth];
     
         $lastNumber = DB::table('Mat_Req')
-            ->whereYear('CR_DT', $currentYear)
-            ->whereMonth('CR_DT', $currentMonth)
+            ->whereYear('created_at', $currentYear)
             ->select(DB::raw("IFNULL(MAX(CAST(TRIM(LEADING '0' FROM SUBSTR(MR_No, 1, 3)) AS UNSIGNED)), 0) AS max_n"))
             ->first()
             ->max_n;
