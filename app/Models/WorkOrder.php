@@ -146,8 +146,6 @@ class WorkOrder extends Model
     }
 
 
-
-
     // App\Models\WorkOrder.php
     public function materialRequests()
     {
